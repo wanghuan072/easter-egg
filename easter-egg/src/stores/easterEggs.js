@@ -1,281 +1,451 @@
-import { defineStore } from 'pinia';
-import { gamesApi, moviesApi, tvApi, newsApi, searchApi } from '../services/api.js';
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+import { gamesApi, moviesApi, tvApi, newsApi, searchApi } from '@/services/api.js'
+import { getApiUrl } from '@/config/env.js'
 
-export const useEasterEggsStore = defineStore('easterEggs', {
-  state: () => ({
-    // 游戏数据
-    games: {
-      data: [],
-      loading: false,
-      error: null,
-      pagination: null
-    },
-    
-    // 电影数据
-    movies: {
-      data: [],
-      loading: false,
-      error: null,
-      pagination: null
-    },
-    
-    // 电视数据
-    tv: {
-      data: [],
-      loading: false,
-      error: null,
-      pagination: null
-    },
-    
-    // 新闻数据
-    news: {
-      data: [],
-      loading: false,
-      error: null,
-      pagination: null
-    },
-    
-    // 搜索数据
-    search: {
-      data: [],
-      loading: false,
-      error: null,
-      pagination: null,
-      query: ''
-    },
-    
-    // 首页数据
-    homeData: {
-      games: [],
-      movies: [],
-      tv: [],
-      loading: false,
-      error: null
-    },
-    
-    // 最新发现
-    latestDiscoveries: {
-      data: [],
-      loading: false,
-      error: null
-    }
-  }),
+export const useEasterEggsStore = defineStore('easterEggs', () => {
+  // 状态
+  const games = ref([])
+  const movies = ref([])
+  const tvShows = ref([])
+  const news = ref([])
+  const searchResults = ref([])
+  const latestDiscoveries = ref([])
+  
+  // 加载状态
+  const isLoading = ref({
+    games: false,
+    movies: false,
+    tv: false,
+    news: false,
+    search: false,
+    home: false
+  })
+  
+  // 全局页面加载状态
+  const isPageLoading = ref(false)
+  
+  // 错误状态
+  const errors = ref({
+    games: '',
+    movies: '',
+    tv: '',
+    news: '',
+    search: '',
+    home: ''
+  })
+  
+  // 分页信息
+  const pagination = ref({
+    games: { page: 1, pages: 1, total: 0 },
+    movies: { page: 1, pages: 1, total: 0 },
+    tv: { page: 1, pages: 1, total: 0 },
+    news: { page: 1, pages: 1, total: 0 },
+    search: { page: 1, pages: 1, total: 0 }
+  })
+  
+  // 搜索相关状态
+  const searchState = ref({
+    query: '',
+    filters: {},
+    results: []
+  })
+  
+  // 分类数据
+  const classifications = ref({
+    games: [],
+    movies: [],
+    tv: [],
+    news: []
+  })
 
-  getters: {
-    // 获取游戏数据
-    getGames: (state) => state.games.data,
+  // 认证状态
+  const auth = ref({
+    isAuthenticated: false,
+    user: null,
+    token: null
+  })
+
+  // 计算属性 - 过滤后的数据
+  const filteredGames = computed(() => games.value)
+  const filteredMovies = computed(() => movies.value)
+  const filteredTVShows = computed(() => tvShows.value)
+  const filteredNews = computed(() => news.value)
+  
+  // 获取分类列表
+  const getClassifications = (type) => {
+    return classifications.value[type] || []
+  }
+
+  // 通用数据获取函数
+  const fetchData = async (type, apiMethod, params = {}) => {
+    isLoading.value[type] = true
+    errors.value[type] = ''
     
-    // 获取电影数据
-    getMovies: (state) => state.movies.data,
-    
-    // 获取电视数据
-    getTV: (state) => state.tv.data,
-    
-    // 获取新闻数据
-    getNews: (state) => state.news.data,
-    
-    // 获取搜索数据
-    getSearchResults: (state) => state.search.data,
-    
-    // 获取首页数据
-    getHomeData: (state) => state.homeData,
-    
-    // 获取最新发现
-    getLatestDiscoveries: (state) => state.latestDiscoveries.data,
-    
-    // 检查是否正在加载
-    isLoading: (state) => (type) => {
+    try {
+      const response = await apiMethod(params)
+      
+      // 统一处理响应格式
+      let data = []
+      if (Array.isArray(response)) {
+        data = response
+      } else if (response && response.data) {
+        data = response.data
+        // 处理分页信息
+        if (response.pagination) {
+          pagination.value[type] = response.pagination
+        }
+      } else {
+        data = []
+      }
+      
+      // 根据类型设置数据
       switch (type) {
-        case 'games': return state.games.loading;
-        case 'movies': return state.movies.loading;
-        case 'tv': return state.tv.loading;
-        case 'news': return state.news.loading;
-        case 'search': return state.search.loading;
-        case 'home': return state.homeData.loading;
-        case 'latest': return state.latestDiscoveries.loading;
-        default: return false;
+        case 'games':
+          games.value = data
+          break
+        case 'movies':
+          movies.value = data
+          break
+        case 'tv':
+          tvShows.value = data
+          break
+        case 'news':
+          news.value = data
+          break
       }
-    },
-    
-    // 检查是否有错误
-    hasError: (state) => (type) => {
-      switch (type) {
-        case 'games': return state.games.error;
-        case 'movies': return state.movies.error;
-        case 'tv': return state.tv.error;
-        case 'news': return state.news.error;
-        case 'search': return state.search.error;
-        case 'home': return state.homeData.error;
-        case 'latest': return state.latestDiscoveries.error;
-        default: return null;
-      }
-    }
-  },
-
-  actions: {
-    // 获取游戏数据
-    async fetchGames(params = {}) {
-      this.games.loading = true;
-      this.games.error = null;
       
-      try {
-        const response = await gamesApi.getAll(params);
-        this.games.data = response.data;
-        this.games.pagination = response.pagination;
-      } catch (error) {
-        this.games.error = error.message;
-        console.error('Failed to fetch games:', error);
-      } finally {
-        this.games.loading = false;
-      }
-    },
-
-    // 获取电影数据
-    async fetchMovies(params = {}) {
-      this.movies.loading = true;
-      this.movies.error = null;
-      
-      try {
-        const response = await moviesApi.getAll(params);
-        this.movies.data = response.data;
-        this.movies.pagination = response.pagination;
-      } catch (error) {
-        this.movies.error = error.message;
-        console.error('Failed to fetch movies:', error);
-      } finally {
-        this.movies.loading = false;
-      }
-    },
-
-    // 获取电视数据
-    async fetchTV(params = {}) {
-      this.tv.loading = true;
-      this.tv.error = null;
-      
-      try {
-        const response = await tvApi.getAll(params);
-        this.tv.data = response.data;
-        this.tv.pagination = response.pagination;
-      } catch (error) {
-        this.tv.error = error.message;
-        console.error('Failed to fetch TV shows:', error);
-      } finally {
-        this.tv.loading = false;
-      }
-    },
-
-    // 获取新闻数据
-    async fetchNews(params = {}) {
-      this.news.loading = true;
-      this.news.error = null;
-      
-      try {
-        const response = await newsApi.getAll(params);
-        this.news.data = response.data;
-        this.news.pagination = response.pagination;
-      } catch (error) {
-        this.news.error = error.message;
-        console.error('Failed to fetch news:', error);
-      } finally {
-        this.news.loading = false;
-      }
-    },
-
-    // 搜索
-    async search(query, params = {}) {
-      this.search.loading = true;
-      this.search.error = null;
-      this.search.query = query;
-      
-      try {
-        const response = await searchApi.search(query, params);
-        this.search.data = response.data;
-        this.search.pagination = response.pagination;
-      } catch (error) {
-        this.search.error = error.message;
-        console.error('Search failed:', error);
-      } finally {
-        this.search.loading = false;
-      }
-    },
-
-    // 获取首页数据
-    async fetchHomeData() {
-      this.homeData.loading = true;
-      this.homeData.error = null;
-      
-      try {
-        const [gamesResponse, moviesResponse, tvResponse] = await Promise.all([
-          gamesApi.getHome(),
-          moviesApi.getHome(),
-          tvApi.getHome()
-        ]);
-        
-        this.homeData.games = gamesResponse.data;
-        this.homeData.movies = moviesResponse.data;
-        this.homeData.tv = tvResponse.data;
-      } catch (error) {
-        this.homeData.error = error.message;
-        console.error('Failed to fetch home data:', error);
-      } finally {
-        this.homeData.loading = false;
-      }
-    },
-
-    // 获取最新发现
-    async fetchLatestDiscoveries() {
-      this.latestDiscoveries.loading = true;
-      this.latestDiscoveries.error = null;
-      
-      try {
-        const [gamesResponse, moviesResponse, tvResponse, newsResponse] = await Promise.all([
-          gamesApi.getLatest(3),
-          moviesApi.getLatest(3),
-          tvApi.getLatest(3),
-          newsApi.getLatest(3)
-        ]);
-        
-        // 合并所有最新数据并按日期排序
-        const allLatest = [
-          ...gamesResponse.data.map(item => ({ ...item, mediaType: 'games' })),
-          ...moviesResponse.data.map(item => ({ ...item, mediaType: 'movies' })),
-          ...tvResponse.data.map(item => ({ ...item, mediaType: 'tv' })),
-          ...newsResponse.data.map(item => ({ ...item, mediaType: 'news' }))
-        ];
-        
-        this.latestDiscoveries.data = allLatest.sort((a, b) => 
-          new Date(b.publishDate) - new Date(a.publishDate)
-        );
-      } catch (error) {
-        this.latestDiscoveries.error = error.message;
-        console.error('Failed to fetch latest discoveries:', error);
-      } finally {
-        this.latestDiscoveries.loading = false;
-      }
-    },
-
-    // 清除错误
-    clearError(type) {
-      switch (type) {
-        case 'games': this.games.error = null; break;
-        case 'movies': this.movies.error = null; break;
-        case 'tv': this.tv.error = null; break;
-        case 'news': this.news.error = null; break;
-        case 'search': this.search.error = null; break;
-        case 'home': this.homeData.error = null; break;
-        case 'latest': this.latestDiscoveries.error = null; break;
-      }
-    },
-
-    // 重置状态
-    reset() {
-      this.games = { data: [], loading: false, error: null, pagination: null };
-      this.movies = { data: [], loading: false, error: null, pagination: null };
-      this.tv = { data: [], loading: false, error: null, pagination: null };
-      this.news = { data: [], loading: false, error: null, pagination: null };
-      this.search = { data: [], loading: false, error: null, pagination: null, query: '' };
-      this.homeData = { games: [], movies: [], tv: [], loading: false, error: null };
-      this.latestDiscoveries = { data: [], loading: false, error: null };
+      return data
+    } catch (error) {
+      const errorMessage = error.message || `Failed to fetch ${type}`
+      errors.value[type] = errorMessage
+      console.error(`Error fetching ${type}:`, error)
+      return []
+    } finally {
+      isLoading.value[type] = false
     }
   }
-});
+
+  // 获取游戏数据
+  const fetchGames = async (params = {}) => {
+    return await fetchData('games', gamesApi.getAll, params)
+  }
+  
+  // 获取电影数据
+  const fetchMovies = async (params = {}) => {
+    return await fetchData('movies', moviesApi.getAll, params)
+  }
+  
+  // 获取电视数据
+  const fetchTV = async (params = {}) => {
+    return await fetchData('tv', tvApi.getAll, params)
+  }
+  
+  // 获取新闻数据
+  const fetchNews = async (params = {}) => {
+    return await fetchData('news', newsApi.getAll, params)
+  }
+  
+  // 获取首页数据
+  const fetchHomeData = async () => {
+    isLoading.value.home = true
+    errors.value.home = ''
+    
+    try {
+      const [gamesRes, moviesRes, tvRes] = await Promise.all([
+        gamesApi.getLatest(8),
+        moviesApi.getLatest(8),
+        tvApi.getLatest(8)
+      ])
+      
+      // 统一处理响应
+      games.value = Array.isArray(gamesRes) ? gamesRes : (gamesRes.data || [])
+      movies.value = Array.isArray(moviesRes) ? moviesRes : (moviesRes.data || [])
+      tvShows.value = Array.isArray(tvRes) ? tvRes : (tvRes.data || [])
+      
+      return { games: games.value, movies: movies.value, tv: tvShows.value }
+    } catch (error) {
+      const errorMessage = error.message || 'Failed to fetch home data'
+      errors.value.home = errorMessage
+      console.error('Error fetching home data:', error)
+      return { games: [], movies: [], tv: [] }
+    } finally {
+      isLoading.value.home = false
+    }
+  }
+  
+  // 预加载数据以提高性能
+  const preloadData = async () => {
+    isPageLoading.value = true
+    
+    try {
+      // 分批加载数据，避免同时发送太多请求
+      console.log('开始预加载数据...')
+      
+      // 第一批：基础数据
+      console.log('加载基础数据...')
+      await Promise.all([
+        fetchGames(),
+        fetchMovies(),
+        fetchTV()
+      ])
+      
+      // 添加延迟，避免触发限流
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // 第二批：分类数据
+      console.log('加载分类数据...')
+      await Promise.all([
+        fetchClassifications('games'),
+        fetchClassifications('movies'),
+        fetchClassifications('tv')
+      ])
+      
+      console.log('数据预加载完成')
+    } catch (error) {
+      console.error('预加载数据时出错:', error)
+      // 即使出错也不阻止应用继续运行
+    } finally {
+      isPageLoading.value = false
+    }
+  }
+  
+  // 获取最新发现
+  const fetchLatestDiscoveries = async (limit = 4) => {
+    try {
+      // 获取游戏、电影、电视中 is_latest = true 的内容
+      const [gamesRes, moviesRes, tvRes] = await Promise.all([
+        gamesApi.getLatest(limit),
+        moviesApi.getLatest(limit),
+        tvApi.getLatest(limit)
+      ])
+      
+      // 合并所有结果
+      let allLatest = []
+      
+      // 处理游戏数据
+      if (gamesRes && gamesRes.data) {
+        allLatest.push(...gamesRes.data)
+      } else if (Array.isArray(gamesRes)) {
+        allLatest.push(...gamesRes)
+      }
+      
+      // 处理电影数据
+      if (moviesRes && moviesRes.data) {
+        allLatest.push(...moviesRes.data)
+      } else if (Array.isArray(moviesRes)) {
+        allLatest.push(...moviesRes)
+      }
+      
+      // 处理电视数据
+      if (tvRes && tvRes.data) {
+        allLatest.push(...tvRes.data)
+      } else if (Array.isArray(tvRes)) {
+        allLatest.push(...tvRes)
+      }
+      
+      // 按发布时间排序，取最新的 limit 条
+      allLatest.sort((a, b) => new Date(b.publish_date || b.publishDate) - new Date(a.publish_date || a.publishDate))
+      allLatest = allLatest.slice(0, limit)
+      
+      latestDiscoveries.value = allLatest
+      return allLatest
+    } catch (error) {
+      console.error('Error fetching latest discoveries:', error)
+      latestDiscoveries.value = []
+      return []
+    }
+  }
+  
+  // 搜索功能
+  const performSearch = async (query, params = {}) => {
+    isLoading.value.search = true
+    errors.value.search = ''
+    
+    try {
+      const response = await searchApi.search(query, params)
+      
+      let data = []
+      if (Array.isArray(response)) {
+        data = response
+      } else if (response && response.data) {
+        data = response.data
+        if (response.pagination) {
+          pagination.value.search = response.pagination
+        }
+      }
+      
+      searchResults.value = data
+      searchState.value.query = query
+      searchState.value.filters = params
+      searchState.value.results = data
+      
+      return data
+    } catch (error) {
+      const errorMessage = error.message || 'Search failed'
+      errors.value.search = errorMessage
+      console.error('Search error:', error)
+      return []
+    } finally {
+      isLoading.value.search = false
+    }
+  }
+  
+  // 获取分类数据
+  const fetchClassifications = async (type) => {
+    try {
+      let response
+      switch (type) {
+        case 'games':
+          response = await gamesApi.getClassifications()
+          break
+        case 'movies':
+          response = await moviesApi.getClassifications()
+          break
+        case 'tv':
+          response = await tvApi.getClassifications()
+          break
+        case 'news':
+          response = await newsApi.getClassifications()
+          break
+        default:
+          return []
+      }
+      
+      const data = Array.isArray(response) ? response : (response.data || [])
+      classifications.value[type] = data
+      return data
+    } catch (error) {
+      console.error(`Error fetching ${type} classifications:`, error)
+      return []
+    }
+  }
+  
+  // 清除错误
+  const clearError = (type) => {
+    if (errors.value[type]) {
+      errors.value[type] = ''
+    }
+  }
+  
+  // 重置状态
+  const reset = () => {
+    games.value = []
+    movies.value = []
+    tvShows.value = []
+    news.value = []
+    searchResults.value = []
+    latestDiscoveries.value = []
+    searchState.value = { query: '', filters: {}, results: [] }
+    isPageLoading.value = false
+    
+    Object.keys(isLoading.value).forEach(key => {
+      isLoading.value[key] = false
+    })
+    
+    Object.keys(errors.value).forEach(key => {
+      errors.value[key] = ''
+    })
+    
+    Object.keys(pagination.value).forEach(key => {
+      pagination.value[key] = { page: 1, pages: 1, total: 0 }
+    })
+  }
+
+  // 认证相关方法
+  const login = async (username, password) => {
+    try {
+      const response = await fetch(getApiUrl('/api/auth/login'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        auth.value.isAuthenticated = true
+        auth.value.user = data.data.user
+        auth.value.token = data.data.token
+        
+        // 存储到localStorage
+        localStorage.setItem('admin_token', data.data.token)
+        localStorage.setItem('admin_user', data.data.user.username)
+        
+        return { success: true, data: data.data }
+      } else {
+        return { success: false, error: data.error }
+      }
+    } catch (error) {
+      console.error('登录失败:', error)
+      return { success: false, error: '网络错误，请稍后重试' }
+    }
+  }
+
+  const logout = () => {
+    auth.value.isAuthenticated = false
+    auth.value.user = null
+    auth.value.token = null
+    
+    // 清除localStorage
+    localStorage.removeItem('admin_token')
+    localStorage.removeItem('admin_user')
+  }
+
+  const checkAuth = () => {
+    const token = localStorage.getItem('admin_token')
+    const user = localStorage.getItem('admin_user')
+    
+    if (token && user) {
+      auth.value.isAuthenticated = true
+      auth.value.user = { username: user }
+      auth.value.token = token
+      return true
+    }
+    return false
+  }
+
+  return {
+    // 状态
+    games,
+    movies,
+    tvShows,
+    news,
+    searchResults,
+    latestDiscoveries,
+    isLoading,
+    isPageLoading,
+    errors,
+    pagination,
+    searchState,
+    classifications,
+    
+    // 计算属性
+    filteredGames,
+    filteredMovies,
+    filteredTVShows,
+    filteredNews,
+    getClassifications,
+    
+    // 方法
+    fetchGames,
+    fetchMovies,
+    fetchTV,
+    fetchNews,
+    fetchHomeData,
+    fetchLatestDiscoveries,
+    performSearch,
+    fetchClassifications,
+    preloadData,
+    clearError,
+    reset,
+    
+    // 认证相关
+    auth,
+    login,
+    logout,
+    checkAuth
+  }
+})

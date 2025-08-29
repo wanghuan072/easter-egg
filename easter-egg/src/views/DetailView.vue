@@ -2,6 +2,11 @@
   <div class="detail-page">
     <Header />
     
+    <!-- Loading State -->
+    <LoadingSpinner 
+      :isLoading="isLoading" 
+    />
+    
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-background" :style="{ backgroundImage: `url(${itemData?.imageUrl})` }">
@@ -90,93 +95,68 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
-import { gamesData } from '@/data/gamesVideo.js'
-import { moviesData } from '@/data/moviesVideo.js'
-import { tvData } from '@/data/tvVideo.js'
-import { formatRelativeTime } from '@/utils/dateUtils.js'
 
-const router = useRouter()
 
-// 格式化日期函数
-const formatDate = formatRelativeTime
+import { ref, onMounted, watch, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import axios from 'axios'
+import { formatRelativeTime } from '../utils/dateUtils'
+import Header from '../components/Header.vue'
+import Footer from '../components/Footer.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
 
-// 接收路由传递的props参数
+const route = useRoute()
+
 const props = defineProps({
-  type: {
-    type: String,
-    required: true
-  },
   addressBar: {
     type: String,
     required: true
   }
 })
 
-// 根据props获取数据类型和addressBar
-const dataType = computed(() => props.type)
-const addressBar = computed(() => props.addressBar)
-
-// 根据数据类型获取对应的数据源
-const dataSource = computed(() => {
-  switch (dataType.value) {
-    case 'games':
-      return gamesData
-    case 'movies':
-      return moviesData
-    case 'tv':
-      return tvData
-    default:
-      return []
-  }
+// 从路由中获取内容类型
+const contentType = computed(() => {
+  const path = route.path
+  if (path.startsWith('/games/')) return 'games'
+  if (path.startsWith('/movies/')) return 'movies'
+  if (path.startsWith('/tv/')) return 'tv'
+  return null
 })
 
-// 获取当前项目数据
-const itemData = computed(() => {
-  return dataSource.value.find(item => item.addressBar === addressBar.value)
-})
+const itemData = ref(null)
+const isLoading = ref(false)
+const formatDate = formatRelativeTime
 
-// 设置页面标题和SEO
-const setPageSEO = () => {
-  if (itemData.value?.seo) {
-    document.title = itemData.value.seo.title
-    // 设置meta描述
-    let metaDescription = document.querySelector('meta[name="description"]')
-    if (!metaDescription) {
-      metaDescription = document.createElement('meta')
-      metaDescription.name = 'description'
-      document.head.appendChild(metaDescription)
-    }
-    metaDescription.content = itemData.value.seo.description
+const fetchData = async () => {
+  try {
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+    const type = contentType.value
     
-    // 设置meta关键词
-    let metaKeywords = document.querySelector('meta[name="keywords"]')
-    if (!metaKeywords) {
-      metaKeywords = document.createElement('meta')
-      metaKeywords.name = 'keywords'
-      document.head.appendChild(metaKeywords)
+    if (!type || !props.addressBar) {
+      console.error('Missing required parameters:', { type, addressBar: props.addressBar })
+      return
     }
-    metaKeywords.content = itemData.value.seo.keywords
+    
+    const apiUrl = `${apiBase}/api/${type}/${props.addressBar}`
+    
+    const res = await axios.get(apiUrl)
+    
+    if (!res.data) {
+      throw new Error('Empty response')
+    }
+    
+    itemData.value = res.data.data || res.data
+  } catch (error) {
+    console.error('Failed to fetch item details:', error)
+    itemData.value = null
   }
 }
 
-// 监听数据变化，设置SEO
-watch(itemData, () => {
-  setPageSEO()
-}, { immediate: true })
+// 监听路由参数变化，重新获取数据
+watch(() => [props.type, props.addressBar], fetchData)
 
-// 组件挂载时设置SEO
-onMounted(() => {
-  setPageSEO()
-  
-  // 如果找不到数据，重定向到首页
-  if (!itemData.value) {
-    router.push('/')
-  }
-})
+// 组件挂载时获取数据
+onMounted(fetchData)
 </script>
 
 <style scoped>

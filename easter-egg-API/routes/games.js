@@ -1,177 +1,181 @@
+
 import express from 'express';
+import { Pool } from 'pg';
+import { DATA_STRUCTURE, transformData, validateData } from '../config/dataStructure.js';
 
 const router = express.Router();
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 
-// Static games data
-const gamesData = [
-  {
-    id: 1,
-    title: "Elden Ring: The Miyazaki Universe Connections",
-    description: "Uncover the hidden lore connections between Elden Ring and FromSoftware's previous titles. Discover how the game's mysterious world connects to Dark Souls, Bloodborne, and other Miyazaki masterpieces through subtle environmental storytelling and hidden item descriptions.",
-    publishDate: "2024-01-15",
-    isLatest: true,
-    isHome: true,
-    label: "GAME",
-    classify: ["Action", "RPG", "Open World", "Souls-like"],
-    imageUrl: "https://images.unsplash.com/photo-1625805866449-3589fe3c4e40?w=800&q=80",
-    imageAlt: "Elden Ring Miyazaki Universe",
-    addressBar: "elden-ring-miyazaki-universe",
-    iframeUrl: "https://example.com/games/elden-ring-details",
-    seo: {
-      title: "Elden Ring: The Miyazaki Universe Connections - Game Secrets Revealed",
-      description: "Discover the hidden connections between Elden Ring and FromSoftware's previous titles. Uncover lore secrets and environmental storytelling.",
-      keywords: "Elden Ring, Dark Souls, Bloodborne, FromSoftware, Miyazaki, game lore, secrets"
-    },
-    detailsHtml: "<h2>The Hidden Connections</h2><p>Elden Ring represents a culmination of FromSoftware's design philosophy...</p><h3>Environmental Storytelling</h3><p>The game's world is filled with subtle references...</p>"
-  },
-  {
-    id: 2,
-    title: "bbb",
-    description: "Uncover the hidden lore connections between Elden Ring and FromSoftware's previous titles. Discover how the game's mysterious world connects to Dark Souls, Bloodborne, and other Miyazaki masterpieces through subtle environmental storytelling and hidden item descriptions.",
-    publishDate: "2024-01-15",
-    isLatest: true,
-    isHome: true,
-    label: "GAME",
-    classify: ["Action"],
-    imageUrl: "https://images.unsplash.com/photo-1625805866449-3589fe3c4e40?w=800&q=80",
-    imageAlt: "Elden Ring Miyazaki Universe",
-    addressBar: "bbb-game",
-    iframeUrl: "https://example.com/games/bbb-details",
-    seo: {
-      title: "BBB Game - Action Adventure Secrets",
-      description: "Explore the mysterious world of BBB game and discover its hidden secrets.",
-      keywords: "BBB game, action, adventure, secrets, gaming"
-    },
-    detailsHtml: "<h2>BBB Game Overview</h2><p>This is a placeholder for BBB game details...</p>"
-  }
-];
+// 统一响应格式
+const sendResponse = (res, data, pagination = null, message = '') => {
+  const response = {
+    success: true,
+    data: data,
+    pagination: pagination,
+    message: message
+  };
+  res.json(response);
+};
 
-// Get all games
+const sendError = (res, error, status = 500) => {
+  const response = {
+    success: false,
+    error: error.message || error,
+    message: 'Request failed'
+  };
+  res.status(status).json(response);
+};
+
+// Get all games from database
 router.get('/', async (req, res) => {
   try {
-    const { page = 1, limit = 10, search, classify } = req.query;
-    const offset = (page - 1) * limit;
+    const { page = DATA_STRUCTURE.PAGINATION.DEFAULT_PAGE, limit = DATA_STRUCTURE.PAGINATION.DEFAULT_LIMIT, search, classify } = req.query;
     
-    let filteredData = [...gamesData];
+    // 验证参数
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(parseInt(limit), DATA_STRUCTURE.PAGINATION.MAX_LIMIT);
+    const offset = (pageNum - 1) * limitNum;
     
-    // Search functionality
+    let where = [];
+    let params = [];
+
     if (search) {
-      const searchLower = search.toLowerCase();
-      filteredData = filteredData.filter(game => 
-        game.title.toLowerCase().includes(searchLower) || 
-        game.description.toLowerCase().includes(searchLower)
-      );
+      params.push(`%${search}%`);
+      where.push(`(title ILIKE $${params.length} OR description ILIKE $${params.length})`);
     }
-    
-    // Filter by classification
     if (classify) {
-      const classifications = classify.split(',');
-      filteredData = filteredData.filter(game => 
-        classifications.some(cat => game.classify.includes(cat))
-      );
+      params.push(classify);
+      where.push(`$${params.length} = ANY(classify)`);
     }
     
-    const total = filteredData.length;
-    const paginatedData = filteredData.slice(offset, offset + parseInt(limit));
+    let query = `SELECT * FROM ${DATA_STRUCTURE.TABLES.GAMES}`;
+    if (where.length) {
+      query += ' WHERE ' + where.join(' AND ');
+    }
+    query += ` ORDER BY publish_date DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    params.push(limitNum, offset);
+
+    const result = await pool.query(query, params);
     
-    res.json({
-      success: true,
-      data: paginatedData,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
+    // 转换数据格式
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    
+    // 计算分页信息
+    const countQuery = `SELECT COUNT(*) FROM ${DATA_STRUCTURE.TABLES.GAMES}`;
+    const countResult = await pool.query(countQuery);
+    const total = parseInt(countResult.rows[0].count);
+    const pages = Math.ceil(total / limitNum);
+    
+    const pagination = {
+      page: pageNum,
+      limit: limitNum,
+      total: total,
+      pages: pages
+    };
+    
+    sendResponse(res, transformedData, pagination);
   } catch (error) {
     console.error('Error fetching games:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch games'
-    });
+    sendError(res, 'Failed to fetch games');
   }
 });
 
-// Get games for home page
+// Get games for home page from database
 router.get('/home', async (req, res) => {
   try {
-    const homeGames = gamesData.filter(game => game.isHome).slice(0, 6);
+    const result = await pool.query(
+      `SELECT * FROM ${DATA_STRUCTURE.TABLES.GAMES} WHERE is_home = true ORDER BY publish_date DESC LIMIT 6`
+    );
     
-    res.json({
-      success: true,
-      data: homeGames
-    });
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching home games:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch home games'
-    });
+    sendError(res, 'Failed to fetch home games');
   }
 });
 
-// Get latest games
+// Get latest games from database
 router.get('/latest', async (req, res) => {
   try {
     const { limit = 8 } = req.query;
-    const latestGames = gamesData.filter(game => game.isLatest).slice(0, parseInt(limit));
+    const limitNum = Math.min(parseInt(limit), DATA_STRUCTURE.PAGINATION.MAX_LIMIT);
     
-    res.json({
-      success: true,
-      data: latestGames
-    });
+    console.log(`Fetching latest games with limit: ${limitNum}`);
+    
+    const result = await pool.query(
+      `SELECT * FROM ${DATA_STRUCTURE.TABLES.GAMES} WHERE is_latest = true ORDER BY publish_date DESC LIMIT $1`,
+      [limitNum]
+    );
+    
+    console.log(`Found ${result.rows.length} games with is_latest = true`);
+    console.log('Game IDs:', result.rows.map(row => row.id));
+    
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching latest games:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch latest games'
-    });
+    sendError(res, 'Failed to fetch latest games');
   }
 });
 
-// Get game by address bar
+// Get game by address bar from database
 router.get('/:addressBar', async (req, res) => {
   try {
     const { addressBar } = req.params;
+    const result = await pool.query(
+      `SELECT * FROM ${DATA_STRUCTURE.TABLES.GAMES} WHERE address_bar = $1 LIMIT 1`,
+      [addressBar]
+    );
     
-    const game = gamesData.find(g => g.addressBar === addressBar);
-    
-    if (!game) {
-      return res.status(404).json({
-        success: false,
-        error: 'Game not found'
-      });
+    if (result.rows.length === 0) {
+      return sendError(res, 'Game not found', 404);
     }
     
-    res.json({
-      success: true,
-      data: game
-    });
+    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching game:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch game'
-    });
+    sendError(res, 'Failed to fetch game');
   }
 });
 
-// Get game classifications
+// Get game classifications from database
 router.get('/classifications/all', async (req, res) => {
   try {
-    const classifications = [...new Set(gamesData.flatMap(game => game.classify))].sort();
+    const result = await pool.query(`SELECT DISTINCT UNNEST(classify) AS classification FROM ${DATA_STRUCTURE.TABLES.GAMES}`);
+    const classifications = [...new Set(result.rows.map(row => row.classification))].sort();
+    sendResponse(res, classifications);
+  } catch (error) {
+    console.error('Error fetching classifications:', error);
+    sendError(res, 'Failed to fetch classifications');
+  }
+});
+
+// Debug route to check latest games count
+router.get('/debug/latest-count', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT COUNT(*) as count FROM ${DATA_STRUCTURE.TABLES.GAMES} WHERE is_latest = true`
+    );
+    const count = result.rows[0].count;
+    
+    // Also get the actual records
+    const records = await pool.query(
+      `SELECT id, title, is_latest FROM ${DATA_STRUCTURE.TABLES.GAMES} WHERE is_latest = true ORDER BY publish_date DESC`
+    );
     
     res.json({
       success: true,
-      data: classifications
+      count: parseInt(count),
+      records: records.rows
     });
   } catch (error) {
-    console.error('Error fetching classifications:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to fetch classifications'
-    });
+    console.error('Error in debug route:', error);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

@@ -3,6 +3,11 @@
     <!-- Header Component -->
     <Header />
 
+    <!-- Loading State -->
+    <LoadingSpinner 
+      :isLoading="store.isLoading.tv" 
+    />
+
     <!-- Hero Section -->
     <section class="hero-section">
       <!-- 背景装饰元素 -->
@@ -67,55 +72,34 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import MediaList from '@/components/MediaList.vue'
-import { tvData } from '@/data/index.js'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import { useEasterEggsStore } from '@/stores/easterEggs.js'
 
-// 导入日期格式化工具
-import { formatRelativeTime } from '@/utils/dateUtils.js'
-
-// 格式化日期函数 - 使用工具函数
-const formatDate = formatRelativeTime
-
-// 路由实例
-const router = useRouter()
-
-// 分类功能
+const store = useEasterEggsStore()
 const activeCategory = ref('all')
 
-// 获取所有唯一分类
-const uniqueCategories = computed(() => {
-  const categories = new Set()
-  tvData.forEach(show => {
-    if (show.classify) {
-      show.classify.forEach(cat => categories.add(cat))
-    }
-  })
-  return Array.from(categories)
+// 使用store中的数据
+const tvList = computed(() => store.tvShows)
+const uniqueCategories = computed(() => store.classifications.tv)
+
+const filteredTVShows = computed(() => {
+  if (activeCategory.value === 'all') return tvList.value
+  return tvList.value.filter(tv => tv.classify && tv.classify.includes(activeCategory.value))
 })
 
-// 设置活动分类
 const setActiveCategory = (category) => {
   activeCategory.value = category
 }
 
-// 过滤后的电视节目数据
-const filteredTVShows = computed(() => {
-  if (activeCategory.value === 'all') {
-    return tvData
-  }
-  return tvData.filter(show => 
-    show.classify && show.classify.includes(activeCategory.value)
-  )
+onMounted(async () => {
+  // 使用store统一获取数据
+  await store.fetchTV()
+  await store.fetchClassifications('tv')
 })
-
-// 跳转到详情页
-const goToDetail = (show) => {
-  router.push(`/tv/${show.addressBar}`)
-}
 </script>
 
 <style scoped>

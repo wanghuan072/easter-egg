@@ -54,4 +54,4 @@ export const closePool = async () => {
   await pool.end();
 };
 
-export default pool;
+export { pool };

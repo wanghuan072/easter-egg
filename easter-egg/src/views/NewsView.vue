@@ -3,6 +3,11 @@
     <!-- Header Component -->
     <Header />
 
+    <!-- Loading State -->
+    <LoadingSpinner 
+      :isLoading="store.isLoading.news" 
+    />
+
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="container">
@@ -61,6 +66,7 @@
 <script setup>
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 </script>
 
 <style scoped>

@@ -1,57 +1,87 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+// 预先导入组件以避免动态导入问题
+import HomeView from '../views/HomeView.vue'
+import VideoGamesView from '../views/VideoGamesView.vue'
+import MoviesView from '../views/MoviesView.vue'
+import TVShowsView from '../views/TVShowsView.vue'
+import NewsView from '../views/NewsView.vue'
+import SearchResultsView from '../views/SearchResultsView.vue'
+import DetailView from '../views/DetailView.vue'
+import LoginView from '../views/admin/LoginView.vue'
+import DashboardView from '../views/admin/DashboardView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
       name: 'home',
-      component: () => import('@/views/HomeView.vue'),
+      component: HomeView
     },
     {
       path: '/games',
       name: 'games',
-      component: () => import('@/views/VideoGamesView.vue'),
+      component: VideoGamesView
     },
     {
       path: '/games/:addressBar',
-      name: 'game-detail',
-      component: () => import('@/views/DetailView.vue'),
-      props: (route) => ({ type: 'games', addressBar: route.params.addressBar })
+      name: 'games-detail',
+      component: DetailView,
+      props: route => ({
+        addressBar: route.params.addressBar,
+        type: 'games'
+      })
     },
     {
       path: '/movies',
       name: 'movies',
-      component: () => import('@/views/MoviesView.vue'),
+      component: MoviesView
     },
     {
       path: '/movies/:addressBar',
-      name: 'movie-detail',
-      component: () => import('@/views/DetailView.vue'),
-      props: (route) => ({ type: 'movies', addressBar: route.params.addressBar })
+      name: 'movies-detail',
+      component: DetailView,
+      props: route => ({
+        addressBar: route.params.addressBar,
+        type: 'movies'
+      })
     },
     {
       path: '/tv',
       name: 'tv',
-      component: () => import('@/views/TVShowsView.vue'),
+      component: TVShowsView
     },
     {
       path: '/tv/:addressBar',
       name: 'tv-detail',
-      component: () => import('@/views/DetailView.vue'),
-      props: (route) => ({ type: 'tv', addressBar: route.params.addressBar })
+      component: DetailView,
+      props: route => ({
+        addressBar: route.params.addressBar,
+        type: 'tv'
+      })
     },
     {
       path: '/news',
       name: 'news',
-      component: () => import('@/views/NewsView.vue'),
+      component: NewsView
     },
     {
       path: '/search',
       name: 'search-results',
-      component: () => import('@/views/SearchResultsView.vue'),
+      component: SearchResultsView
     },
-  ],
+    {
+      path: '/admin/login',
+      name: 'admin-login',
+      component: LoginView
+    },
+    {
+      path: '/admin/dashboard',
+      name: 'admin-dashboard',
+      component: DashboardView
+    }
+  ]
 })
 
 export default router

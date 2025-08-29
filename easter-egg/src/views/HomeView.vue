@@ -4,15 +4,15 @@
     <Header />
 
     <!-- Loading State -->
-    <div v-if="isLoading('home')" class="loading-overlay">
-      <div class="loading-spinner"></div>
-      <p>Loading Easter Egg Vault...</p>
-    </div>
+    <LoadingSpinner 
+      :isLoading="isLoading" 
+      text="正在加载复活节彩蛋宝库..." 
+    />
 
     <!-- Error State -->
-    <div v-if="hasError('home')" class="error-banner">
-      <p>⚠️ {{ hasError('home') }}</p>
-      <button @click="retryFetch" class="retry-button">Retry</button>
+    <div v-if="store.errors.home" class="error-banner">
+      <p>⚠️ {{ store.errors.home }}</p>
+      <button @click="retryFetch" class="retry-button">重试</button>
     </div>
 
     <!-- Hero Section -->
@@ -92,14 +92,15 @@
             Fresh secrets, hidden details, and easter eggs discovered by our community of hunters.
           </p>
         </div>
-        <div v-if="isLoading('latest')" class="loading-section">
-          <div class="loading-spinner"></div>
-          <p>Loading latest discoveries...</p>
+        <div v-if="isLoading" class="loading-section">
+          <LoadingSpinner 
+            :isLoading="isLoading" 
+          />
         </div>
         
-        <div v-else-if="hasError('latest')" class="error-section">
-          <p>⚠️ {{ hasError('latest') }}</p>
-          <button @click="retryLatestFetch" class="retry-button">Retry</button>
+        <div v-else-if="store.errors.home" class="error-section">
+          <p>⚠️ {{ store.errors.home }}</p>
+          <button @click="retryLatestFetch" class="retry-button">重试</button>
         </div>
         
         <MediaList 
@@ -120,20 +121,20 @@
             Discover hidden easter eggs, secret levels, and developer jokes in your favorite games.
           </p>
         </div>
-        <div v-if="isLoading('home')" class="loading-section">
+          <div v-if="isLoading" class="loading-section">
           <div class="loading-spinner"></div>
           <p>Loading games...</p>
         </div>
         
-        <div v-else-if="hasError('home')" class="error-section">
-          <p>⚠️ {{ hasError('home') }}</p>
-          <button @click="retryFetch" class="retry-button">Retry</button>
+        <div v-else-if="store.errors.home" class="error-section">
+          <p>⚠️ {{ store.errors.home }}</p>
+          <button @click="retryFetch" class="retry-button">重试</button>
         </div>
         
         <MediaList 
           v-else
           type="games"
-          :data="homeData.games"
+          :data="games"
           :show-more-button="true"
         />
       </div>
@@ -148,20 +149,20 @@
             Uncover movie easter eggs, hidden details, and director's subtle references.
           </p>
         </div>
-        <div v-if="isLoading('home')" class="loading-section">
+        <div v-if="isLoading" class="loading-section">
           <div class="loading-spinner"></div>
           <p>Loading movies...</p>
         </div>
         
-        <div v-else-if="hasError('home')" class="error-section">
-          <p>⚠️ {{ hasError('home') }}</p>
-          <button @click="retryFetch" class="retry-button">Retry</button>
+        <div v-else-if="store.errors.home" class="error-section">
+          <p>⚠️ {{ store.errors.home }}</p>
+          <button @click="retryFetch" class="retry-button">重试</button>
         </div>
         
         <MediaList 
           v-else
           type="movies"
-          :data="homeData.movies"
+          :data="movies"
           :show-more-button="true"
         />
       </div>
@@ -176,20 +177,20 @@
             Find hidden references, callbacks, and easter eggs across television series.
           </p>
         </div>
-        <div v-if="isLoading('home')" class="loading-section">
+        <div v-if="isLoading" class="loading-section">
           <div class="loading-spinner"></div>
           <p>Loading TV shows...</p>
         </div>
         
-        <div v-else-if="hasError('home')" class="error-section">
-          <p>⚠️ {{ hasError('home') }}</p>
-          <button @click="retryFetch" class="retry-button">Retry</button>
+        <div v-else-if="store.errors.home" class="error-section">
+          <p>⚠️ {{ store.errors.home }}</p>
+          <button @click="retryFetch" class="retry-button">重试</button>
         </div>
         
         <MediaList 
           v-else
           type="tv"
-          :data="homeData.tv"
+          :data="tvShows"
           :show-more-button="true"
         />
       </div>
@@ -345,32 +346,30 @@ import { useRouter } from 'vue-router'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import MediaList from '@/components/MediaList.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
+
 import { useEasterEggsStore } from '@/stores/easterEggs.js'
 
 // 使用路由
 const router = useRouter()
 
-// 使用状态管理
 const store = useEasterEggsStore()
-
-// 响应式数据
 const searchQuery = ref('')
 const isSearching = ref(false)
 
-// 计算属性
-const homeData = computed(() => store.getHomeData)
-const latestDiscoveries = computed(() => store.getLatestDiscoveries)
-const isLoading = computed(() => store.isLoading)
-const hasError = computed(() => store.hasError)
+// 使用store中的数据
+const games = computed(() => store.games)
+const movies = computed(() => store.movies)
+const tvShows = computed(() => store.tvShows)
+const latestDiscoveries = computed(() => store.latestDiscoveries)
+const isLoading = computed(() => store.isLoading.home)
 
 // 搜索功能
 const performSearch = async () => {
   if (!searchQuery.value.trim()) return
-  
   isSearching.value = true
   try {
-    await store.search(searchQuery.value.trim())
-    // 跳转到搜索结果页面
+    // 直接跳转到搜索结果页面，数据由 SearchResultsView.vue 负责获取
     router.push({
       name: 'search-results',
       query: { q: searchQuery.value.trim() }
@@ -384,27 +383,18 @@ const performSearch = async () => {
 
 // 重试获取数据
 const retryFetch = async () => {
-  store.clearError('home')
   await store.fetchHomeData()
 }
 
 // 重试获取最新发现
 const retryLatestFetch = async () => {
-  store.clearError('latest')
   await store.fetchLatestDiscoveries()
 }
 
-// 组件挂载时获取数据
 onMounted(async () => {
-  try {
-    // 并行获取首页数据和最新发现
-    await Promise.all([
-      store.fetchHomeData(),
-      store.fetchLatestDiscoveries()
-    ])
-  } catch (error) {
-    console.error('Failed to fetch initial data:', error)
-  }
+  // 使用store统一获取数据
+  await store.fetchHomeData()
+  await store.fetchLatestDiscoveries(4)
 })
 </script>
 

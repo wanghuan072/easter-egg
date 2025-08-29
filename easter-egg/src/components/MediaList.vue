@@ -44,6 +44,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { formatRelativeTime } from '@/utils/dateUtils.js'
+import { dataUtils, DATA_STRUCTURE } from '@/config/dataStructure.js'
 
 const router = useRouter()
 
@@ -52,11 +53,11 @@ const formatDate = formatRelativeTime
 
 // Props定义
 const props = defineProps({
-  // 数据类型：games, movies, tv
+  // 数据类型：games, movies, tv, latest
   type: {
     type: String,
     required: true,
-    validator: (value) => ['games', 'movies', 'tv', 'latest'].includes(value)
+    validator: (value) => Object.values(DATA_STRUCTURE.MEDIA_TYPES).includes(value) || value === 'latest'
   },
   // 数据源
   data: {
@@ -73,14 +74,16 @@ const props = defineProps({
 // 类型标签
 const typeLabel = computed(() => {
   switch (props.type) {
-    case 'games':
+    case DATA_STRUCTURE.MEDIA_TYPES.GAMES:
       return 'Games'
-    case 'movies':
+    case DATA_STRUCTURE.MEDIA_TYPES.MOVIES:
       return 'Movies'
-    case 'tv':
+    case DATA_STRUCTURE.MEDIA_TYPES.TV:
       return 'TV Shows'
+    case DATA_STRUCTURE.MEDIA_TYPES.NEWS:
+      return 'News'
     case 'latest':
-      return 'Discoveries'
+      return 'Latest Discoveries'
     default:
       return 'Content'
   }
@@ -96,19 +99,17 @@ const moreButtonLink = computed(() => {
 
 // 跳转到详情页
 const goToDetail = (item) => {
-  if (props.type === 'latest') {
-    // 根据item的label判断跳转路径
-    const itemType = item.label.toLowerCase()
-    if (itemType === 'game') {
-      router.push(`/games/${item.addressBar}`)
-    } else if (itemType === 'movie') {
-      router.push(`/movies/${item.addressBar}`)
-    } else if (itemType === 'tv') {
-      router.push(`/tv/${item.addressBar}`)
+  // 使用统一的数据工具函数
+  const addressBar = dataUtils.getAddressBar(item)
+  const routeName = dataUtils.getRouteName(item)
+  
+  // 使用命名路由进行导航
+  router.push({
+    name: routeName,
+    params: {
+      addressBar
     }
-  } else {
-    router.push(`/${props.type}/${item.addressBar}`)
-  }
+  })
 }
 </script>
 
@@ -117,8 +118,6 @@ const goToDetail = (item) => {
   padding: 80px 0;
   background-color: #0f172a;
 }
-
-
 
 /* 媒体网格 */
 .media-grid {

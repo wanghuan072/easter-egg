@@ -172,3 +172,12 @@ coverage/
 # Local development files
 local/
 dev/
+
+# Test and temporary files
+test-*.js
+test-*.mjs
+*.test.js
+*.test.mjs
+scripts/encrypt-password.js
+scripts/create-admin-table.sql
+scripts/README-database-setup.md

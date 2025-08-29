@@ -3,6 +3,11 @@
     <!-- Header Component -->
     <Header />
 
+    <!-- Loading State -->
+    <LoadingSpinner 
+      :isLoading="store.isLoading.search" 
+    />
+
     <!-- Search Results Section -->
     <section class="search-results-section">
       <div class="container">
@@ -17,19 +22,19 @@
         </div>
 
         <!-- Loading State -->
-        <div v-if="isLoading('search')" class="loading-section">
+  <div v-if="isLoading" class="loading-section">
           <div class="loading-spinner"></div>
           <p>Searching for easter eggs...</p>
         </div>
 
         <!-- Error State -->
-        <div v-else-if="hasError('search')" class="error-section">
-          <p>⚠️ {{ hasError('search') }}</p>
+        <div v-else-if="hasError" class="error-section">
+          <p>⚠️ {{ hasError }}</p>
           <button @click="retrySearch" class="retry-button">Retry Search</button>
         </div>
 
-        <!-- Search Results -->
-        <div v-else-if="searchResults.length > 0" class="search-results">
+  <!-- Search Results -->
+  <div v-else-if="Array.isArray(searchResults) ? searchResults.length > 0 : searchResults && searchResults.value && searchResults.value.length > 0" class="search-results">
           <!-- Filters -->
           <div class="search-filters">
             <div class="filter-group">
@@ -39,7 +44,7 @@
                 <option value="game">Games</option>
                 <option value="movie">Movies</option>
                 <option value="tv">TV Shows</option>
-                <option value="news">News</option>
+                <!-- News 相关选项已移除 -->
               </select>
             </div>
             
@@ -119,7 +124,7 @@
             <router-link to="/games" class="category-link">🎮 Games</router-link>
             <router-link to="/movies" class="category-link">🎬 Movies</router-link>
             <router-link to="/tv" class="category-link">📺 TV Shows</router-link>
-            <router-link to="/news" class="category-link">📰 News</router-link>
+            <!-- News 相关链接已移除 -->
           </div>
         </div>
       </div>
@@ -131,11 +136,23 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useEasterEggsStore } from '@/stores/easterEggs.js'
+import { dataUtils } from '@/config/dataStructure.js'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
-import { useEasterEggsStore } from '@/stores/easterEggs.js'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
+
+// 日期格式化函数
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+}
 
 // 使用路由
 const route = useRoute()
@@ -148,48 +165,27 @@ const store = useEasterEggsStore()
 const selectedMediaType = ref('')
 const sortBy = ref('relevance')
 
-// 计算属性
+// 计算属性 - 从store获取
 const searchQuery = computed(() => route.query.q || '')
-const searchResults = computed(() => store.getSearchResults)
-const pagination = computed(() => store.getSearchResults?.pagination)
-const totalResults = computed(() => pagination.value?.total || 0)
-const isLoading = computed(() => store.isLoading)
-const hasError = computed(() => store.hasError)
+const searchResults = computed(() => store.searchResults)
+const pagination = computed(() => store.pagination.search)
+const totalResults = computed(() => searchResults.value.length)
+const isLoading = computed(() => store.isLoading.search)
+const hasError = computed(() => store.errors.search)
 
-// 格式化日期
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
-
-// 获取媒体类型（安全处理）
-const getMediaType = (item) => {
-  // 如果item有mediaType字段，直接返回
-  if (item.mediaType) {
-    return item.mediaType
+// 执行搜索
+const performSearch = async () => {
+  if (!searchQuery.value) return
+  
+  const params = {}
+  if (selectedMediaType.value) {
+    params.mediaType = selectedMediaType.value
+  }
+  if (sortBy.value !== 'relevance') {
+    params.sort = sortBy.value
   }
   
-  // 根据label字段推断媒体类型
-  if (item.label) {
-    switch (item.label.toUpperCase()) {
-      case 'GAME':
-        return 'game'
-      case 'MOVIE':
-        return 'movie'
-      case 'TV':
-        return 'tv'
-      case 'NEWS':
-        return 'news'
-      default:
-        return 'unknown'
-    }
-  }
-  
-  // 默认返回unknown
-  return 'unknown'
+  await store.performSearch(searchQuery.value, params)
 }
 
 // 应用过滤器
@@ -204,24 +200,18 @@ const applyFilters = async () => {
     params.sort = sortBy.value
   }
   
-  await store.search(searchQuery.value, params)
+  await store.performSearch(searchQuery.value, params)
+}
+
+// 获取媒体类型 - 使用统一的数据工具函数
+const getMediaType = (item) => {
+  return dataUtils.getMediaType(item)
 }
 
 // 重试搜索
 const retrySearch = async () => {
   store.clearError('search')
   await performSearch()
-}
-
-// 执行搜索
-const performSearch = async () => {
-  if (!searchQuery.value) return
-  
-  try {
-    await store.search(searchQuery.value)
-  } catch (error) {
-    console.error('Search failed:', error)
-  }
 }
 
 // 切换页面
@@ -236,7 +226,7 @@ const changePage = async (page) => {
     params.sort = sortBy.value
   }
   
-  await store.search(searchQuery.value, params)
+  await store.performSearch(searchQuery.value, params)
   
   // 更新URL参数
   router.push({
@@ -246,22 +236,44 @@ const changePage = async (page) => {
 
 // 跳转到详情页
 const goToDetail = (item) => {
-  const mediaType = getMediaType(item)
-  const routeName = `${mediaType}-detail`
-  const addressBar = item.addressBar
-  
-  router.push({
-    name: routeName,
-    params: { addressBar }
-  })
+  try {
+    // 获取媒体类型
+    const type = getMediaType(item)
+    
+    // 获取 addressBar
+    const addressBar = item.address_bar || item.addressBar || 
+      (item.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 
+      item.id?.toString()
+    
+    if (!addressBar) {
+      console.error('No valid addressBar available:', item)
+      return
+    }
+    
+    // 根据类型构建路径
+    const path = `/${type}/${addressBar}`
+    console.log('Navigating to:', path)
+    
+    // 使用路径导航
+    router.push(path)
+  } catch (error) {
+    console.error('Navigation error:', error)
+  }
 }
 
 // 监听搜索查询变化
-watch(() => route.query.q, (newQuery) => {
-  if (newQuery && newQuery !== store.search.query) {
-    performSearch()
+watch(
+  () => route.query.q,
+  async (newQuery) => {
+    try {
+      if (newQuery && newQuery !== store.searchState.query) {
+        await performSearch()
+      }
+    } catch (error) {
+      console.error('Error in search query watcher:', error)
+    }
   }
-})
+)
 
 // 组件挂载时执行搜索
 onMounted(() => {
@@ -410,9 +422,17 @@ onMounted(() => {
   margin-bottom: 16px;
   line-height: 1.6;
   display: -webkit-box;
+  display: -moz-box;
+  display: box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
+  /* 回退方案 */
+  max-height: 4.8em; /* line-height * 3 lines */
 }
 
 .result-meta {

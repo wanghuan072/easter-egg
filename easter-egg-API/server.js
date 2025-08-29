@@ -10,8 +10,8 @@ import dotenv from 'dotenv';
 import gamesRoutes from './routes/games.js';
 import moviesRoutes from './routes/movies.js';
 import tvRoutes from './routes/tv.js';
-import newsRoutes from './routes/news.js';
 import searchRoutes from './routes/search.js';
+import authRoutes from './routes/auth.js';
 
 // Database connection will be added later when migrating to Neon
 
@@ -25,10 +25,11 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet());
 
 // CORS configuration
-app.use(cors({
-  origin: true,
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || true,
   credentials: true
-}));
+};
+app.use(cors(corsOptions));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -37,8 +38,17 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
+  // 在开发环境下可以选择性禁用限流
+  skip: (req) => process.env.NODE_ENV === 'development' && process.env.DISABLE_RATE_LIMIT === 'true'
 });
-app.use(limiter);
+
+// 只在非开发环境或未禁用时应用限流
+if (process.env.NODE_ENV !== 'development' || process.env.DISABLE_RATE_LIMIT !== 'true') {
+  app.use(limiter);
+  console.log('🔒 Rate limiting enabled');
+} else {
+  console.log('⚠️ Rate limiting disabled for development');
+}
 
 // Compression middleware
 app.use(compression());
@@ -61,10 +71,10 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
+app.use('/api/auth', authRoutes);
 app.use('/api/games', gamesRoutes);
 app.use('/api/movies', moviesRoutes);
 app.use('/api/tv', tvRoutes);
-app.use('/api/news', newsRoutes);
 app.use('/api/search', searchRoutes);
 
 // 404 handler
