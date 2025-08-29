@@ -398,13 +398,27 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     const token = localStorage.getItem('admin_token')
     const user = localStorage.getItem('admin_user')
     
-    if (token && user) {
+    if (token && user && isTokenValid(token)) {
       auth.value.isAuthenticated = true
       auth.value.user = { username: user }
       auth.value.token = token
       return true
+    } else {
+      // token无效或过期，清除认证状态
+      logout()
+      return false
     }
-    return false
+  }
+
+  // 检查token是否有效
+  const isTokenValid = (token) => {
+    try {
+      const tokenData = JSON.parse(atob(token.split('.')[1]))
+      const now = Date.now() / 1000
+      return tokenData.exp > now
+    } catch (error) {
+      return false
+    }
   }
 
   return {

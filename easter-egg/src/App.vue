@@ -13,6 +13,9 @@ const store = useEasterEggsStore()
 
 onMounted(async () => {
   try {
+    // 检查认证状态
+    store.checkAuth()
+    
     // 预加载数据以提高性能
     console.log('开始预加载数据...')
     await store.preloadData()

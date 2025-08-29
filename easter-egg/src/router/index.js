@@ -11,6 +11,9 @@ import DetailView from '../views/DetailView.vue'
 import LoginView from '../views/admin/LoginView.vue'
 import DashboardView from '../views/admin/DashboardView.vue'
 
+// 导入路由守卫
+import { globalBeforeEach } from './guards.js'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -83,5 +86,8 @@ const router = createRouter({
     }
   ]
 })
+
+// 添加全局前置守卫
+router.beforeEach(globalBeforeEach)
 
 export default router

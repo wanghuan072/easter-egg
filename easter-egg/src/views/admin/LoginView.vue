@@ -82,10 +82,11 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { getApiUrl } from '@/config/env.js'
 
 const router = useRouter()
+const route = useRoute()
 
 // 表单数据
 const formData = reactive({
@@ -127,8 +128,9 @@ const handleLogin = async () => {
       localStorage.setItem('admin_token', data.data.token)
       localStorage.setItem('admin_user', data.data.user.username)
       
-      // 跳转到管理后台
-      router.push('/admin/dashboard')
+      // 检查是否有重定向路径
+      const redirectPath = route.query.redirect || '/admin/dashboard'
+      router.push(redirectPath)
     } else {
       // 登录失败
       errorMessage.value = data.error || '登录失败，请检查用户名和密码'
