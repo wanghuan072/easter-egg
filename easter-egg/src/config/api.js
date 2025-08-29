@@ -1,7 +1,7 @@
 // API配置文件
 const API_CONFIG = {
   // 从环境变量获取API配置
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
+  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
   // API版本（可选）
   API_VERSION: import.meta.env.VITE_API_VERSION || '',
   // 请求超时时间

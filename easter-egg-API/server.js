@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 import gamesRoutes from './routes/games.js';
 import moviesRoutes from './routes/movies.js';
 import tvRoutes from './routes/tv.js';
+import newsRoutes from './routes/news.js';
 import searchRoutes from './routes/search.js';
 import authRoutes from './routes/auth.js';
 
@@ -75,6 +76,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/games', gamesRoutes);
 app.use('/api/movies', moviesRoutes);
 app.use('/api/tv', tvRoutes);
+app.use('/api/news', newsRoutes);
 app.use('/api/search', searchRoutes);
 
 // 404 handler
