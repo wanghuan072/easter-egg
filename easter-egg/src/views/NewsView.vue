@@ -540,18 +540,151 @@ onMounted(async () => {
   color: #64748b;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
+/* 响应式设计 - 1024px 断点 */
+@media (max-width: 1024px) {
+  .hero-section {
+    min-height: 50vh;
+    padding-top: 60px;
+  }
+  
   .hero-title {
-    font-size: 48px;
+    font-size: 60px;
   }
   
   .hero-title-part-1 {
-    font-size: 64px;
+    font-size: 80px;
   }
   
   .hero-description {
-    font-size: 18px;
+    font-size: 20px;
+    margin-bottom: 28px;
+  }
+  
+  .news-section {
+    padding: 60px 0;
+  }
+  
+  .news-list {
+    gap: 28px;
+    margin-bottom: 40px;
+  }
+  
+  .news-item {
+    gap: 28px;
+    padding: 28px;
+  }
+  
+  .news-image {
+    width: 240px;
+    height: 180px;
+  }
+  
+  .news-title {
+    font-size: 24px;
+    margin-bottom: 14px;
+  }
+  
+  .news-description {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .news-meta {
+    margin-bottom: 16px;
+  }
+  
+  .news-date {
+    font-size: 16px;
+  }
+  
+  .news-tag {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+  
+  .read-more-btn {
+    padding: 8px 16px;
+    font-size: 16px;
+  }
+  
+  .pagination {
+    margin-top: 40px;
+    gap: 14px;
+  }
+  
+  .page-button {
+    padding: 10px 16px;
+    font-size: 16px;
+  }
+  
+  .page-number {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+  
+  .empty-state {
+    padding: 60px 16px;
+  }
+  
+  .empty-icon {
+    font-size: 56px;
+    margin-bottom: 20px;
+  }
+  
+  .empty-state h3 {
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+  
+  .empty-state p {
+    font-size: 16px;
+  }
+  
+  .tech-circle-1 {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .tech-circle-2 {
+    width: 250px;
+    height: 250px;
+  }
+  
+  .tech-circle-3 {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+/* 响应式设计 - 768px 断点 (移动端) */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 40vh;
+    padding-top: 20px;
+  }
+  
+  .hero-title {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+  
+  .hero-title-part-1 {
+    font-size: 24px;
+  }
+  
+  .hero-description {
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .news-section {
+    padding: 20px 0;
+  }
+  
+  .news-list {
+    gap: 20px;
+    margin-bottom: 20px;
   }
   
   .news-item {
@@ -562,53 +695,103 @@ onMounted(async () => {
   
   .news-image {
     width: 100%;
-    height: 200px;
+    height: 160px;
   }
   
-  .category-tabs {
-    gap: 12px;
-  }
-  
-  .tab-button {
-    padding: 10px 16px;
-    font-size: 14px;
+  .news-category-badge {
+    font-size: 10px;
+    padding: 4px 8px;
+    top: 12px;
+    left: 12px;
   }
   
   .news-title {
-    font-size: 24px;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .news-description {
+    font-size: 12px;
+    margin-bottom: 20px;
   }
   
   .news-meta {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  
+  .news-date {
+    font-size: 12px;
+  }
+  
+  .news-tags {
+    gap: 6px;
+  }
+  
+  .news-tag {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+  
+  .read-more-btn {
+    padding: 8px 16px;
+    font-size: 12px;
   }
   
   .pagination {
     flex-direction: column;
-    gap: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 0 16px;
+    gap: 10px;
+    margin-top: 20px;
   }
   
-  .news-item {
-    padding: 16px;
+  .page-button {
+    padding: 8px 16px;
+    font-size: 12px;
   }
   
-  .news-title {
-    font-size: 20px;
+  .page-numbers {
+    gap: 6px;
   }
   
-  .hero-title {
-    font-size: 36px;
+  .page-number {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
   }
   
-  .hero-title-part-1 {
+  .empty-state {
+    padding: 40px 10px;
+  }
+  
+  .empty-icon {
     font-size: 48px;
+    margin-bottom: 16px;
+  }
+  
+  .empty-state h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .empty-state p {
+    font-size: 12px;
+  }
+  
+  .tech-circle-1 {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .tech-circle-2 {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .tech-circle-3 {
+    width: 120px;
+    height: 120px;
   }
 }
 </style>

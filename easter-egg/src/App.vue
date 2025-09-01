@@ -62,4 +62,29 @@ onMounted(async () => {
   color: #888;
   font-weight: 500;
 }
+
+/* 响应式设计 - 1024px 断点 */
+@media (max-width: 1024px) {
+  .container {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+  
+  .loading-section {
+    padding: 30px 15px;
+    margin: 15px 0;
+  }
+}
+
+/* 响应式设计 - 768px 断点 (移动端) */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 10px;
+  }
+  
+  .loading-section {
+    padding: 20px 10px;
+    margin: 10px 0;
+  }
+}
 </style>

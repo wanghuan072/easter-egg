@@ -513,24 +513,237 @@ onMounted(() => {
   100% { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* 响应式设计 - 1024px 断点 */
+@media (max-width: 1024px) {
+  .search-header {
+    padding: 50px 0 32px;
+  }
+  
   .search-title {
-    font-size: 32px;
+    font-size: 40px;
+    margin-bottom: 14px;
+  }
+  
+  .search-subtitle {
+    font-size: 18px;
   }
   
   .results-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
   }
   
-  .search-filters {
+  .result-image {
+    height: 180px;
+  }
+  
+  .media-type-badge {
+    top: 10px;
+    right: 10px;
+    padding: 3px 6px;
+    font-size: 16px;
+  }
+  
+  .result-content {
+    padding: 16px;
+  }
+  
+  .result-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .result-description {
+    font-size: 16px;
+    margin-bottom: 14px;
+    max-height: 4.2em;
+  }
+  
+  .result-meta {
+    font-size: 16px;
+  }
+  
+  .result-tags {
+    gap: 5px;
+  }
+  
+  .tag {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+  
+  .pagination {
+    gap: 16px;
+    margin-top: 32px;
+  }
+  
+  .page-button {
+    padding: 8px 16px;
+    font-size: 16px;
+  }
+  
+  .page-info {
+    font-size: 16px;
+  }
+  
+  .no-results {
+    padding: 60px 16px;
+  }
+  
+  .no-results-icon {
+    font-size: 56px;
+    margin-bottom: 20px;
+  }
+  
+  .no-results h2 {
+    font-size: 28px;
+    margin-bottom: 14px;
+  }
+  
+  .no-results p {
+    font-size: 16px;
+    margin-bottom: 28px;
+  }
+  
+  .suggested-categories {
+    gap: 14px;
+  }
+  
+  .category-link {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+  
+  .error-section {
+    padding: 16px;
+    margin: 16px 0;
+    font-size: 16px;
+  }
+  
+  .retry-button {
+    padding: 6px 14px;
+    font-size: 16px;
+  }
+}
+
+/* 响应式设计 - 768px 断点 (移动端) */
+@media (max-width: 768px) {
+  .search-header {
+    padding: 40px 0 20px;
+  }
+  
+  .search-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .search-subtitle {
+    font-size: 12px;
+  }
+  
+  .results-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .result-image {
+    height: 160px;
+  }
+  
+  .media-type-badge {
+    top: 8px;
+    right: 8px;
+    padding: 3px 6px;
+    font-size: 12px;
+  }
+  
+  .result-content {
+    padding: 20px;
+  }
+  
+  .result-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .result-description {
+    font-size: 12px;
+    margin-bottom: 16px;
+    max-height: 3.6em;
+  }
+  
+  .result-meta {
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+  }
+  
+  .result-tags {
+    gap: 4px;
+  }
+  
+  .tag {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .page-button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+  
+  .page-info {
+    font-size: 12px;
+  }
+  
+  .no-results {
+    padding: 40px 10px;
+  }
+  
+  .no-results-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+  
+  .no-results h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .no-results p {
+    font-size: 12px;
+    margin-bottom: 20px;
   }
   
   .suggested-categories {
     flex-direction: column;
     align-items: center;
+    gap: 10px;
+  }
+  
+  .category-link {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+  
+  .error-section {
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 12px;
+  }
+  
+  .retry-button {
+    padding: 6px 12px;
+    font-size: 12px;
   }
 }
 </style>

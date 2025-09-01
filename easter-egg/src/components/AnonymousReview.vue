@@ -570,12 +570,145 @@ onMounted(async () => {
   background: rgba(139, 92, 246, 0.3);
 }
 
-/* 响应式设计 */
+/* 响应式设计 - 1024px 断点 */
+@media (max-width: 1024px) {
+  .review-section {
+    padding: 20px;
+    margin-bottom: 25px;
+  }
+  
+  .review-header {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+  }
+  
+  .review-header h3 {
+    font-size: 18px;
+  }
+  
+  .rating-stats {
+    gap: 16px;
+  }
+  
+  .rating-value {
+    font-size: 20px;
+  }
+  
+  .star {
+    font-size: 16px;
+  }
+  
+  .total-reviews {
+    font-size: 16px;
+  }
+  
+  .review-form {
+    padding: 20px;
+    margin-bottom: 25px;
+  }
+  
+  .review-form h4 {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-group label {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  
+  .form-input,
+  .form-textarea {
+    padding: 10px 14px;
+    font-size: 16px;
+  }
+  
+  .char-count {
+    font-size: 16px;
+  }
+  
+  .star-input .star {
+    font-size: 20px;
+    gap: 6px;
+  }
+  
+  .rating-note {
+    font-size: 16px;
+  }
+  
+  .submit-btn {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+  
+  .cooldown-note {
+    margin-top: 12px;
+    padding: 10px 14px;
+    font-size: 16px;
+  }
+  
+  .reviews-list h4 {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .review-items {
+    gap: 16px;
+  }
+  
+  .review-item {
+    padding: 16px;
+  }
+  
+  .review-item .review-header {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+  
+  .reviewer-info {
+    gap: 12px;
+  }
+  
+  .nickname {
+    font-size: 16px;
+  }
+  
+  .review-date {
+    font-size: 16px;
+  }
+  
+  .review-content {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .reply-btn {
+    padding: 6px 14px;
+    font-size: 16px;
+  }
+}
+
+/* 响应式设计 - 768px 断点 (移动端) */
 @media (max-width: 768px) {
+  .review-section {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  
   .review-header {
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
     align-items: flex-start;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+  }
+
+  .review-header h3 {
+    font-size: 16px;
   }
 
   .rating-stats {
@@ -583,15 +716,123 @@ onMounted(async () => {
     gap: 10px;
     align-items: flex-start;
   }
+  
+  .rating-value {
+    font-size: 24px;
+  }
+  
+  .star {
+    font-size: 12px;
+  }
+  
+  .total-reviews {
+    font-size: 12px;
+  }
+  
+  .review-form {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .review-form h4 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-group label {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .form-input,
+  .form-textarea {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .form-textarea {
+    min-height: 80px;
+  }
+  
+  .char-count {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  
+  .star-input {
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  
+  .star-input .star {
+    font-size: 20px;
+  }
+  
+  .rating-note {
+    font-size: 12px;
+  }
+  
+  .submit-btn {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+  
+  .cooldown-note {
+    margin-top: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .reviews-list h4 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .no-reviews {
+    padding: 30px 15px;
+    font-size: 12px;
+  }
+  
+  .review-items {
+    gap: 12px;
+  }
+  
+  .review-item {
+    padding: 12px;
+  }
 
   .review-item .review-header {
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     align-items: flex-start;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
   }
-
-  .replies {
-    padding-left: 15px;
+  
+  .reviewer-info {
+    gap: 10px;
+  }
+  
+  .nickname {
+    font-size: 12px;
+  }
+  
+  .review-date {
+    font-size: 12px;
+  }
+  
+  .review-content {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .reply-btn {
+    padding: 6px 12px;
+    font-size: 12px;
   }
 }
 </style>

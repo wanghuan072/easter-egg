@@ -251,22 +251,112 @@ onMounted(async () => {
   padding: 0 20px;
 }
 
-/* Responsive design */
+/* 响应式设计 - 1024px 断点 */
+@media (max-width: 1024px) {
+  .footer {
+    padding: 40px 0 20px;
+  }
+  
+  .footer-main {
+    gap: 40px;
+    margin-bottom: 25px;
+  }
+  
+  .footer-links {
+    gap: 25px;
+  }
+  
+  .footer-brand .footer-logo {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  
+  .footer-description {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .footer-link-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .footer-link-list a {
+    font-size: 16px;
+  }
+  
+  .footer-bottom {
+    font-size: 16px;
+  }
+}
+
+/* 响应式设计 - 768px 断点 (移动端) */
 @media (max-width: 768px) {
+  .footer {
+    padding: 20px 0 10px;
+  }
+  
   .footer-main {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 20px;
+    margin-bottom: 20px;
   }
 
   .footer-links {
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    gap: 20px;
   }
 
   .footer-bottom {
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
     text-align: center;
+    font-size: 12px;
+  }
+  
+  .footer-brand .footer-logo {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .footer-description {
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .footer-social {
+    gap: 10px;
+  }
+  
+  .social-link {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  
+  .footer-link-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .footer-link-list {
+    margin-bottom: 10px;
+  }
+  
+  .footer-link-list li {
+    margin-bottom: 6px;
+  }
+  
+  .footer-link-list a {
+    font-size: 12px;
+  }
+  
+  .footer-legal {
+    gap: 20px;
+  }
+  
+  .footer-legal a {
+    font-size: 12px;
   }
 }
 </style>

@@ -44,13 +44,8 @@
         <div v-else>
           <!-- 分类Tab -->
           <div class="category-tabs">
-            <button 
-              v-for="category in categories" 
-              :key="category.id"
-              class="tab-button" 
-              :class="{ active: activeCategory === category.name }"
-              @click="setActiveCategory(category.name)"
-            >
+            <button v-for="category in categories" :key="category.id" class="tab-button"
+              :class="{ active: activeCategory === category.name }" @click="setActiveCategory(category.name)">
               {{ category.display_name }}
             </button>
           </div>
@@ -59,13 +54,8 @@
             <h3>No Content Available</h3>
             <p>No movies found in category "{{ getCategoryDisplayName(activeCategory) }}"</p>
           </div>
-          
-          <MediaList 
-            v-else
-            type="movies"
-            :data="filteredMovies"
-            :show-more-button="false"
-          />
+
+          <MediaList v-else type="movies" :data="filteredMovies" :show-more-button="false" />
         </div>
       </div>
     </section>
@@ -125,7 +115,7 @@ onMounted(async () => {
       setTimeout(waitForData, 50)
     }
   }
-  
+
   waitForData()
 })
 </script>
@@ -168,7 +158,7 @@ onMounted(async () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     /* 网格图案 */
     linear-gradient(rgba(139, 92, 246, 0.2) 1px, transparent 1px),
     linear-gradient(90deg, rgba(139, 92, 246, 0.2) 1px, transparent 1px),
@@ -452,19 +442,130 @@ onMounted(async () => {
   color: #6b7280;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* 响应式设计 - 1024px 断点 */
+@media (max-width: 1024px) {
+  .hero-section {
+    min-height: 50vh;
+    padding-top: 60px;
+  }
+
   .hero-title {
-    font-size: 48px;
+    font-size: 60px;
   }
-  
+
   .hero-title-part-1 {
-    font-size: 64px;
+    font-size: 80px;
   }
-  
-  .movies-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
+
+  .hero-description {
+    font-size: 20px;
+    margin-bottom: 28px;
+  }
+
+  .movies-section {
+    padding: 60px 0;
+  }
+
+  .category-tabs {
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+
+  .tab-button {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+
+  .empty-state {
+    padding: 50px 16px;
+  }
+
+  .empty-state h3 {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  .empty-state p {
+    font-size: 16px;
+  }
+
+  .tech-circle-1 {
+    width: 300px;
+    height: 300px;
+  }
+
+  .tech-circle-2 {
+    width: 250px;
+    height: 250px;
+  }
+
+  .tech-circle-3 {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+/* 响应式设计 - 768px 断点 (移动端) */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 40vh;
+    padding-top: 20px;
+  }
+
+  .hero-title {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  .hero-title-part-1 {
+    font-size: 24px;
+  }
+
+  .hero-description {
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+
+  .movies-section {
+    padding: 20px 0;
+  }
+
+  .category-tabs {
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .tab-button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .empty-state {
+    padding: 40px 10px;
+  }
+
+  .empty-state h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .empty-state p {
+    font-size: 12px;
+  }
+
+  .tech-circle-1 {
+    width: 200px;
+    height: 200px;
+  }
+
+  .tech-circle-2 {
+    width: 150px;
+    height: 150px;
+  }
+
+  .tech-circle-3 {
+    width: 120px;
+    height: 120px;
   }
 }
 </style>

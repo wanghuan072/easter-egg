@@ -3,8 +3,6 @@
     <!-- Header Component -->
     <Header />
 
-
-
     <!-- Error State -->
     <div v-if="store.errors.home" class="error-banner">
       <p>⚠️ {{ store.errors.home }}</p>
@@ -1119,14 +1117,14 @@ onMounted(async () => {
 }
 
 .faq-content {
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
 .faq-grid {
   margin-top: 48px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   gap: 24px;
 }
 
@@ -1228,6 +1226,312 @@ onMounted(async () => {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* 响应式设计 - 1024px 断点 */
+@media (max-width: 1024px) {
+  .section-title {
+    font-size: 40px;
+  }
+  
+  .section-description {
+    font-size: 18px;
+  }
+  
+  .hero-title {
+    font-size: 72px;
+  }
+  
+  .hero-description {
+    font-size: 20px;
+    margin-bottom: 28px;
+  }
+  
+  .hero-search-input {
+    font-size: 16px;
+    padding: 14px 14px 14px 44px;
+  }
+  
+  .hero-search-button {
+    font-size: 16px;
+    padding: 14px 28px;
+  }
+  
+  .hero-stats {
+    font-size: 16px;
+    gap: 28px;
+  }
+  
+  .latest-discoveries-section,
+  .category-section,
+  .introduction-section,
+  .faq-section {
+    padding: 60px 0;
+  }
+  
+  .section-header {
+    margin-bottom: 40px;
+  }
+  
+  .articles-grid,
+  .category-grid {
+    gap: 28px;
+    margin-bottom: 40px;
+  }
+  
+  .introduction-grid {
+    gap: 28px;
+    margin-top: 40px;
+  }
+  
+  .faq-grid {
+    margin-top: 40px;
+    gap: 20px;
+  }
+  
+  .intro-card {
+    padding: 28px 20px;
+  }
+  
+  .intro-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+  }
+  
+  .intro-title {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+  
+  .intro-description {
+    font-size: 16px;
+  }
+  
+  .faq-item {
+    padding: 20px;
+  }
+  
+  .faq-title {
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
+  
+  .faq-answer {
+    font-size: 16px;
+  }
+}
+
+/* 响应式设计 - 768px 断点 (移动端) */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 80vh;
+    padding: 20px 0;
+  }
+  
+  .hero-content {
+    padding: 0 10px;
+  }
+  
+  .section-title {
+    font-size: 24px;
+  }
+  
+  .section-description {
+    font-size: 12px;
+  }
+  
+  .hero-title {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+  
+  .hero-description {
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .hero-search {
+    margin-bottom: 20px;
+  }
+  
+  .hero-search-input {
+    font-size: 12px;
+    padding: 10px 10px 10px 36px;
+  }
+  
+  .hero-search-icon {
+    font-size: 16px;
+    left: 12px;
+  }
+  
+  .hero-search-button {
+    font-size: 12px;
+    padding: 10px 20px;
+  }
+  
+  .hero-stats {
+    font-size: 12px;
+    gap: 10px;
+  }
+  
+  .stat-item {
+    padding: 6px 12px;
+    gap: 6px;
+  }
+  
+  .latest-discoveries-section,
+  .category-section,
+  .introduction-section,
+  .faq-section {
+    padding: 20px 0;
+  }
+  
+  .section-header {
+    margin-bottom: 20px;
+  }
+  
+  .section-title {
+    margin-bottom: 10px;
+  }
+  
+  .section-description {
+    margin-bottom: 10px;
+  }
+  
+  .articles-grid,
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .article-card,
+  .category-article-card {
+    margin-bottom: 10px;
+  }
+  
+  .article-content,
+  .category-article-content {
+    padding: 20px;
+  }
+  
+  .article-title,
+  .category-article-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .article-excerpt,
+  .category-article-excerpt {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  
+  .article-meta,
+  .category-article-meta {
+    font-size: 12px;
+  }
+  
+  .article-category,
+  .category-article-category {
+    font-size: 10px;
+    padding: 3px 8px;
+    top: 12px;
+    left: 12px;
+  }
+  
+  .introduction-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .intro-card {
+    padding: 20px 16px;
+  }
+  
+  .intro-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  
+  .intro-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .intro-description {
+    font-size: 12px;
+  }
+  
+  .faq-grid {
+    grid-template-columns: 1fr;
+    margin-top: 20px;
+    gap: 20px;
+  }
+  
+  .faq-item {
+    padding: 20px;
+  }
+  
+  .faq-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .faq-answer {
+    font-size: 12px;
+  }
+  
+  .loading-section {
+    padding: 20px 10px;
+    margin: 10px 0;
+  }
+  
+  .loading-text {
+    font-size: 12px;
+  }
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 15px;
+  }
+  
+  .error-banner {
+    padding: 12px 20px;
+    margin: 10px 0;
+  }
+  
+  .error-section {
+    padding: 15px;
+    margin: 10px 0;
+  }
+  
+  .retry-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .action-button {
+    padding: 10px 24px;
+    font-size: 12px;
+  }
+  
+  .tech-circle-1 {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .tech-circle-2 {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .tech-circle-3 {
+    width: 150px;
+    height: 150px;
+  }
 }
 
 </style>

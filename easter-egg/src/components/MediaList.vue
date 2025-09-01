@@ -244,33 +244,102 @@ const goToDetail = (item) => {
   transform: translateX(4px);
 }
 
-/* 响应式设计 */
-@media (max-width: 1200px) {
-  .media-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-  }
-}
-
-@media (max-width: 900px) {
+/* 响应式设计 - 1024px 断点 */
+@media (max-width: 1024px) {
   .media-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-}
-
-@media (max-width: 768px) {
-  .media-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 28px;
+    margin-bottom: 40px;
   }
   
   .media-content {
-    padding: 20px;
+    padding: 18px;
   }
   
   .media-title {
-    font-size: 1.25rem;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .media-description {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .media-meta {
+    font-size: 16px;
+  }
+  
+  .media-category {
+    font-size: 11px;
+    padding: 5px 10px;
+    top: 14px;
+    left: 14px;
+  }
+  
+  .more-button {
+    padding: 14px 28px;
+    font-size: 16px;
+    gap: 10px;
+  }
+  
+  .arrow {
+    font-size: 18px;
+  }
+}
+
+/* 响应式设计 - 768px 断点 (移动端) */
+@media (max-width: 768px) {
+  .media-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .media-image {
+    height: 140px;
+  }
+  
+  .media-content {
+    padding: 12px;
+  }
+  
+  .media-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  
+  .media-description {
+    font-size: 11px;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  
+  .media-meta {
+    font-size: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .media-category {
+    font-size: 9px;
+    padding: 3px 6px;
+    top: 8px;
+    left: 8px;
+  }
+  
+  .more-button {
+    padding: 10px 20px;
+    font-size: 12px;
+    gap: 8px;
+  }
+  
+  .arrow {
+    font-size: 16px;
   }
 }
 </style>

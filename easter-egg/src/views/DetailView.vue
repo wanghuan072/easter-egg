@@ -531,42 +531,277 @@ onUnmounted(() => {
 
 
 
-/* Responsive Design */
+/* 响应式设计 - 1024px 断点 */
 @media (max-width: 1024px) {
+  .hero-section {
+    min-height: 50vh;
+    padding-top: 60px;
+  }
+  
+  .hero-content {
+    padding: 100px 0 60px;
+  }
+  
+  .hero-title {
+    font-size: 2.8rem;
+  }
+  
+  .hero-description {
+    font-size: 1.1rem;
+    margin-bottom: 28px;
+  }
+  
+  .hero-meta {
+    gap: 28px;
+  }
+  
+  .badge-text {
+    font-size: 16px;
+    padding: 6px 14px;
+  }
+  
+  .category-tag {
+    font-size: 16px;
+    padding: 5px 10px;
+  }
+  
+  .publish-date {
+    font-size: 16px;
+  }
+  
+  .content-section {
+    padding: 60px 0;
+  }
+  
   .content-wrapper {
     grid-template-columns: 1fr;
     gap: 40px;
   }
   
-  .hero-title {
-    font-size: 2.5rem;
+  .details-content {
+    padding: 32px;
   }
   
-  .hero-description {
+  .content-header h2 {
+    font-size: 1.75rem;
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+  }
+  
+  .content-body {
+    font-size: 16px;
+  }
+  
+  .content-body h2 {
+    font-size: 1.5rem;
+    margin: 28px 0 14px;
+  }
+  
+  .content-body h3 {
+    font-size: 1.25rem;
+    margin: 20px 0 10px;
+  }
+  
+  .content-body p {
+    margin-bottom: 14px;
+    font-size: 16px;
+  }
+  
+  .iframe-container {
+    margin-bottom: 32px;
+  }
+  
+  .content-iframe {
+    height: 400px;
+  }
+  
+  .sidebar {
+    gap: 28px;
+  }
+  
+  .info-card {
+    padding: 20px;
+  }
+  
+  .info-card h3 {
     font-size: 1.1rem;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+  }
+  
+  .info-item {
+    margin-bottom: 16px;
+  }
+  
+  .info-label {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  
+  .info-value {
+    font-size: 16px;
+  }
+  
+  .info-tag {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+  
+  .loading-text {
+    font-size: 20px;
+  }
+  
+  .error-text {
+    font-size: 20px;
   }
 }
 
+/* 响应式设计 - 768px 断点 (移动端) */
 @media (max-width: 768px) {
+  .hero-section {
+    min-height: 40vh;
+    padding-top: 20px;
+  }
+  
   .hero-content {
-    padding: 80px 0 60px;
+    padding: 60px 0 40px;
+  }
+  
+  .hero-badge {
+    margin-bottom: 10px;
+  }
+  
+  .badge-text {
+    font-size: 12px;
+    padding: 6px 12px;
   }
   
   .hero-title {
-    font-size: 2rem;
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .hero-description {
+    font-size: 12px;
+    margin-bottom: 20px;
   }
   
   .hero-meta {
     flex-direction: column;
+    gap: 10px;
+  }
+  
+  .publish-date {
+    font-size: 12px;
+  }
+  
+  .categories {
+    gap: 8px;
+    justify-content: center;
+  }
+  
+  .category-tag {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  
+  .content-section {
+    padding: 20px 0;
+  }
+  
+  .content-wrapper {
     gap: 20px;
   }
   
   .details-content {
-    padding: 24px;
+    padding: 20px;
   }
   
   .content-header h2 {
-    font-size: 1.5rem;
+    font-size: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+  }
+  
+  .content-body {
+    font-size: 12px;
+  }
+  
+  .content-body h2 {
+    font-size: 16px;
+    margin: 20px 0 10px;
+  }
+  
+  .content-body h3 {
+    font-size: 16px;
+    margin: 16px 0 8px;
+  }
+  
+  .content-body p {
+    margin-bottom: 10px;
+    font-size: 12px;
+  }
+  
+  .iframe-container {
+    margin-bottom: 20px;
+  }
+  
+  .content-iframe {
+    height: 300px;
+  }
+  
+  .sidebar {
+    gap: 20px;
+  }
+  
+  .info-card {
+    padding: 16px;
+  }
+  
+  .info-card h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+  
+  .info-item {
+    margin-bottom: 12px;
+  }
+  
+  .info-label {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .info-value {
+    font-size: 12px;
+  }
+  
+  .info-tags {
+    gap: 6px;
+  }
+  
+  .info-tag {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+  
+  .loading-section {
+    min-height: 40vh;
+    padding: 40px 0;
+  }
+  
+  .loading-text {
+    font-size: 12px;
+  }
+  
+  .error-section {
+    min-height: 40vh;
+    padding: 40px 0;
+  }
+  
+  .error-text {
+    font-size: 12px;
   }
 }
 </style>

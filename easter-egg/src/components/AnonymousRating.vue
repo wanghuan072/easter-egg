@@ -330,3 +330,186 @@ onMounted(fetchRatingStats)
   font-weight: 500;
 }
 </style>
+
+/* 响应式设计 - 1024px 断点 */
+@media (max-width: 1024px) {
+  .anonymous-rating {
+    padding: 20px;
+    margin: 16px 0;
+  }
+  
+  .rating-header {
+    margin-bottom: 16px;
+  }
+  
+  .rating-header h3 {
+    font-size: 18px;
+  }
+  
+  .average-rating {
+    font-size: 2rem;
+    margin-right: 10px;
+  }
+  
+  .star {
+    font-size: 1.1rem;
+  }
+  
+  .total-ratings {
+    font-size: 16px;
+    margin-left: 6px;
+  }
+  
+  .rating-distribution {
+    margin: 16px 0;
+  }
+  
+  .rating-bar {
+    margin: 6px 0;
+  }
+  
+  .stars-label {
+    width: 36px;
+    font-size: 16px;
+  }
+  
+  .bar-container {
+    margin: 0 10px;
+  }
+  
+  .count {
+    width: 28px;
+    font-size: 16px;
+  }
+  
+  .user-rating {
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+  
+  .user-rating h4 {
+    margin-bottom: 14px;
+    font-size: 16px;
+  }
+  
+  .star-input {
+    margin: 14px 0;
+  }
+  
+  .star-input .star {
+    font-size: 1.3rem;
+    margin-right: 6px;
+  }
+  
+  .submit-btn {
+    padding: 7px 14px;
+    font-size: 16px;
+  }
+  
+  .rating-note {
+    font-size: 16px;
+    margin-top: 6px;
+  }
+  
+  .cooldown-note {
+    font-size: 16px;
+    margin-top: 6px;
+  }
+}
+
+/* 响应式设计 - 768px 断点 (移动端) */
+@media (max-width: 768px) {
+  .anonymous-rating {
+    padding: 16px;
+    margin: 10px 0;
+  }
+  
+  .rating-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .rating-header h3 {
+    font-size: 16px;
+    margin: 0;
+  }
+  
+  .rating-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .average-rating {
+    font-size: 24px;
+    margin-right: 8px;
+  }
+  
+  .star {
+    font-size: 12px;
+  }
+  
+  .total-ratings {
+    font-size: 12px;
+    margin-left: 4px;
+  }
+  
+  .rating-distribution {
+    margin: 12px 0;
+  }
+  
+  .rating-bar {
+    margin: 4px 0;
+  }
+  
+  .stars-label {
+    width: 32px;
+    font-size: 12px;
+  }
+  
+  .bar-container {
+    height: 6px;
+    margin: 0 8px;
+  }
+  
+  .count {
+    width: 24px;
+    font-size: 12px;
+  }
+  
+  .user-rating {
+    padding-top: 12px;
+    margin-top: 12px;
+  }
+  
+  .user-rating h4 {
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  
+  .star-input {
+    margin: 10px 0;
+  }
+  
+  .star-input .star {
+    font-size: 20px;
+    margin-right: 4px;
+  }
+  
+  .submit-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .rating-note {
+    font-size: 12px;
+    margin-top: 6px;
+  }
+  
+  .cooldown-note {
+    font-size: 12px;
+    margin-top: 6px;
+  }
+}
