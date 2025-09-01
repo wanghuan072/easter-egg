@@ -1,24 +1,49 @@
 import express from 'express';
-import { pool } from '../config/database.js';
+import jwt from 'jsonwebtoken';
+import { pool, query } from '../config/database.js';
 
 const router = express.Router();
+
+// JWT 认证中间件
+const verifyToken = (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized',
+        message: 'Authentication token is required'
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      error: 'Invalid token',
+      message: 'Authentication token is invalid or expired'
+    });
+  }
+};
 
 // 获取所有分类
 router.get('/', async (req, res) => {
   try {
     const { mediaType } = req.query;
     
-    let query = 'SELECT * FROM egg_categories';
+    let queryText = 'SELECT * FROM egg_categories WHERE is_active = true';
     let params = [];
     
     if (mediaType) {
-      query += ' WHERE media_type = $1';
+      queryText += ' AND media_type = $1';
       params.push(mediaType);
     }
     
-    query += ' ORDER BY sort_order, name';
+    queryText += ' ORDER BY sort_order, name';
     
-    const result = await pool.query(query, params);
+    const result = await query(queryText, params);
     
     res.json({
       success: true,
@@ -40,7 +65,7 @@ router.get('/:mediaType', async (req, res) => {
   try {
     const { mediaType } = req.params;
     
-    const result = await pool.query(
+    const result = await query(
       'SELECT * FROM egg_categories WHERE media_type = $1 AND is_active = true ORDER BY sort_order, name',
       [mediaType]
     );
@@ -61,19 +86,9 @@ router.get('/:mediaType', async (req, res) => {
 });
 
 // 创建新分类
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   try {
     const { name, display_name, media_type, sort_order = 0, is_active = true } = req.body;
-    
-    // 验证管理员权限
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        error: 'Unauthorized',
-        message: 'Authentication token is required'
-      });
-    }
     
     // 验证必需字段
     if (!name || !display_name || !media_type) {
@@ -85,7 +100,7 @@ router.post('/', async (req, res) => {
     }
     
     // 检查分类名称是否已存在
-    const existingCategory = await pool.query(
+    const existingCategory = await query(
       'SELECT id FROM egg_categories WHERE name = $1 AND media_type = $2',
       [name, media_type]
     );
@@ -98,7 +113,7 @@ router.post('/', async (req, res) => {
       });
     }
     
-    const result = await pool.query(
+    const result = await query(
       'INSERT INTO egg_categories (name, display_name, media_type, sort_order, is_active) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [name, display_name, media_type, sort_order, is_active]
     );
@@ -119,23 +134,13 @@ router.post('/', async (req, res) => {
 });
 
 // 更新分类
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, display_name, media_type, sort_order, is_active } = req.body;
     
-    // 验证管理员权限
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        error: 'Unauthorized',
-        message: 'Authentication token is required'
-      });
-    }
-    
     // 检查分类是否存在
-    const existingCategory = await pool.query(
+    const existingCategory = await query(
       'SELECT id FROM egg_categories WHERE id = $1',
       [id]
     );
@@ -150,7 +155,7 @@ router.put('/:id', async (req, res) => {
     
     // 如果更改了名称，检查是否与其他分类重复
     if (name) {
-      const duplicateCategory = await pool.query(
+      const duplicateCategory = await query(
         'SELECT id FROM egg_categories WHERE name = $1 AND media_type = $2 AND id != $3',
         [name, media_type, id]
       );
@@ -164,7 +169,7 @@ router.put('/:id', async (req, res) => {
       }
     }
     
-    const result = await pool.query(
+    const result = await query(
       'UPDATE egg_categories SET name = COALESCE($1, name), display_name = COALESCE($2, display_name), media_type = COALESCE($3, media_type), sort_order = COALESCE($4, sort_order), is_active = COALESCE($5, is_active) WHERE id = $6 RETURNING *',
       [name, display_name, media_type, sort_order, is_active, id]
     );
@@ -185,26 +190,14 @@ router.put('/:id', async (req, res) => {
 });
 
 // 删除分类
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
-    
-    // 验证管理员权限
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        error: 'Unauthorized',
-        message: 'Authentication token is required'
-      });
-    }
-    
-    // 这里可以添加JWT验证逻辑，暂时跳过具体验证
-    // 在实际部署时应该验证token的有效性
+    const { hard = false } = req.query; // 支持硬删除参数
     
     // 检查分类是否存在
-    const existingCategory = await pool.query(
-      'SELECT id FROM egg_categories WHERE id = $1',
+    const existingCategory = await query(
+      'SELECT id, name FROM egg_categories WHERE id = $1',
       [id]
     );
     
@@ -216,16 +209,26 @@ router.delete('/:id', async (req, res) => {
       });
     }
     
-    // 软删除：将is_active设置为false
-    await pool.query(
-      'UPDATE egg_categories SET is_active = false WHERE id = $1',
-      [id]
-    );
-    
-    res.json({
-      success: true,
-      message: 'Category deleted successfully'
-    });
+    if (hard === 'true') {
+      // 硬删除：完全从数据库中删除
+      await query('DELETE FROM egg_categories WHERE id = $1', [id]);
+      
+      res.json({
+        success: true,
+        message: 'Category permanently deleted successfully'
+      });
+    } else {
+      // 软删除：将is_active设置为false
+      await query(
+        'UPDATE egg_categories SET is_active = false WHERE id = $1',
+        [id]
+      );
+      
+      res.json({
+        success: true,
+        message: 'Category deleted successfully'
+      });
+    }
   } catch (error) {
     console.error('Error deleting category:', error);
     res.status(500).json({
@@ -236,8 +239,87 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// 恢复已删除的分类
+router.put('/:id/restore', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // 检查分类是否存在
+    const existingCategory = await query(
+      'SELECT id, name, is_active FROM egg_categories WHERE id = $1',
+      [id]
+    );
+    
+    if (existingCategory.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'Category not found',
+        message: 'Category with this ID does not exist'
+      });
+    }
+    
+    if (existingCategory.rows[0].is_active) {
+      return res.status(400).json({
+        success: false,
+        error: 'Category is already active',
+        message: 'This category is not deleted'
+      });
+    }
+    
+    const result = await query(
+      'UPDATE egg_categories SET is_active = true WHERE id = $1 RETURNING *',
+      [id]
+    );
+    
+    res.json({
+      success: true,
+      data: result.rows[0],
+      message: 'Category restored successfully'
+    });
+  } catch (error) {
+    console.error('Error restoring category:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to restore category',
+      message: error.message
+    });
+  }
+});
+
+// 管理员获取所有分类（包括已删除的）
+router.get('/admin/all', verifyToken, async (req, res) => {
+  try {
+    const { mediaType } = req.query;
+    
+    let queryText = 'SELECT * FROM egg_categories';
+    let params = [];
+    
+    if (mediaType) {
+      queryText += ' WHERE media_type = $1';
+      params.push(mediaType);
+    }
+    
+    queryText += ' ORDER BY is_active DESC, sort_order, name';
+    
+    const result = await query(queryText, params);
+    
+    res.json({
+      success: true,
+      data: result.rows,
+      message: 'All categories retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Error fetching all categories:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch categories',
+      message: error.message
+    });
+  }
+});
+
 // 批量更新分类排序
-router.put('/sort/batch', async (req, res) => {
+router.put('/sort/batch', verifyToken, async (req, res) => {
   try {
     const { categories } = req.body; // [{id, sort_order}, ...]
     
@@ -251,7 +333,7 @@ router.put('/sort/batch', async (req, res) => {
     
     // 批量更新排序
     for (const category of categories) {
-      await pool.query(
+      await query(
         'UPDATE egg_categories SET sort_order = $1 WHERE id = $2',
         [category.sort_order, category.id]
       );
