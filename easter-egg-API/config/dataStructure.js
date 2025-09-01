@@ -24,8 +24,7 @@ export const DATA_STRUCTURE = {
   MEDIA_TYPES: {
     GAMES: 'games',
     MOVIES: 'movies',
-    TV: 'tv',
-    NEWS: 'news'
+    TV: 'tv'
   },
 
   // 标签常量
@@ -41,7 +40,9 @@ export const DATA_STRUCTURE = {
     GAMES: 'egg_games',
     MOVIES: 'egg_movies',
     TV: 'egg_tv',
-    NEWS: 'egg_news'
+    NEWS: 'egg_news',
+    RATINGS: 'egg_ratings',
+    COMMENTS: 'egg_comments'
   },
 
   // API响应格式
@@ -79,15 +80,6 @@ export const DATA_STRUCTURE = {
 export const transformData = {
   // 数据库行转换为前端格式
   dbToFrontend: (dbRow) => {
-    console.log('🔍 dbToFrontend 输入:', {
-      id: dbRow.id,
-      title: dbRow.title,
-      publish_date: dbRow.publish_date,
-      iframe_url: dbRow.iframe_url,
-      seo_description: dbRow.seo_description,
-      seo_keywords: dbRow.seo_keywords
-    });
-    
     const result = {
       id: dbRow.id,
       title: dbRow.title,
@@ -107,15 +99,6 @@ export const transformData = {
       detailsHtml: dbRow.details_html,
       mediaType: dbRow.media_type
     };
-    
-    console.log('🔍 dbToFrontend 输出:', {
-      id: result.id,
-      title: result.title,
-      publishDate: result.publishDate,
-      iframeUrl: result.iframeUrl,
-      seoDescription: result.seoDescription,
-      seoKeywords: result.seoKeywords
-    });
     
     return result;
   },

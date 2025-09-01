@@ -60,28 +60,8 @@ router.get('/', async (req, res) => {
 
     const result = await pool.query(query, params);
     
-    // 调试：查看原始数据库行数据
-    console.log('🔍 原始数据库行数据示例:', result.rows[0] ? {
-      id: result.rows[0].id,
-      title: result.rows[0].title,
-      publish_date: result.rows[0].publish_date,
-      iframe_url: result.rows[0].iframe_url,
-      seo_description: result.rows[0].seo_description,
-      seo_keywords: result.rows[0].seo_keywords
-    } : '无数据');
-    
     // 转换数据格式
     const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
-    
-    // 调试：查看转换后的数据
-    console.log('🔍 转换后的数据示例:', transformedData[0] ? {
-      id: transformedData[0].id,
-      title: transformedData[0].title,
-      publishDate: transformedData[0].publishDate,
-      iframeUrl: transformedData[0].iframeUrl,
-      seoDescription: transformedData[0].seoDescription,
-      seoKeywords: transformedData[0].seoKeywords
-    } : '无数据');
     
     // 计算分页信息
     const countQuery = `SELECT COUNT(*) FROM ${DATA_STRUCTURE.TABLES.GAMES}`;
@@ -124,15 +104,15 @@ router.get('/latest', async (req, res) => {
     const { limit = 8 } = req.query;
     const limitNum = Math.min(parseInt(limit), DATA_STRUCTURE.PAGINATION.MAX_LIMIT);
     
-    console.log(`Fetching latest games with limit: ${limitNum}`);
+
     
     const result = await pool.query(
       `SELECT * FROM ${DATA_STRUCTURE.TABLES.GAMES} WHERE is_latest = true ORDER BY publish_date DESC LIMIT $1`,
       [limitNum]
     );
     
-    console.log(`Found ${result.rows.length} games with is_latest = true`);
-    console.log('Game IDs:', result.rows.map(row => row.id));
+
+
     
     const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
     sendResponse(res, transformedData);
@@ -207,7 +187,7 @@ router.post('/', async (req, res) => {
       return sendError(res, 'Unauthorized', 401);
     }
 
-    console.log('🔍 创建游戏 - 接收到的数据:', req.body);
+
     
     const {
       title,
@@ -226,11 +206,6 @@ router.post('/', async (req, res) => {
       seo_keywords,
       details_html
     } = req.body;
-    
-    console.log('🔍 创建游戏 - 关键字段检查:');
-    console.log('  - iframe_url:', iframe_url, '类型:', typeof iframe_url);
-    console.log('  - seo_description:', seo_description, '类型:', typeof seo_description);
-    console.log('  - seo_keywords:', seo_keywords, '类型:', typeof seo_keywords);
 
     // 验证必填字段
     if (!title || !description || !address_bar) {
@@ -277,7 +252,7 @@ router.put('/:id', async (req, res) => {
     }
 
     const { id } = req.params;
-    console.log('🔍 更新游戏 - 接收到的数据:', req.body);
+
     
     const {
       title,
@@ -295,11 +270,6 @@ router.put('/:id', async (req, res) => {
       seo_keywords,
       details_html
     } = req.body;
-    
-    console.log('🔍 更新游戏 - 关键字段检查:');
-    console.log('  - iframe_url:', iframe_url, '类型:', typeof iframe_url);
-    console.log('  - seo_description:', seo_description, '类型:', typeof seo_description);
-    console.log('  - seo_keywords:', seo_keywords, '类型:', typeof seo_keywords);
 
     // 验证必填字段
     if (!title || !description) {

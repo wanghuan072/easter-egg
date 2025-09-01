@@ -66,15 +66,39 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     token: null
   })
 
+  // 数据加载状态
+  const dataLoaded = ref({
+    games: false,
+    movies: false,
+    tv: false,
+    news: false,
+    categories: false,
+    latestDiscoveries: false
+  })
+
   // 计算属性 - 过滤后的数据
   const filteredGames = computed(() => games.value)
   const filteredMovies = computed(() => movies.value)
   const filteredTVShows = computed(() => tvShows.value)
   const filteredNews = computed(() => news.value)
   
+  // 认证状态计算属性
+  const isAuthenticated = computed(() => auth.value.isAuthenticated)
+  
   // 获取分类列表
   const getClassifications = (type) => {
     return classifications.value[type] || []
+  }
+
+  // 检查数据是否已加载
+  const isDataLoaded = (type) => {
+    const loaded = dataLoaded.value[type]
+    return loaded
+  }
+
+  // 检查多个数据类型是否都已加载
+  const areDataTypesLoaded = (types) => {
+    return types.every(type => dataLoaded.value[type])
   }
 
   // 通用数据获取函数
@@ -83,7 +107,9 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     errors.value[type] = ''
     
     try {
+      console.log(`开始获取 ${type} 数据...`)
       const response = await apiMethod(params)
+      console.log(`${type} API响应:`, response)
       
       // 统一处理响应格式
       let data = []
@@ -98,6 +124,8 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
       } else {
         data = []
       }
+      
+      console.log(`${type} 处理后的数据:`, data)
       
       // 根据类型设置数据
       switch (type) {
@@ -114,6 +142,10 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
           news.value = data
           break
       }
+
+      // 标记数据已加载
+      dataLoaded.value[type] = true
+      console.log(`${type} 数据加载完成，标记为已加载`)
       
       return data
     } catch (error) {
@@ -163,6 +195,11 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
       movies.value = Array.isArray(moviesRes) ? moviesRes : (moviesRes.data || [])
       tvShows.value = Array.isArray(tvRes) ? tvRes : (tvRes.data || [])
       
+      // 标记数据已加载
+      dataLoaded.value.games = true
+      dataLoaded.value.movies = true
+      dataLoaded.value.tv = true
+      
       return { games: games.value, movies: movies.value, tv: tvShows.value }
     } catch (error) {
       const errorMessage = error.message || 'Failed to fetch home data'
@@ -179,29 +216,31 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     isPageLoading.value = true
     
     try {
-      // 分批加载数据，避免同时发送太多请求
-      console.log('开始预加载数据...')
+  
       
-      // 第一批：基础数据
-      console.log('加载基础数据...')
-      await Promise.all([
-        fetchGames(),
-        fetchMovies(),
-        fetchTV()
+      // 一次性加载所有数据，提高性能
+      console.log('加载所有数据...')
+      const [gamesData, moviesData, tvData, newsData, gamesCat, moviesCat, tvCat, newsCat] = await Promise.all([
+        fetchData('games', gamesApi.getAll),
+        fetchData('movies', moviesApi.getAll),
+        fetchData('tv', tvApi.getAll),
+        fetchData('news', newsApi.getAll),
+        gamesApi.getClassifications(),
+        moviesApi.getClassifications(),
+        tvApi.getClassifications(),
+        newsApi.getClassifications()
       ])
       
-      // 添加延迟，避免触发限流
-      await new Promise(resolve => setTimeout(resolve, 500))
+      // 存储分类数据
+      classifications.value.games = Array.isArray(gamesCat) ? gamesCat : (gamesCat?.data || [])
+      classifications.value.movies = Array.isArray(moviesCat) ? moviesCat : (moviesCat?.data || [])
+      classifications.value.tv = Array.isArray(tvCat) ? tvCat : (tvCat?.data || [])
+      classifications.value.news = Array.isArray(newsCat) ? newsCat : (newsCat?.data || [])
       
-      // 第二批：分类数据
-      console.log('加载分类数据...')
-      await Promise.all([
-        fetchClassifications('games'),
-        fetchClassifications('movies'),
-        fetchClassifications('tv')
-      ])
+      // 标记分类数据已加载
+      dataLoaded.value.categories = true
       
-      console.log('数据预加载完成')
+  
     } catch (error) {
       console.error('预加载数据时出错:', error)
       // 即使出错也不阻止应用继续运行
@@ -249,6 +288,10 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
       allLatest = allLatest.slice(0, limit)
       
       latestDiscoveries.value = allLatest
+      
+      // 标记数据已加载
+      dataLoaded.value.latestDiscoveries = true
+      
       return allLatest
     } catch (error) {
       console.error('Error fetching latest discoveries:', error)
@@ -435,13 +478,17 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     pagination,
     searchState,
     classifications,
+    dataLoaded,
     
     // 计算属性
     filteredGames,
     filteredMovies,
     filteredTVShows,
     filteredNews,
+    isAuthenticated,
     getClassifications,
+    isDataLoaded,
+    areDataTypesLoaded,
     
     // 方法
     fetchGames,

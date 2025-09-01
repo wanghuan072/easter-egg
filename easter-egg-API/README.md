@@ -104,19 +104,24 @@ GET /api/search/suggestions?q=elden&limit=5
 Create a `.env` file based on `env.example`:
 
 ```env
-# Server Configuration
+# 服务器配置
 PORT=3000
 NODE_ENV=development
 
-# CORS Configuration
-CORS_ORIGIN=http://localhost:5173
+# CORS配置
+CORS_ORIGIN_DEV=http://localhost:5173
+CORS_ORIGIN_PROD=https://easter-egg-sandy.vercel.app
 
-# Rate Limiting
+# 速率限制
 RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
+RATE_LIMIT_MAX_REQUESTS=500
 
-# Database (for future Neon integration)
+# 数据库配置 (Neon PostgreSQL)
 DATABASE_URL=postgresql://username:password@host:port/database?sslmode=require
+
+# JWT配置
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRES_IN=1h
 ```
 
 ## Development

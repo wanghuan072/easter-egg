@@ -40,6 +40,30 @@
             <span class="nav-icon">📰</span>
             <span class="nav-text">新闻管理</span>
           </li>
+          
+          <li 
+            class="nav-item"
+            :class="{ active: activeModule === 'categories' }"
+            @click="$emit('change-module', 'categories')"
+          >
+            <span class="nav-icon">🏷️</span>
+            <span class="nav-text">分类标签管理</span>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <h3 class="nav-title">用户互动</h3>
+        
+        <ul class="nav-list">
+          <li 
+            class="nav-item"
+            :class="{ active: activeModule === 'reviews' }"
+            @click="goToReviews"
+          >
+            <span class="nav-icon">📝</span>
+            <span class="nav-text">评价管理</span>
+          </li>
         </ul>
       </div>
       
@@ -61,18 +85,30 @@
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
+
+
 const emit = defineEmits(['change-module'])
 
-defineProps({
+const props = defineProps({
   activeModule: {
     type: String,
     required: true
   }
 })
 
+// 调试信息
+console.log('🔍 AdminSidebar - 接收到的activeModule:', props.activeModule)
+
 // 返回首页
 const goHome = () => {
   router.push('/')
+}
+
+// 跳转到评价管理
+const goToReviews = () => {
+  console.log('🎯 跳转到评价管理，activeModule:', 'reviews')
+  emit('change-module', 'reviews')
 }
 </script>
 

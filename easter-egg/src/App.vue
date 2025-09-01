@@ -6,10 +6,11 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useEasterEggsStore } from '@/stores/easterEggs.js'
 
 const store = useEasterEggsStore()
+const isInitialized = ref(false)
 
 onMounted(async () => {
   try {
@@ -19,10 +20,15 @@ onMounted(async () => {
     // 预加载数据以提高性能
     console.log('开始预加载数据...')
     await store.preloadData()
+    
+    // 标记初始化完成
+    isInitialized.value = true
+    console.log('应用初始化完成，所有数据已加载')
   } catch (error) {
     console.error('预加载数据失败，但应用将继续运行:', error)
     // 即使预加载失败，也不阻止应用继续运行
     // 用户可以在需要时手动触发数据加载
+    isInitialized.value = true
   }
 })
 </script>
@@ -38,5 +44,22 @@ onMounted(async () => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 10px;
+}
+
+/* 通用Loading样式 */
+.loading-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.loading-text {
+  font-size: 18px;
+  color: #888;
+  font-weight: 500;
 }
 </style>

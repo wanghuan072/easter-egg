@@ -1,0 +1,29 @@
+User-agent: *
+Allow: /
+
+# 禁止爬取开发和临时文件
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_nuxt/
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /src/
+
+# 允许爬取静态资源
+Allow: /images/
+Allow: /css/
+Allow: /js/
+Allow: /favicon.ico
+
+# 站点地图位置
+Sitemap: https://eastereggvault.com/sitemap.xml
+
+# 爬取延迟（秒）- 对搜索引擎友好
+Crawl-delay: 1
+
+# 特定搜索引擎配置
+User-agent: Googlebot
+Crawl-delay: 0
+
+User-agent: Bingbot
+Crawl-delay: 1

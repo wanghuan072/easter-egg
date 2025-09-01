@@ -20,33 +20,37 @@
 
           <div class="footer-links">
             <div class="footer-link-group">
-              <h3 class="footer-link-title">Content</h3>
+              <h3 class="footer-link-title">QUICK LINKS</h3>
               <ul class="footer-link-list">
-                <li><a href="#games">Video Games</a></li>
-                <li><a href="#movies">Movies</a></li>
-                <li><a href="#tv">TV Shows</a></li>
-                <li><a href="#news">Latest News</a></li>
-                <li><a href="#faq">FAQ</a></li>
+                <li><router-link to="/">Home</router-link></li>
+                <li><router-link to="/games">Video Games</router-link></li>
+                <li><router-link to="/movies">Movies</router-link></li>
+                <li><router-link to="/tv">TV Shows</router-link></li>
+                <li><router-link to="/news">Latest News</router-link></li>
               </ul>
             </div>
 
             <div class="footer-link-group">
-              <h3 class="footer-link-title">Community</h3>
+              <h3 class="footer-link-title">Popular</h3>
               <ul class="footer-link-list">
-                <li><a href="#submit">Submit Secret</a></li>
-                <li><a href="#discord">Discord</a></li>
-                <li><a href="#reddit">Reddit</a></li>
-                <li><a href="#contributors">Contributors</a></li>
+                <li v-if="!isLatestDiscoveriesLoaded" class="footer-loading">Loading...</li>
+                <li v-else-if="latestDiscoveries.length === 0" class="footer-empty">No content available</li>
+                <li v-else v-for="item in latestDiscoveries.slice(0, 4)" :key="item.id">
+                  <router-link :to="getDetailRoute(item)" class="footer-popular-link">
+                    {{ item.title }}
+                  </router-link>
+                </li>
               </ul>
             </div>
 
             <div class="footer-link-group">
-              <h3 class="footer-link-title">Resources</h3>
+              <h3 class="footer-link-title">Legal</h3>
               <ul class="footer-link-list">
-                <li><a href="#guide">Search Guide</a></li>
-                <li><a href="#api">API</a></li>
-                <li><a href="#app">Mobile App</a></li>
-                <li><a href="#extension">Browser Extension</a></li>
+                <li><router-link to="/privacy">Privacy Policy</router-link></li>
+                <li><router-link to="/terms">Terms of Use</router-link></li>
+                <li><router-link to="/copyright">Copyright</router-link></li>
+                <li><router-link to="/about">About Us</router-link></li>
+                <li><router-link to="/contact">Contact Us</router-link></li>
               </ul>
             </div>
           </div>
@@ -54,12 +58,12 @@
 
         <div class="footer-bottom">
           <div class="footer-copyright">
-            <p>&copy; 2024 EasterEggVault. All rights reserved.</p>
+            <p>&copy; 2025 EasterEggVault. All rights reserved.</p>
           </div>
           <div class="footer-legal">
-            <a href="#privacy">Privacy Policy</a>
-            <a href="#terms">Terms of Service</a>
-            <a href="#cookies">Cookie Policy</a>
+            <router-link to="/privacy">Privacy Policy</router-link>
+            <router-link to="/terms">Terms of Service</router-link>
+            <router-link to="/copyright">Copyright</router-link>
           </div>
         </div>
       </div>
@@ -68,7 +72,41 @@
 </template>
 
 <script setup>
-// Footer component logic can be added here
+import { computed, onMounted } from 'vue'
+import { useEasterEggsStore } from '@/stores/easterEggs.js'
+import { dataUtils } from '@/config/dataStructure.js'
+
+const store = useEasterEggsStore()
+
+// 计算属性
+const latestDiscoveries = computed(() => store.latestDiscoveries)
+const isLatestDiscoveriesLoaded = computed(() => store.isDataLoaded('latestDiscoveries'))
+
+// 获取详情页路由
+const getDetailRoute = (item) => {
+  const mediaType = dataUtils.getMediaType(item)
+  const addressBar = dataUtils.getAddressBar(item)
+  
+  switch (mediaType) {
+    case 'games':
+      return `/games/${addressBar}`
+    case 'movies':
+      return `/movies/${addressBar}`
+    case 'tv':
+      return `/tv/${addressBar}`
+    case 'news':
+      return `/news/${addressBar}`
+    default:
+      return `/games/${addressBar}`
+  }
+}
+
+// 生命周期
+onMounted(async () => {
+  if (!isLatestDiscoveriesLoaded.value) {
+    await store.fetchLatestDiscoveries(4) // 只获取4个用于footer显示
+  }
+})
 </script>
 
 <style scoped>
@@ -163,6 +201,21 @@
 .footer-link-list a:hover {
   color: #8b5cf6;
   text-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+}
+
+.footer-loading,
+.footer-empty {
+  color: #666;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.footer-popular-link {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
 }
 
 .footer-bottom {

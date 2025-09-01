@@ -1,67 +1,57 @@
 // 路由守卫配置
+import { nextTick } from 'vue'
 import { useEasterEggsStore } from '@/stores/easterEggs.js'
+import { setPageTDK, resetPageTDK, setCanonicalUrl } from '@/seo/tdkManager.js'
 
 // 需要登录才能访问的路由
-const protectedRoutes = [
-  '/admin/dashboard',
-  '/admin/users',
-  '/admin/settings'
-]
-
-// 检查用户是否已登录
-const isAuthenticated = () => {
-  const store = useEasterEggsStore()
-  return store.auth.isAuthenticated
-}
-
-// 检查token是否有效
-const hasValidToken = () => {
-  const token = localStorage.getItem('admin_token')
-  if (!token) return false
-  
-  // 检查token是否过期（1小时）
-  const tokenData = JSON.parse(atob(token.split('.')[1]))
-  const now = Date.now() / 1000
-  
-  return tokenData.exp > now
-}
-
-// 路由守卫函数
-export const requireAuth = (to, from, next) => {
-  // 检查是否是受保护的路由
-  if (protectedRoutes.some(route => to.path.startsWith(route))) {
-    // 检查是否已登录且token有效
-    if (isAuthenticated() && hasValidToken()) {
-      next() // 允许访问
-    } else {
-      // 未登录或token无效，跳转到登录页
-      next({
-        path: '/admin/login',
-        query: { redirect: to.fullPath } // 保存原目标路径
-      })
-    }
-  } else {
-    next() // 非受保护路由，直接通过
-  }
-}
-
-// 已登录用户访问登录页时重定向到仪表板
-export const redirectIfAuthenticated = (to, from, next) => {
-  if (to.path === '/admin/login' && isAuthenticated() && hasValidToken()) {
-    next('/admin/dashboard')
-  } else {
-    next()
-  }
-}
+const protectedRoutes = ['/admin/dashboard']
 
 // 全局前置守卫
 export const globalBeforeEach = (to, from, next) => {
-  // 检查是否需要认证
-  if (protectedRoutes.some(route => to.path.startsWith(route))) {
-    requireAuth(to, from, next)
-  } else if (to.path === '/admin/login') {
-    redirectIfAuthenticated(to, from, next)
+  // 统一设置canonical URL（参考Fish-Games的实现）
+  const canonicalUrl = `https://easter-egg-sandy.vercel.app${to.path}`
+  setCanonicalUrl(canonicalUrl)
+
+  // 设置SEO信息
+  if (to.meta.dynamic) {
+    // 动态页面：TDK将通过API数据在组件中设置
+    resetPageTDK()
+  } else if (to.meta.title) {
+    // 静态页面：从路由meta中获取TDK
+    setPageTDK({
+      title: to.meta.title,
+      description: to.meta.description,
+      keywords: to.meta.keywords
+    })
   } else {
+    // 默认页面：重置为默认TDK
+    resetPageTDK()
+  }
+
+  // 检查是否需要登录
+  const easterEggsStore = useEasterEggsStore()
+  const isAuthenticated = easterEggsStore.isAuthenticated
+
+  if (protectedRoutes.includes(to.path) && !isAuthenticated) {
+    // 如果需要登录但未登录，重定向到登录页
+    next('/admin/login')
+  } else {
+    // 继续导航
     next()
+  }
+}
+
+// 全局后置守卫 - 处理页面滚动
+export const globalAfterEach = (to, from) => {
+  // 页面跳转后滚动到顶部
+  if (to.path !== from.path) {
+    // 使用 nextTick 确保DOM更新完成后再滚动
+    nextTick(() => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth' // 平滑滚动效果
+      })
+    })
   }
 }

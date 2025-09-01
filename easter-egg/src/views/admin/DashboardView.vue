@@ -19,7 +19,7 @@ onMounted(() => {
   store.checkAuth()
   
   // 如果没有认证，跳转到登录页
-  if (!store.auth.isAuthenticated) {
+  if (!store.isAuthenticated) {
     router.push('/admin/login')
   }
 })

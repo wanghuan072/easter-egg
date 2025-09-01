@@ -1,14 +1,7 @@
 // 环境配置
 const getApiUrl = (endpoint) => {
-  // 开发环境使用本地API
-  if (import.meta.env.DEV) {
-    return `http://localhost:3000${endpoint}`
-  }
-  
-  // 生产环境使用Vercel部署的API
-  // 部署后需要更新为实际的Vercel API域名
-  const productionApiUrl = import.meta.env.VITE_API_URL || 'https://easter-egg-api.vercel.app'
-  return `${productionApiUrl}${endpoint}`
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+  return `${apiUrl}${endpoint}`
 }
 
 // 获取完整的API URL
@@ -20,21 +13,21 @@ const getFullApiUrl = (endpoint) => {
 const config = {
   // API配置
   api: {
-    baseUrl: import.meta.env.DEV ? 'http://localhost:3000' : (import.meta.env.VITE_API_URL || 'https://easter-egg-api.vercel.app'),
+    baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000',
     timeout: 10000,
   },
   
   // 应用配置
   app: {
-    name: 'EasterEggVault',
-    version: '1.0.0',
+    name: import.meta.env.VITE_APP_NAME || 'EasterEggVault',
+    version: import.meta.env.VITE_APP_VERSION || '1.0.0',
     environment: import.meta.env.MODE,
   },
   
   // 功能开关
   features: {
-    debug: import.meta.env.DEV,
-    analytics: !import.meta.env.DEV,
+    debug: import.meta.env.VITE_ENABLE_DEBUG === 'true' || import.meta.env.DEV,
+    analytics: import.meta.env.VITE_ENABLE_ANALYTICS === 'true' && !import.meta.env.DEV,
   }
 }
 

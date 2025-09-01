@@ -1,6 +1,7 @@
 
 import express from 'express';
 import { Pool } from 'pg';
+import { transformData } from '../config/dataStructure.js';
 
 const router = express.Router();
 const pool = new Pool({
@@ -22,16 +23,13 @@ router.get('/', async (req, res) => {
       return res.status(500).json({ success: false, error: 'Database not configured' });
     }
     
-    console.log('Searching with query:', query);
-    console.log('Database URL exists:', !!process.env.DATABASE_URL);
-    
     const offset = (page - 1) * limit;
     let results = [];
 
-    // 构建 SQL 查询
-    const gamesSql = `SELECT id, title, description, publish_date, classify, image_url AS "imageUrl", address_bar AS "addressBar", 'games' AS media_type FROM egg_games WHERE title ILIKE $1 OR description ILIKE $1`;
-    const moviesSql = `SELECT id, title, description, publish_date, classify, image_url AS "imageUrl", address_bar AS "addressBar", 'movies' AS media_type FROM egg_movies WHERE title ILIKE $1 OR description ILIKE $1`;
-    const tvSql = `SELECT id, title, description, publish_date, classify, image_url AS "imageUrl", address_bar AS "addressBar", 'tv' AS media_type FROM egg_tv WHERE title ILIKE $1 OR description ILIKE $1`;
+    // 构建 SQL 查询 - 修复字段名和添加label字段
+    const gamesSql = `SELECT id, title, description, publish_date, classify, image_url AS "imageUrl", address_bar AS "addressBar", 'games' AS "mediaType", label FROM egg_games WHERE title ILIKE $1 OR description ILIKE $1`;
+    const moviesSql = `SELECT id, title, description, publish_date, classify, image_url AS "imageUrl", address_bar AS "addressBar", 'movies' AS "mediaType", label FROM egg_movies WHERE title ILIKE $1 OR description ILIKE $1`;
+    const tvSql = `SELECT id, title, description, publish_date, classify, image_url AS "imageUrl", address_bar AS "addressBar", 'tv' AS "mediaType", label FROM egg_tv WHERE title ILIKE $1 OR description ILIKE $1`;
 
     const searchParam = `%${query}%`;
     const [gamesRes, moviesRes, tvRes] = await Promise.all([
@@ -48,7 +46,7 @@ router.get('/', async (req, res) => {
     // 可选：按 mediaType/classify 过滤
     if (mediaType) {
       const types = mediaType.split(',');
-      results = results.filter(item => types.includes(item.media_type));
+      results = results.filter(item => types.includes(item.mediaType));
     }
     if (classify) {
       const classifications = classify.split(',');
@@ -69,9 +67,33 @@ router.get('/', async (req, res) => {
     const total = results.length;
     const paginatedData = results.slice(offset, offset + parseInt(limit));
 
+    // 对搜索结果进行数据转换，确保字段名一致
+    const transformedData = paginatedData.map(item => {
+      // 为缺少label字段的记录提供默认值
+      if (!item.label) {
+        if (item.mediaType === 'movies') {
+          item.label = ['MOVIE']
+        } else if (item.mediaType === 'games') {
+          item.label = ['GAME']
+        } else if (item.mediaType === 'tv') {
+          item.label = ['TV']
+        }
+      }
+      
+      // 确保字段名与transformData.dbToFrontend期望的一致
+      const normalizedItem = {
+        ...item,
+        address_bar: item.addressBar, // 将addressBar映射到address_bar
+        media_type: item.mediaType,   // 将mediaType映射到media_type
+        image_url: item.imageUrl      // 将imageUrl映射到image_url
+      }
+      
+      return transformData.dbToFrontend(normalizedItem)
+    });
+
     res.json({
       success: true,
-      data: paginatedData,
+      data: transformedData,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),

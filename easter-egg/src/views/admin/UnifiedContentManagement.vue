@@ -6,40 +6,18 @@
     </div>
     
     <div class="content-container">
-      <!-- 数据统计 -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">📊</div>
-          <div class="stat-content">
-            <div class="stat-number">{{ stats.total }}</div>
-            <div class="stat-label">总{{ pageConfig.contentName }}数</div>
-          </div>
-        </div>
-        
-        <div class="stat-card">
-          <div class="stat-icon">🏠</div>
-          <div class="stat-content">
-            <div class="stat-number">{{ stats.home }}</div>
-            <div class="stat-label">首页显示</div>
-          </div>
-        </div>
-        
-        <div class="stat-card" v-if="pageConfig.supportsLatest">
-          <div class="stat-icon">⭐</div>
-          <div class="stat-content">
-            <div class="stat-number">{{ stats.latest }}</div>
-            <div class="stat-label">最新发现</div>
-          </div>
-        </div>
-      </div>
+
       
       <!-- 内容列表 -->
       <div class="content-list">
         <div class="list-header">
           <h2>{{ pageConfig.contentName }}列表</h2>
-          <button class="add-btn" @click="handleAddContent">
-            {{ pageConfig.icon }} 添加{{ pageConfig.contentName }}
-          </button>
+          <div class="list-actions">
+            <button class="add-btn" @click="handleAddContent">
+              {{ pageConfig.icon }} 添加{{ pageConfig.contentName }}
+            </button>
+            <span class="total-count">共 {{ contentList.length }} 条记录</span>
+          </div>
         </div>
         
         <div v-if="isLoading" class="loading-state">
@@ -166,11 +144,7 @@ const pageConfig = computed(() => {
 // 状态数据
 const contentList = ref([])
 const isLoading = ref(false)
-const stats = ref({
-  total: 0,
-  home: 0,
-  latest: 0
-})
+
 
 // 数据转换函数 - 将后端驼峰命名转换为表单下划线命名
 const transformDataForForm = (item) => {
@@ -254,14 +228,7 @@ const loadContent = async () => {
       const data = await response.json()
       contentList.value = data.data || []
       
-      // 计算统计数据
-      stats.value = {
-        total: contentList.value.length,
-        home: contentList.value.filter(item => item.isHome).length,
-        latest: pageConfig.value.supportsLatest 
-          ? contentList.value.filter(item => item.isLatest).length 
-          : 0
-      }
+
       
 
     } else {
@@ -354,137 +321,86 @@ onUnmounted(() => {
 
 <style scoped>
 .unified-content-management {
-  padding: 20px;
+  padding: 24px;
+  background: #f5f5f5;
+  min-height: 100vh;
 }
 
 .page-header {
-  margin-bottom: 30px;
-  text-align: center;
+  margin-bottom: 24px;
 }
 
 .page-header h1 {
-  font-size: 32px;
-  font-weight: 700;
-  margin: 0 0 10px 0;
-  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  margin: 0 0 8px 0;
+  color: #333;
 }
 
 .page-description {
-  color: #a0a0a0;
-  font-size: 16px;
   margin: 0;
+  color: #666;
 }
 
 .content-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* 统计卡片 */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 40px;
-}
 
-.stat-card {
-  background: rgba(51, 65, 85, 0.8);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 16px;
-  padding: 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  transition: all 0.3s ease;
-}
 
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.2);
-  border-color: #8b5cf6;
-}
 
-.stat-icon {
-  font-size: 32px;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(139, 92, 246, 0.2);
-  border-radius: 12px;
-}
-
-.stat-content {
-  flex: 1;
-}
-
-.stat-number {
-  font-size: 28px;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #a0a0a0;
-  font-weight: 500;
-}
 
 /* 内容列表 */
 .content-list {
-  background: rgba(51, 65, 85, 0.8);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 16px;
-  padding: 24px;
+  margin-top: 24px;
 }
 
 .list-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .list-header h2 {
   margin: 0;
-  color: #ffffff;
-  font-size: 20px;
-  font-weight: 600;
+  color: #333;
+}
+
+.list-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.total-count {
+  color: #666;
+  font-size: 0.9rem;
 }
 
 /* 加载状态 */
-.loading-state {
+.loading-state,
+.empty-state {
   text-align: center;
-  padding: 60px 20px;
-  color: #a0a0a0;
+  padding: 40px;
+  color: #666;
 }
 
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(139, 92, 246, 0.3);
-  border-top: 3px solid #8b5cf6;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
+  margin: 0 auto 16px;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-/* 空状态 */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #a0a0a0;
 }
 
 .empty-icon {
@@ -494,7 +410,7 @@ onUnmounted(() => {
 
 .empty-state h3 {
   margin: 0 0 10px 0;
-  color: #ffffff;
+  color: #333;
   font-size: 20px;
 }
 
@@ -508,10 +424,6 @@ onUnmounted(() => {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .content-table th,
@@ -561,20 +473,19 @@ onUnmounted(() => {
 
 /* 添加按钮 */
 .add-btn {
-  background: linear-gradient(90deg, #22c55e, #06b6d4);
+  background: #007bff;
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .add-btn:hover {
-  transform: translateY(-2px);
+  background: #0056b3;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -594,25 +505,21 @@ onUnmounted(() => {
 }
 
 .action-btn.edit {
-  background: rgba(6, 182, 212, 0.2);
-  color: #06b6d4;
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: #17a2b8;
+  color: white;
 }
 
 .action-btn.edit:hover {
-  background: rgba(6, 182, 212, 0.3);
-  border-color: #06b6d4;
+  background: #138496;
 }
 
 .action-btn.delete {
-  background: rgba(220, 38, 38, 0.2);
-  color: #dc2626;
-  border: 1px solid rgba(220, 38, 38, 0.3);
+  background: #dc3545;
+  color: white;
 }
 
 .action-btn.delete:hover {
-  background: rgba(220, 38, 38, 0.3);
-  border-color: #dc2626;
+  background: #c82333;
 }
 
 /* 响应式设计 */
@@ -625,10 +532,7 @@ onUnmounted(() => {
     font-size: 24px;
   }
   
-  .stats-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
+
   
   .list-header {
     flex-direction: column;

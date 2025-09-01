@@ -29,7 +29,7 @@ export const gamesApi = {
 
   // 获取游戏分类
   getClassifications: async () => {
-    const url = buildApiUrl('/games/classifications/all');
+    const url = buildApiUrl('/categories/games');
     return await apiRequest(url);
   }
 };
@@ -63,7 +63,7 @@ export const moviesApi = {
 
   // 获取电影分类
   getClassifications: async () => {
-    const url = buildApiUrl('/movies/classifications/all');
+    const url = buildApiUrl('/categories/movies');
     return await apiRequest(url);
   }
 };
@@ -97,8 +97,59 @@ export const tvApi = {
 
   // 获取电视节目分类
   getClassifications: async () => {
-    const url = buildApiUrl('/tv/classifications/all');
+    const url = buildApiUrl('/categories/tv');
     return await apiRequest(url);
+  }
+};
+
+// 分类相关API
+export const categoriesApi = {
+  // 获取所有分类
+  getAll: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const url = buildApiUrl(`/categories${queryString ? `?${queryString}` : ''}`);
+    return await apiRequest(url);
+  },
+
+  // 获取特定媒体类型的分类
+  getByMediaType: async (mediaType) => {
+    const url = buildApiUrl(`/categories/${mediaType}`);
+    return await apiRequest(url);
+  },
+
+  // 创建分类
+  create: async (categoryData) => {
+    const url = buildApiUrl('/categories');
+    return await apiRequest(url, {
+      method: 'POST',
+      body: JSON.stringify(categoryData)
+    });
+  },
+
+  // 更新分类
+  update: async (id, categoryData) => {
+    const url = buildApiUrl(`/categories/${id}`);
+    return await apiRequest(url, {
+      method: 'PUT',
+      body: JSON.stringify(categoryData)
+    });
+  },
+
+  // 删除分类
+  delete: async (id) => {
+    const url = buildApiUrl(`/categories/${id}`);
+    return await apiRequest(url, {
+      method: 'DELETE'
+    });
+  },
+
+  // 批量更新排序
+  updateSort: async (categories) => {
+    const url = buildApiUrl('/categories/sort/batch');
+    return await apiRequest(url, {
+      method: 'PUT',
+      body: JSON.stringify({ categories })
+    });
   }
 };
 
@@ -108,6 +159,12 @@ export const newsApi = {
   getAll: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     const url = buildApiUrl(`/news${queryString ? `?${queryString}` : ''}`);
+    return await apiRequest(url);
+  },
+
+  // 获取首页新闻
+  getHome: async () => {
+    const url = buildApiUrl('/news/home');
     return await apiRequest(url);
   },
 
@@ -125,7 +182,7 @@ export const newsApi = {
 
   // 获取新闻分类
   getClassifications: async () => {
-    const url = buildApiUrl('/news/classifications/all');
+    const url = buildApiUrl('/categories/news');
     return await apiRequest(url);
   }
 };
@@ -167,6 +224,7 @@ export default {
   movies: moviesApi,
   tv: tvApi,
   news: newsApi,
+  categories: categoriesApi,
   search: searchApi,
   health: healthApi
 };

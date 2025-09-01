@@ -3,56 +3,123 @@
     <!-- Header Component -->
     <Header />
 
-    <!-- Loading State -->
-    <LoadingSpinner 
-      :isLoading="store.isLoading.news" 
-    />
+
 
     <!-- Hero Section -->
     <section class="hero-section">
+      <!-- 背景装饰元素 -->
+      <div class="hero-decorations">
+        <div class="tech-circle tech-circle-1"></div>
+        <div class="tech-circle tech-circle-2"></div>
+        <div class="tech-circle tech-circle-3"></div>
+      </div>
+
+      <!-- Main Content -->
       <div class="container">
         <div class="hero-content">
           <div class="hero-text">
             <h1 class="hero-title">
               <span class="hero-title-part-1">📰</span>
               <br />
-              <span class="hero-title-part-2">News</span>
+              <span class="hero-title-part-2">Latest News</span>
             </h1>
             <p class="hero-description">
-              Stay updated with the latest easter egg discoveries and vault updates.
+              Stay updated with the latest easter egg discoveries, community highlights, and vault announcements.
+              From breaking discoveries to expert insights, get the scoop on everything happening in the world of hidden secrets.
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Coming Soon Section -->
-    <section class="coming-soon-section">
+    <!-- All News Section -->
+    <section class="news-section">
       <div class="container">
-        <div class="coming-soon-content">
-          <div class="coming-soon-icon">🚧</div>
-          <h2 class="coming-soon-title">Coming Soon</h2>
-          <p class="coming-soon-description">
-            We're working hard to bring you the latest news and updates from the Easter Egg Vault.
-            <br />
-            This section will feature breaking discoveries, community highlights, and vault announcements.
-          </p>
-          <div class="coming-soon-features">
-            <div class="feature-item">
-              <span class="feature-icon">🔍</span>
-              <span class="feature-text">Latest Discoveries</span>
-            </div>
-            <div class="feature-item">
-              <span class="feature-icon">👥</span>
-              <span class="feature-text">Community Updates</span>
-            </div>
-            <div class="feature-item">
-              <span class="feature-icon">📢</span>
-              <span class="feature-text">Vault Announcements</span>
+        <!-- Loading State -->
+        <div v-if="!isDataReady" class="loading-section">
+          <div class="loading-text">Loading...</div>
+        </div>
+
+        <!-- 数据加载完成后的内容 -->
+        <div v-else>
+          <!-- 新闻列表 -->
+          <div class="news-list">
+            <div 
+              v-for="newsItem in filteredNews" 
+              :key="newsItem.id"
+              class="news-item"
+              @click="goToDetail(newsItem)"
+            >
+              <!-- 左侧图片 -->
+              <div class="news-image">
+                <img 
+                  :src="newsItem.imageUrl" 
+                  :alt="newsItem.title"
+                  class="news-img"
+                />
+                <div class="news-category-badge">{{ Array.isArray(newsItem.label) ? newsItem.label[0] : newsItem.label }}</div>
+              </div>
+              
+              <!-- 右侧内容 -->
+              <div class="news-content">
+                <h3 class="news-title">{{ newsItem.title }}</h3>
+                <p class="news-description">{{ newsItem.description }}</p>
+                
+                <div class="news-meta">
+                  <span class="news-date">{{ formatDate(newsItem.publishDate) }}</span>
+                  <div class="news-tags">
+                    <span 
+                      v-for="tag in newsItem.classify.slice(0, 3)" 
+                      :key="tag"
+                      class="news-tag"
+                    >
+                      {{ tag }}
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="news-actions">
+                  <button class="read-more-btn">Read More →</button>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="back-home">
-            <a href="/" class="back-home-btn">← Back to Home</a>
+
+          <!-- 分页 -->
+          <div v-if="store.pagination.news && store.pagination.news.pages > 1" class="pagination">
+            <button 
+              :disabled="store.pagination.news.page <= 1"
+              @click="changePage(store.pagination.news.page - 1)"
+              class="page-button"
+            >
+              ← Previous
+            </button>
+            
+            <div class="page-numbers">
+              <button 
+                v-for="page in store.pagination.news.pages" 
+                :key="page"
+                :class="['page-number', { 'active': page === store.pagination.news.page }]"
+                @click="changePage(page)"
+              >
+                {{ page }}
+              </button>
+            </div>
+            
+            <button 
+              :disabled="store.pagination.news.page >= store.pagination.news.pages"
+              @click="changePage(store.pagination.news.page + 1)"
+              class="page-button"
+            >
+              Next →
+            </button>
+          </div>
+
+          <!-- 空状态 -->
+          <div v-if="filteredNews.length === 0 && isDataReady" class="empty-state">
+            <div class="empty-icon">📰</div>
+            <h3>No News Found</h3>
+            <p>There are no news articles available.</p>
           </div>
         </div>
       </div>
@@ -64,9 +131,54 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import { useEasterEggsStore } from '@/stores/easterEggs.js'
+
+const router = useRouter()
+const store = useEasterEggsStore()
+// 使用store中的数据
+const newsList = computed(() => store.news)
+
+const filteredNews = computed(() => newsList.value)
+
+const goToDetail = (newsItem) => {
+  if (newsItem.addressBar) {
+    router.push(`/news/${newsItem.addressBar}`)
+  }
+}
+
+const changePage = (page) => {
+  store.fetchNews({ page })
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+const isDataReady = computed(() => store.isDataLoaded('news'))
+
+onMounted(async () => {
+  // 等待数据预加载完成
+  const waitForData = () => {
+    if (isDataReady.value) {
+      console.log('新闻数据已加载完成')
+    } else {
+      // 使用更短的轮询间隔，提高响应速度
+      setTimeout(waitForData, 50)
+    }
+  }
+  
+  waitForData()
+})
 </script>
 
 <style scoped>
@@ -90,11 +202,84 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  background-color: #100e19;
   background: linear-gradient(135deg, #100e19 0%, #0f172a 50%, #100e19 100%);
-  margin-top: 80px;
+  margin-top: 0;
+  padding-top: 80px;
+}
+
+/* 背景网格和渐变 */
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    /* 网格图案 */
+    linear-gradient(rgba(139, 92, 246, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.2) 1px, transparent 1px),
+    /* 径向渐变 */
+    radial-gradient(circle at 25% 25%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(6, 182, 212, 0.15) 0%, transparent 50%);
+  background-size: 50px 50px, 50px 50px, auto, auto;
+  background-position: 0 0, 0 0, 0 0, 0 0;
+  opacity: 0.8;
+  z-index: 0;
+}
+
+/* 装饰元素容器 */
+.hero-decorations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.tech-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(139, 92, 246, 0.3);
+}
+
+.tech-circle-1 {
+  width: 400px;
+  height: 400px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-color: rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.1);
+}
+
+.tech-circle-2 {
+  width: 300px;
+  height: 300px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-color: rgba(6, 182, 212, 0.2);
+  box-shadow: 0 0 30px rgba(6, 182, 212, 0.1);
+}
+
+.tech-circle-3 {
+  width: 200px;
+  height: 200px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
 }
 
 .hero-content {
+  position: relative;
+  z-index: 10;
   text-align: center;
   max-width: 800px;
   margin: 0 auto;
@@ -130,109 +315,232 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
   margin-right: auto;
 }
 
-/* Coming Soon Section */
-.coming-soon-section {
-  padding: 120px 0;
+/* News Section */
+.news-section {
+  padding: 80px 0;
   background-color: #0f172a;
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
 }
 
-.coming-soon-content {
-  text-align: center;
-  max-width: 800px;
-  margin: 0 auto;
-}
 
-.coming-soon-icon {
-  font-size: 120px;
-  margin-bottom: 32px;
-  filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.3));
-}
 
-.coming-soon-title {
-  font-size: 48px;
-  font-weight: 700;
-  margin-bottom: 24px;
-  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.3));
-}
-
-.coming-soon-description {
-  font-size: 20px;
-  color: #a0a0a0;
-  margin-bottom: 48px;
-  line-height: 1.8;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.coming-soon-features {
-  display: flex;
-  justify-content: center;
-  gap: 48px;
-  margin-bottom: 48px;
-  flex-wrap: wrap;
-}
-
-.feature-item {
+/* News List */
+.news-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 24px;
-  background-color: #1e293b;
-  border-radius: 12px;
-  border: 1px solid #334155;
-  transition: all 0.3s ease;
-  min-width: 160px;
+  gap: 32px;
+  margin-bottom: 48px;
 }
 
-.feature-item:hover {
+.news-item {
+  display: flex;
+  gap: 32px;
+  padding: 32px;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 16px;
+  border: 1px solid #334155;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.news-item:hover {
   border-color: #8b5cf6;
   box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
   transform: translateY(-4px);
 }
 
-.feature-icon {
-  font-size: 32px;
-  filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.4));
+/* 左侧图片 */
+.news-image {
+  position: relative;
+  flex-shrink: 0;
+  width: 280px;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.feature-text {
-  font-size: 16px;
+.news-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.news-item:hover .news-img {
+  transform: scale(1.05);
+}
+
+.news-category-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 6px 12px;
+  background: rgba(139, 92, 246, 0.9);
+  color: #000;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* 右侧内容 */
+.news-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.news-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  line-height: 1.3;
   color: #f5f5f5;
 }
 
-.back-home {
+.news-description {
+  font-size: 16px;
+  color: #94a3b8;
+  margin-bottom: 24px;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.news-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.news-date {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.news-tags {
+  display: flex;
+  gap: 8px;
+}
+
+.news-tag {
+  padding: 4px 8px;
+  background: rgba(139, 92, 246, 0.2);
+  color: #8b5cf6;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.news-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.read-more-btn {
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.read-more-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+}
+
+/* 分页 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
   margin-top: 48px;
 }
 
-.back-home-btn {
-  display: inline-block;
-  padding: 16px 32px;
-  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
-  color: #000;
-  text-decoration: none;
+.page-button {
+  padding: 12px 20px;
+  background: transparent;
+  border: 2px solid #334155;
+  color: #94a3b8;
   border-radius: 8px;
+  cursor: pointer;
   font-weight: 600;
-  font-size: 18px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
 }
 
-.back-home-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+.page-button:hover:not(:disabled) {
+  border-color: #8b5cf6;
+  color: #f5f5f5;
 }
 
-/* Responsive Design */
+.page-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 8px;
+}
+
+.page-number {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 2px solid #334155;
+  color: #94a3b8;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.page-number:hover {
+  border-color: #8b5cf6;
+  color: #f5f5f5;
+}
+
+.page-number.active {
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+  border-color: transparent;
+  color: #000;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #94a3b8;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 24px;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #f5f5f5;
+}
+
+.empty-state p {
+  font-size: 16px;
+  color: #64748b;
+}
+
+/* 响应式设计 */
 @media (max-width: 768px) {
   .hero-title {
     font-size: 48px;
@@ -242,18 +550,65 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
     font-size: 64px;
   }
   
-  .coming-soon-title {
+  .hero-description {
+    font-size: 18px;
+  }
+  
+  .news-item {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .news-image {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .category-tabs {
+    gap: 12px;
+  }
+  
+  .tab-button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .news-title {
+    font-size: 24px;
+  }
+  
+  .news-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+  
+  .news-item {
+    padding: 16px;
+  }
+  
+  .news-title {
+    font-size: 20px;
+  }
+  
+  .hero-title {
     font-size: 36px;
   }
   
-  .coming-soon-features {
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-  }
-  
-  .feature-item {
-    min-width: 200px;
+  .hero-title-part-1 {
+    font-size: 48px;
   }
 }
 </style>

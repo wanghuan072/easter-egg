@@ -99,17 +99,24 @@
           <div class="form-row">
             <div class="form-group">
               <label for="classify">分类标签</label>
-              <div class="tag-input">
-                <input
-                  id="classify"
-                  v-model="newTag"
-                  type="text"
-                  placeholder="输入标签后按回车添加"
-                  @keyup.enter="addTag"
-                />
-                <button type="button" class="add-tag-btn" @click="addTag">+</button>
+              <div class="category-selector">
+                <select 
+                  v-model="selectedCategory" 
+                  @change="addCategory"
+                  class="category-dropdown"
+                >
+                  <option value="">请选择分类</option>
+                  <option 
+                    v-for="category in availableCategories" 
+                    :key="category.id" 
+                    :value="category.name"
+                  >
+                    {{ category.display_name }}
+                  </option>
+                </select>
+                <button type="button" class="add-category-btn" @click="addCategory">+</button>
               </div>
-              <div class="tags-container" v-if="formData.classify.length > 0">
+              <div class="tags-container" v-if="Array.isArray(formData.classify) && formData.classify.length > 0">
                 <span 
                   v-for="(tag, index) in formData.classify" 
                   :key="index"
@@ -119,9 +126,37 @@
                   <button type="button" @click="removeTag(index)" class="remove-tag" :title="`删除标签: ${tag}`">×</button>
                 </span>
               </div>
-              <!-- 调试信息 -->
-              <div v-if="formData.classify.length > 0" style="font-size: 12px; color: #666; margin-top: 5px;">
-                当前标签数量: {{ formData.classify.length }} | 标签内容: {{ formData.classify.join(', ') }}
+              <div class="category-help">
+                已选择 {{ Array.isArray(formData.classify) ? formData.classify.length : 0 }} 个分类标签
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="label">标签按钮</label>
+              <div class="category-selector">
+                <input
+                  v-model="newLabel"
+                  type="text"
+                  placeholder="输入标签名称，按回车或点击+添加"
+                  @keyup.enter="addLabel"
+                  class="category-dropdown"
+                />
+                <button type="button" class="add-category-btn" @click="addLabel">+</button>
+              </div>
+              <div class="tags-container" v-if="Array.isArray(formData.label) && formData.label.length > 0">
+                <span 
+                  v-for="(tag, index) in formData.label" 
+                  :key="index"
+                  class="tag"
+                >
+                  {{ tag }}
+                  <button type="button" @click="removeLabel(index)" class="remove-tag" :title="`删除标签: ${tag}`">×</button>
+                </span>
+              </div>
+              <div class="category-help">
+                已添加 {{ Array.isArray(formData.label) ? formData.label.length : 0 }} 个标签按钮
               </div>
             </div>
           </div>
@@ -229,9 +264,9 @@
           <button type="button" class="btn btn-secondary" @click="$emit('close')">
             取消
           </button>
-          <button type="submit" class="btn btn-primary" :disabled="isSubmitting">
-            {{ isSubmitting ? '保存中...' : (isEdit ? '更新' : '创建') }}
-          </button>
+                        <button type="submit" class="btn btn-primary" :disabled="props.isSubmitting">
+                {{ props.isSubmitting ? '上传中...' : (isEdit ? '更新' : '创建') }}
+              </button>
         </div>
       </form>
     </div>
@@ -240,6 +275,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { categoriesApi } from '@/services/api.js'
 
 const props = defineProps({
   contentType: {
@@ -249,6 +285,10 @@ const props = defineProps({
   editData: {
     type: Object,
     default: null
+  },
+  isSubmitting: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -261,7 +301,7 @@ const formData = ref({
   publish_date: '',
   is_latest: false,
   is_home: false,
-  label: '',
+  label: [],
   classify: [],
   image_url: '',
   image_alt: '',
@@ -273,9 +313,10 @@ const formData = ref({
   details_html: ''
 })
 
-// 新标签输入
-const newTag = ref('')
-const isSubmitting = ref(false)
+// 分类相关
+const availableCategories = ref([])
+const selectedCategory = ref('')
+const newLabel = ref('')
 
 // 计算属性
 const isEdit = computed(() => !!props.editData)
@@ -300,6 +341,21 @@ const initFormData = () => {
       formData.value = filteredData
     } else {
       formData.value = { ...props.editData }
+      
+      // 确保label字段是数组
+      if (!formData.value.label) {
+        formData.value.label = []
+      } else if (!Array.isArray(formData.value.label)) {
+        // 如果仍然是字符串（向后兼容），转换为数组
+        formData.value.label = [formData.value.label]
+      }
+      
+      // 确保classify字段是数组
+      if (formData.value.classify && !Array.isArray(formData.value.classify)) {
+        formData.value.classify = [formData.value.classify]
+      } else if (!formData.value.classify) {
+        formData.value.classify = []
+      }
     }
   } else {
     // 添加模式，设置默认值
@@ -310,7 +366,7 @@ const initFormData = () => {
       publish_date: today,
       is_latest: props.contentType !== 'news' ? false : null,
       is_home: false,
-      label: props.contentType.toUpperCase(),
+      label: [props.contentType.toUpperCase()],
       classify: props.contentType !== 'news' ? [] : null,
       image_url: '',
       image_alt: '',
@@ -324,14 +380,28 @@ const initFormData = () => {
   }
 }
 
-// 添加标签
-const addTag = () => {
-  if (props.contentType === 'news') return // 新闻管理禁用标签功能
+// 添加分类
+const addCategory = () => {
+  if (props.contentType === 'news') return // 新闻管理禁用分类功能
   
-  const tag = newTag.value.trim()
-  if (tag && !formData.value.classify.includes(tag)) {
-    formData.value.classify.push(tag)
-    newTag.value = ''
+  const category = selectedCategory.value.trim()
+  if (category && !formData.value.classify.includes(category)) {
+    formData.value.classify.push(category)
+    selectedCategory.value = '' // 重置选择器
+  }
+}
+
+// 获取可用分类
+const fetchCategories = async () => {
+  if (props.contentType === 'news') return // 新闻不需要分类
+  
+  try {
+    const response = await categoriesApi.getByMediaType(props.contentType)
+    if (response.success) {
+      availableCategories.value = response.data
+    }
+  } catch (error) {
+    console.error('Failed to fetch categories:', error)
   }
 }
 
@@ -342,40 +412,59 @@ const removeTag = (index) => {
   formData.value.classify.splice(index, 1)
 }
 
+// 添加标签按钮
+const addLabel = () => {
+  if (props.contentType === 'news') return // 新闻管理禁用标签功能
+  
+  const label = newLabel.value.trim()
+  if (label) {
+    // 确保label是数组
+    if (!Array.isArray(formData.value.label)) {
+      formData.value.label = []
+    }
+    
+    if (!formData.value.label.includes(label)) {
+      formData.value.label.push(label)
+      newLabel.value = '' // 重置输入框
+    }
+  }
+}
+
+// 移除标签按钮
+const removeLabel = (index) => {
+  if (props.contentType === 'news') return // 新闻管理禁用标签功能
+  
+  // 确保label是数组
+  if (Array.isArray(formData.value.label)) {
+    formData.value.label.splice(index, 1)
+  }
+}
+
 // 处理表单提交
 const handleSubmit = async () => {
-  try {
-    isSubmitting.value = true
-    
-    // 验证必填字段
-    if (!formData.value.title || !formData.value.description) {
-      alert('请填写必填字段')
-      return
-    }
-    
-    if (!isEdit.value && !formData.value.address_bar) {
-      alert('请填写地址栏标识')
-      return
-    }
-    
-    // 为新闻管理过滤掉不需要的字段
-    let dataToSave = { ...formData.value }
-    
-    if (props.contentType === 'news') {
-      // 移除新闻管理不需要的字段
-      delete dataToSave.is_latest
-      delete dataToSave.classify
-      delete dataToSave.iframe_url
-    }
-    
-    // 发送保存事件
-    emit('save', dataToSave)
-    
-  } catch (error) {
-    console.error('表单提交失败:', error)
-  } finally {
-    isSubmitting.value = false
+  // 验证必填字段
+  if (!formData.value.title || !formData.value.description) {
+    alert('请填写必填字段')
+    return
   }
+  
+  if (!isEdit.value && !formData.value.address_bar) {
+    alert('请填写地址栏标识')
+    return
+  }
+  
+  // 为新闻管理过滤掉不需要的字段
+  let dataToSave = { ...formData.value }
+  
+  if (props.contentType === 'news') {
+    // 移除新闻管理不需要的字段
+    delete dataToSave.is_latest
+    delete dataToSave.classify
+    delete dataToSave.iframe_url
+  }
+  
+  // 发送保存事件，让父组件处理
+  emit('save', dataToSave)
 }
 
 // 处理遮罩层点击
@@ -389,6 +478,7 @@ watch(() => props.editData, initFormData, { immediate: true })
 // 组件挂载时初始化
 onMounted(() => {
   initFormData()
+  fetchCategories()
 })
 </script>
 
@@ -538,16 +628,35 @@ onMounted(() => {
   margin: 0;
 }
 
-.tag-input {
+.category-selector {
   display: flex;
   gap: 10px;
 }
 
-.tag-input input {
+.category-dropdown {
   flex: 1;
+  padding: 12px 16px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.add-tag-btn {
+.category-dropdown:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+.category-dropdown option {
+  background: rgba(30, 41, 59, 0.95);
+  color: #ffffff;
+}
+
+.add-category-btn {
   padding: 12px 16px;
   background: #8b5cf6;
   border: none;
@@ -558,8 +667,15 @@ onMounted(() => {
   transition: all 0.3s ease;
 }
 
-.add-tag-btn:hover {
+.add-category-btn:hover {
   background: #7c3aed;
+}
+
+.category-help {
+  font-size: 12px;
+  color: #a0a0a0;
+  margin-top: 8px;
+  font-style: italic;
 }
 
 .tags-container {

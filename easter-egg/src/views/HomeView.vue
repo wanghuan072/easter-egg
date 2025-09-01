@@ -3,11 +3,7 @@
     <!-- Header Component -->
     <Header />
 
-    <!-- Loading State -->
-    <LoadingSpinner 
-      :isLoading="isLoading" 
-      text="正在加载复活节彩蛋宝库..." 
-    />
+
 
     <!-- Error State -->
     <div v-if="store.errors.home" class="error-banner">
@@ -92,15 +88,8 @@
             Fresh secrets, hidden details, and easter eggs discovered by our community of hunters.
           </p>
         </div>
-        <div v-if="isLoading" class="loading-section">
-          <LoadingSpinner 
-            :isLoading="isLoading" 
-          />
-        </div>
-        
-        <div v-else-if="store.errors.home" class="error-section">
-          <p>⚠️ {{ store.errors.home }}</p>
-          <button @click="retryLatestFetch" class="retry-button">重试</button>
+        <div v-if="!isLatestDiscoveriesLoaded" class="loading-section">
+          <div class="loading-text">Loading...</div>
         </div>
         
         <MediaList 
@@ -121,7 +110,7 @@
             Discover hidden easter eggs, secret levels, and developer jokes in your favorite games.
           </p>
         </div>
-          <div v-if="isLoading" class="loading-section">
+          <div v-if="!isGamesLoaded" class="loading-section">
           <div class="loading-spinner"></div>
           <p>Loading games...</p>
         </div>
@@ -149,7 +138,7 @@
             Uncover movie easter eggs, hidden details, and director's subtle references.
           </p>
         </div>
-        <div v-if="isLoading" class="loading-section">
+        <div v-if="!isMoviesLoaded" class="loading-section">
           <div class="loading-spinner"></div>
           <p>Loading movies...</p>
         </div>
@@ -177,7 +166,7 @@
             Find hidden references, callbacks, and easter eggs across television series.
           </p>
         </div>
-        <div v-if="isLoading" class="loading-section">
+        <div v-if="!isTVLoaded" class="loading-section">
           <div class="loading-spinner"></div>
           <p>Loading TV shows...</p>
         </div>
@@ -346,7 +335,7 @@ import { useRouter } from 'vue-router'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import MediaList from '@/components/MediaList.vue'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
+
 
 import { useEasterEggsStore } from '@/stores/easterEggs.js'
 
@@ -363,6 +352,12 @@ const movies = computed(() => store.movies)
 const tvShows = computed(() => store.tvShows)
 const latestDiscoveries = computed(() => store.latestDiscoveries)
 const isLoading = computed(() => store.isLoading.home)
+
+// 数据加载状态计算属性
+const isLatestDiscoveriesLoaded = computed(() => store.isDataLoaded('latestDiscoveries'))
+const isGamesLoaded = computed(() => store.isDataLoaded('games'))
+const isMoviesLoaded = computed(() => store.isDataLoaded('movies'))
+const isTVLoaded = computed(() => store.isDataLoaded('tv'))
 
 // 搜索功能
 const performSearch = async () => {
@@ -392,9 +387,19 @@ const retryLatestFetch = async () => {
 }
 
 onMounted(async () => {
-  // 使用store统一获取数据
-  await store.fetchHomeData()
-  await store.fetchLatestDiscoveries(4)
+  // 等待数据预加载完成
+  const waitForData = () => {
+    if (store.areDataTypesLoaded(['games', 'movies', 'tv'])) {
+      // 数据已加载，获取最新发现
+      store.fetchLatestDiscoveries(4)
+      console.log('首页数据加载完成')
+    } else {
+      // 使用更短的轮询间隔，提高响应速度
+      setTimeout(waitForData, 50)
+    }
+  }
+  
+  waitForData()
 })
 </script>
 
@@ -457,6 +462,7 @@ onMounted(async () => {
   background-color: #4b5563;
   transform: scale(1.05);
 }
+
 
 /* Hero Section */
 .hero-section {
@@ -1179,15 +1185,6 @@ onMounted(async () => {
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 20px;
-}
-
-.loading-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  color: #f5f5f5;
 }
 
 .error-banner {

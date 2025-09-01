@@ -2,11 +2,6 @@
   <div class="detail-page">
     <Header />
     
-    <!-- Loading State -->
-    <LoadingSpinner 
-      :isLoading="isLoading" 
-    />
-    
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-background" :style="{ backgroundImage: `url(${itemData?.imageUrl})` }">
@@ -14,9 +9,15 @@
         <div class="hero-grid"></div>
       </div>
       <div class="container">
-        <div class="hero-content">
+        <!-- Loading State -->
+        <div v-if="isLoading" class="loading-section">
+          <div class="loading-text">Loading...</div>
+        </div>
+
+        <!-- 数据加载完成后的内容 -->
+        <div v-else-if="itemData" class="hero-content">
           <div class="hero-badge">
-            <span class="badge-text">{{ itemData?.label }}</span>
+            <span class="badge-text">{{ Array.isArray(itemData?.label) ? itemData.label[0] : itemData?.label }}</span>
           </div>
           <h1 class="hero-title">{{ itemData?.title }}</h1>
           <p class="hero-description">{{ itemData?.description }}</p>
@@ -33,11 +34,16 @@
             </div>
           </div>
         </div>
+
+        <!-- 错误状态 -->
+        <div v-else class="error-section">
+          <div class="error-text">Failed to load content</div>
+        </div>
       </div>
     </section>
 
     <!-- Content Section -->
-    <section class="content-section">
+    <section v-if="!isLoading && itemData" class="content-section">
       <div class="container">
         <div class="content-wrapper">
           <!-- 详情内容 -->
@@ -80,10 +86,31 @@
                 </div>
               </div>
               <div class="info-item">
-                <span class="info-label">Label:</span>
-                <span class="info-value">{{ itemData?.label }}</span>
+                <span class="info-label">Labels:</span>
+                <div class="info-tags">
+                  <template v-if="Array.isArray(itemData?.label) && itemData.label.length > 0">
+                    <span 
+                      v-for="label in itemData.label" 
+                      :key="label" 
+                      class="info-tag"
+                    >
+                      {{ label }}
+                    </span>
+                  </template>
+                  <span v-else-if="itemData?.label && !Array.isArray(itemData.label)" class="info-tag">
+                    {{ itemData.label }}
+                  </span>
+                  <span v-else class="info-tag no-labels">No tags yet</span>
+                </div>
               </div>
             </div>
+
+            <!-- 评分评论系统 - 新闻不显示 -->
+            <AnonymousReview 
+              v-if="itemData?.id && contentType !== 'news'"
+              :content-type="contentType"
+              :content-id="itemData.id"
+            />
 
           </aside>
         </div>
@@ -97,13 +124,14 @@
 <script setup>
 
 
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { formatRelativeTime } from '../utils/dateUtils'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
-import LoadingSpinner from '../components/LoadingSpinner.vue'
+import AnonymousReview from '../components/AnonymousReview.vue'
+import { setPageTDK, resetPageTDK } from '@/seo/tdkManager.js'
 
 const route = useRoute()
 
@@ -111,24 +139,43 @@ const props = defineProps({
   addressBar: {
     type: String,
     required: true
+  },
+  type: {
+    type: String,
+    required: false
   }
 })
 
 // 从路由中获取内容类型
 const contentType = computed(() => {
+  // 优先使用props中的type
+  if (props.type) {
+    return props.type
+  }
+  
+  // 如果没有props.type，则从路由推断
   const path = route.path
   if (path.startsWith('/games/')) return 'games'
   if (path.startsWith('/movies/')) return 'movies'
   if (path.startsWith('/tv/')) return 'tv'
+  if (path.startsWith('/news/')) return 'news'
   return null
 })
 
 const itemData = ref(null)
 const isLoading = ref(false)
-const formatDate = formatRelativeTime
+const formatDate = (date) => {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
 
 const fetchData = async () => {
   try {
+    isLoading.value = true
     const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3000'
     const type = contentType.value
     
@@ -138,6 +185,7 @@ const fetchData = async () => {
     }
     
     const apiUrl = `${apiBase}/api/${type}/${props.addressBar}`
+    console.log('Fetching data from:', apiUrl)
     
     const res = await axios.get(apiUrl)
     
@@ -145,18 +193,61 @@ const fetchData = async () => {
       throw new Error('Empty response')
     }
     
-    itemData.value = res.data.data || res.data
+    const rawData = res.data.data || res.data
+    console.log('Received data:', rawData)
+    
+    // Ensure label field is array format
+    if (!rawData.label) {
+      rawData.label = []
+    } else if (!Array.isArray(rawData.label)) {
+      // If still string (backward compatibility), convert to array
+      rawData.label = [rawData.label]
+    }
+    
+    itemData.value = rawData
+    
+    // Set page TDK with enhanced SEO - 不使用默认内容，直接使用后台数据
+    setPageTDK({
+      title: rawData.seoTitle || rawData.title,
+      description: rawData.seoDescription || rawData.description,
+      keywords: rawData.seoKeywords || rawData.classify?.join(', ') || '',
+      imageUrl: rawData.imageUrl
+    }, null, false)
   } catch (error) {
     console.error('Failed to fetch item details:', error)
+    console.error('Error details:', {
+      type: contentType.value,
+      addressBar: props.addressBar,
+      apiUrl: `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/${contentType.value}/${props.addressBar}`,
+      errorMessage: error.message,
+      errorResponse: error.response?.data,
+      errorStatus: error.response?.status,
+      errorStatusText: error.response?.statusText,
+      errorConfig: {
+        url: error.config?.url,
+        method: error.config?.method,
+        headers: error.config?.headers
+      }
+    })
     itemData.value = null
+    
+    // Reset page TDK
+    resetPageTDK()
+  } finally {
+    isLoading.value = false
   }
 }
 
 // 监听路由参数变化，重新获取数据
-watch(() => [props.type, props.addressBar], fetchData)
+watch(() => [props.addressBar], fetchData)
 
 // 组件挂载时获取数据
 onMounted(fetchData)
+
+// Reset TDK when component unmounts
+onUnmounted(() => {
+  resetPageTDK()
+})
 </script>
 
 <style scoped>
@@ -228,7 +319,6 @@ onMounted(fetchData)
   border-radius: 20px;
   font-weight: 700;
   font-size: 14px;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
@@ -349,6 +439,37 @@ onMounted(fetchData)
   height: 500px;
   border: none;
   display: block;
+}
+
+/* Loading and Error States */
+.loading-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 80px 0;
+}
+
+.loading-text {
+  font-size: 24px;
+  color: #8b5cf6;
+  font-weight: 600;
+  text-align: center;
+}
+
+.error-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 80px 0;
+}
+
+.error-text {
+  font-size: 24px;
+  color: #ef4444;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* Sidebar */

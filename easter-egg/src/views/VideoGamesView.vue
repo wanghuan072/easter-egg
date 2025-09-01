@@ -3,10 +3,7 @@
     <!-- Header Component -->
     <Header />
 
-    <!-- Loading State -->
-    <LoadingSpinner 
-      :isLoading="store.isLoading.games" 
-    />
+
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -38,31 +35,38 @@
     <!-- All Games Section -->
     <section class="games-section">
       <div class="container">
-        <!-- 分类Tab -->
-        <div class="category-tabs">
-          <button 
-            class="tab-button active" 
-            :class="{ active: activeCategory === 'all' }"
-            @click="setActiveCategory('all')"
-          >
-            All Games
-          </button>
-          <button 
-            v-for="category in uniqueCategories" 
-            :key="category"
-            class="tab-button" 
-            :class="{ active: activeCategory === category }"
-            @click="setActiveCategory(category)"
-          >
-            {{ category }}
-          </button>
+        <!-- Loading State - 等待所有数据加载完成 -->
+        <div v-if="!isDataReady" class="loading-section">
+          <div class="loading-text">Loading...</div>
         </div>
 
-        <MediaList 
-          type="games"
-          :data="filteredGames"
-          :show-more-button="false"
-        />
+        <!-- 数据加载完成后的内容 -->
+        <div v-else>
+          <!-- 分类Tab -->
+          <div class="category-tabs">
+            <button 
+              v-for="category in categories" 
+              :key="category.id"
+              class="tab-button" 
+              :class="{ active: activeCategory === category.name }"
+              @click="setActiveCategory(category.name)"
+            >
+              {{ category.display_name }}
+            </button>
+          </div>
+
+          <div v-if="filteredGames.length === 0" class="empty-state">
+            <h3>No Content Available</h3>
+            <p>No games found in category "{{ getCategoryDisplayName(activeCategory) }}"</p>
+          </div>
+          
+          <MediaList 
+            v-else
+            type="games"
+            :data="filteredGames"
+            :show-more-button="false"
+          />
+        </div>
       </div>
     </section>
 
@@ -76,18 +80,18 @@ import { ref, computed, onMounted } from 'vue'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import MediaList from '@/components/MediaList.vue'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
+
 import { useEasterEggsStore } from '@/stores/easterEggs.js'
 
 const store = useEasterEggsStore()
-const activeCategory = ref('all')
+const activeCategory = ref('')
 
 // 使用store中的数据
 const gamesList = computed(() => store.games)
-const uniqueCategories = computed(() => store.classifications.games)
+const categories = computed(() => store.classifications.games)
 
 const filteredGames = computed(() => {
-  if (activeCategory.value === 'all') return gamesList.value
+  if (!activeCategory.value) return gamesList.value
   return gamesList.value.filter(game => game.classify && game.classify.includes(activeCategory.value))
 })
 
@@ -95,10 +99,33 @@ const setActiveCategory = (category) => {
   activeCategory.value = category
 }
 
+// 获取分类显示名称
+const getCategoryDisplayName = (categoryName) => {
+  if (!categoryName) return ''
+  const category = categories.value.find(cat => cat.name === categoryName)
+  return category ? category.display_name : categoryName
+}
+
+const isDataReady = computed(() => {
+  return store.areDataTypesLoaded(['games', 'categories'])
+})
+
 onMounted(async () => {
-  // 使用store统一获取数据
-  await store.fetchGames()
-  await store.fetchClassifications('games')
+  // 等待数据预加载完成
+  const waitForData = () => {
+    if (store.areDataTypesLoaded(['games', 'categories'])) {
+      // 数据已加载，设置第一个分类为默认选中
+      if (categories.value.length > 0) {
+        activeCategory.value = categories.value[0].name
+      }
+      console.log('VideoGamesView 数据加载完成')
+    } else {
+      // 使用更短的轮询间隔，提高响应速度
+      setTimeout(waitForData, 50)
+    }
+  }
+  
+  waitForData()
 })
 </script>
 
@@ -449,5 +476,26 @@ onMounted(async () => {
     grid-template-columns: 1fr;
     gap: 24px;
   }
+}
+
+/* 空状态样式 */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #a0a0a0;
+}
+
+.empty-state h3 {
+  margin-bottom: 16px;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #a0a0a0;
 }
 </style>

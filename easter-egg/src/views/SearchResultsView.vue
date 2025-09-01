@@ -3,10 +3,7 @@
     <!-- Header Component -->
     <Header />
 
-    <!-- Loading State -->
-    <LoadingSpinner 
-      :isLoading="store.isLoading.search" 
-    />
+
 
     <!-- Search Results Section -->
     <section class="search-results-section">
@@ -22,9 +19,8 @@
         </div>
 
         <!-- Loading State -->
-  <div v-if="isLoading" class="loading-section">
-          <div class="loading-spinner"></div>
-          <p>Searching for easter eggs...</p>
+        <div v-if="store.isLoading.search" class="loading-section">
+          <div class="loading-text">Loading...</div>
         </div>
 
         <!-- Error State -->
@@ -35,28 +31,7 @@
 
   <!-- Search Results -->
   <div v-else-if="Array.isArray(searchResults) ? searchResults.length > 0 : searchResults && searchResults.value && searchResults.value.length > 0" class="search-results">
-          <!-- Filters -->
-          <div class="search-filters">
-            <div class="filter-group">
-              <label>Media Type:</label>
-              <select v-model="selectedMediaType" @change="applyFilters">
-                <option value="">All Types</option>
-                <option value="game">Games</option>
-                <option value="movie">Movies</option>
-                <option value="tv">TV Shows</option>
-                <!-- News 相关选项已移除 -->
-              </select>
-            </div>
-            
-            <div class="filter-group">
-              <label>Sort By:</label>
-              <select v-model="sortBy" @change="applyFilters">
-                <option value="relevance">Relevance</option>
-                <option value="date">Date</option>
-                <option value="title">Title</option>
-              </select>
-            </div>
-          </div>
+
 
           <!-- Results Grid -->
           <div class="results-grid">
@@ -142,7 +117,7 @@ import { useEasterEggsStore } from '@/stores/easterEggs.js'
 import { dataUtils } from '@/config/dataStructure.js'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
+
 
 // 日期格式化函数
 const formatDate = (dateString) => {
@@ -161,9 +136,7 @@ const router = useRouter()
 // 使用状态管理
 const store = useEasterEggsStore()
 
-// 响应式数据
-const selectedMediaType = ref('')
-const sortBy = ref('relevance')
+
 
 // 计算属性 - 从store获取
 const searchQuery = computed(() => route.query.q || '')
@@ -176,32 +149,10 @@ const hasError = computed(() => store.errors.search)
 // 执行搜索
 const performSearch = async () => {
   if (!searchQuery.value) return
-  
-  const params = {}
-  if (selectedMediaType.value) {
-    params.mediaType = selectedMediaType.value
-  }
-  if (sortBy.value !== 'relevance') {
-    params.sort = sortBy.value
-  }
-  
-  await store.performSearch(searchQuery.value, params)
+  await store.performSearch(searchQuery.value, {})
 }
 
-// 应用过滤器
-const applyFilters = async () => {
-  if (!searchQuery.value) return
-  
-  const params = {}
-  if (selectedMediaType.value) {
-    params.mediaType = selectedMediaType.value
-  }
-  if (sortBy.value !== 'relevance') {
-    params.sort = sortBy.value
-  }
-  
-  await store.performSearch(searchQuery.value, params)
-}
+
 
 // 获取媒体类型 - 使用统一的数据工具函数
 const getMediaType = (item) => {
@@ -219,13 +170,6 @@ const changePage = async (page) => {
   if (!searchQuery.value) return
   
   const params = { page }
-  if (selectedMediaType.value) {
-    params.mediaType = selectedMediaType.value
-  }
-  if (sortBy.value !== 'relevance') {
-    params.sort = sortBy.value
-  }
-  
   await store.performSearch(searchQuery.value, params)
   
   // 更新URL参数
@@ -240,10 +184,22 @@ const goToDetail = (item) => {
     // 获取媒体类型
     const type = getMediaType(item)
     
-    // 获取 addressBar
-    const addressBar = item.address_bar || item.addressBar || 
-      (item.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 
-      item.id?.toString()
+    // 获取 addressBar - 优先使用现有的addressBar字段
+    let addressBar = item.addressBar || item.address_bar
+    
+    // 如果没有addressBar，尝试从title生成
+    if (!addressBar && item.title) {
+      addressBar = item.title
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]+/g, '') // 移除特殊字符
+        .replace(/\s+/g, '-') // 空格替换为连字符
+        .replace(/^-+|-+$/g, '') // 移除首尾连字符
+    }
+    
+    // 如果还是没有，使用ID
+    if (!addressBar && item.id) {
+      addressBar = item.id.toString()
+    }
     
     if (!addressBar) {
       console.error('No valid addressBar available:', item)
@@ -252,12 +208,12 @@ const goToDetail = (item) => {
     
     // 根据类型构建路径
     const path = `/${type}/${addressBar}`
-    console.log('Navigating to:', path)
+    console.log('Navigating to:', path, 'for item:', item)
     
     // 使用路径导航
     router.push(path)
   } catch (error) {
-    console.error('Navigation error:', error)
+    console.error('Navigation error:', error, 'for item:', item)
   }
 }
 
@@ -323,34 +279,7 @@ onMounted(() => {
   color: #a0a0a0;
 }
 
-/* Search Filters */
-.search-filters {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 40px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
 
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.filter-group label {
-  font-weight: 600;
-  color: #d1d5db;
-}
-
-.filter-group select {
-  padding: 8px 16px;
-  border: 1px solid #374151;
-  border-radius: 6px;
-  background: #1f2937;
-  color: #f5f5f5;
-  font-size: 14px;
-}
 
 /* Results Grid */
 .results-grid {
@@ -541,14 +470,7 @@ onMounted(() => {
 }
 
 /* Loading and Error States */
-.loading-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 20px;
-  color: #f5f5f5;
-}
+
 
 .loading-spinner {
   width: 50px;

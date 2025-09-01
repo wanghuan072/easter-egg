@@ -14,7 +14,7 @@
               :src="item.imageUrl"
               :alt="item.imageAlt"
             />
-            <div class="media-category">{{ item.label }}</div>
+            <div class="media-category">{{ Array.isArray(item.label) ? item.label[0] : item.label }}</div>
           </div>
           <div class="media-content">
             <h3 class="media-title">{{ item.title }}</h3>
@@ -115,7 +115,6 @@ const goToDetail = (item) => {
 
 <style scoped>
 .media-section {
-  padding: 80px 0;
   background-color: #0f172a;
 }
 
@@ -174,7 +173,7 @@ const goToDetail = (item) => {
 }
 
 .media-content {
-  padding: 24px;
+  padding: 20px;
 }
 
 .media-title {

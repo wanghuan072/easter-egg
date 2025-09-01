@@ -4,18 +4,30 @@
       <!-- 左侧导航栏 -->
       <AdminSidebar 
         :activeModule="activeModule" 
-        @change-module="handleModuleChange" 
+        @change-module="handleModuleChange"
       />
       
       <!-- 右侧内容区域 -->
       <div class="admin-content">
-        <component 
-          :is="currentComponent" 
-          :content-type="activeModule"
-          @edit-content="handleEditContent"
-          @delete-content="handleDeleteContent"
-        />
+        <!-- 主要内容区域 -->
+        <div v-if="activeModule !== 'reviews' && activeModule !== 'categories'" class="main-content-area">
+          <component 
+            :is="currentComponent" 
+            :content-type="activeModule"
+            @edit-content="handleEditContent"
+            @delete-content="handleDeleteContent"
+          />
+        </div>
 
+        <!-- 分类管理区域 -->
+        <div v-if="activeModule === 'categories'" class="rating-comments-section">
+          <CategoriesManagement />
+        </div>
+
+        <!-- 评价管理区域 -->
+        <div v-if="activeModule === 'reviews'" class="rating-comments-section">
+          <ReviewsManagement />
+        </div>
       </div>
     </div>
 
@@ -24,6 +36,7 @@
       v-if="showForm"
       :content-type="formContentType"
       :edit-data="editData"
+      :is-submitting="isFormSubmitting"
       @close="closeForm"
       @save="handleSaveContent"
     />
@@ -37,6 +50,8 @@ import { getApiUrl } from '@/config/env.js'
 import AdminSidebar from './AdminSidebar.vue'
 import ContentForm from './ContentForm.vue'
 import UnifiedContentManagement from '@/views/admin/UnifiedContentManagement.vue'
+import CategoriesManagement from '@/views/admin/CategoriesManagement.vue'
+import ReviewsManagement from '@/views/admin/ReviewsManagement.vue'
 
 const router = useRouter()
 
@@ -47,6 +62,9 @@ const activeModule = ref('games')
 const showForm = ref(false)
 const formContentType = ref('')
 const editData = ref(null)
+const isFormSubmitting = ref(false)
+
+
 
 // 组件映射 - 使用统一的组件
 const componentMap = {
@@ -56,17 +74,15 @@ const componentMap = {
   news: UnifiedContentManagement
 }
 
-// 当前显示的组件 - 统一使用UnifiedContentManagement
+// 当前显示的组件 - 根据模块动态选择
 const currentComponent = computed(() => {
-  return UnifiedContentManagement
+  return componentMap[activeModule.value] || UnifiedContentManagement
 })
 
 // 处理模块切换
 const handleModuleChange = (module) => {
   activeModule.value = module
 }
-
-
 
 // 处理编辑内容
 const handleEditContent = (data) => {
@@ -117,16 +133,12 @@ const handleDeleteContent = async (id) => {
   }
 }
 
-
-
 // 处理保存内容
 const handleSaveContent = async (data) => {
+  isFormSubmitting.value = true
   try {
     const token = localStorage.getItem('admin_token')
 
-
-
-    
     if (!token) {
       alert('请先登录')
       return
@@ -170,6 +182,8 @@ const handleSaveContent = async (data) => {
   } catch (error) {
     console.error('保存失败:', error)
     alert(`保存失败: ${error.message}`)
+  } finally {
+    isFormSubmitting.value = false
   }
 }
 
@@ -178,6 +192,7 @@ const closeForm = () => {
   showForm.value = false
   editData.value = null
   formContentType.value = ''
+  isFormSubmitting.value = false
 }
 
 // 检查认证状态
@@ -206,6 +221,23 @@ onMounted(() => {
   padding: 20px;
   overflow-y: auto;
 }
+
+/* 主要内容区域样式 */
+.main-content-area {
+  width: 100%;
+}
+
+/* 评分评论管理区域样式 */
+.rating-comments-section {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+
 
 /* 响应式设计 */
 @media (max-width: 768px) {

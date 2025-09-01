@@ -127,17 +127,27 @@ export const dataUtils = {
       }
     }
 
-    // 其次使用 label 字段
+    // 其次使用 label 字段（可能是数组或字符串）
     if (item.label) {
-      switch (item.label.toUpperCase()) {
-        case DATA_STRUCTURE.LABELS.GAME:
-          return DATA_STRUCTURE.MEDIA_TYPES.GAMES
-        case DATA_STRUCTURE.LABELS.MOVIE:
-          return DATA_STRUCTURE.MEDIA_TYPES.MOVIES
-        case DATA_STRUCTURE.LABELS.TV:
-          return DATA_STRUCTURE.MEDIA_TYPES.TV
-        case DATA_STRUCTURE.LABELS.NEWS:
-          return DATA_STRUCTURE.MEDIA_TYPES.NEWS
+      let labelValue = item.label
+      
+      // 如果 label 是数组，取第一个元素
+      if (Array.isArray(labelValue)) {
+        labelValue = labelValue[0]
+      }
+      
+      // 确保 labelValue 是字符串
+      if (typeof labelValue === 'string') {
+        switch (labelValue.toUpperCase()) {
+          case DATA_STRUCTURE.LABELS.GAME:
+            return DATA_STRUCTURE.MEDIA_TYPES.GAMES
+          case DATA_STRUCTURE.LABELS.MOVIE:
+            return DATA_STRUCTURE.MEDIA_TYPES.MOVIES
+          case DATA_STRUCTURE.LABELS.TV:
+            return DATA_STRUCTURE.MEDIA_TYPES.TV
+          case DATA_STRUCTURE.LABELS.NEWS:
+            return DATA_STRUCTURE.MEDIA_TYPES.NEWS
+        }
       }
     }
 
@@ -192,3 +202,4 @@ export const dataUtils = {
 }
 
 export default DATA_STRUCTURE
+

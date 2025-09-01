@@ -64,7 +64,7 @@
             class="login-button"
             :disabled="isLoading"
           >
-            <span v-if="isLoading">登录中...</span>
+            <span v-if="isLoading">上传中...</span>
             <span v-else>登录</span>
           </button>
         </form>
@@ -84,9 +84,11 @@
 import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getApiUrl } from '@/config/env.js'
+import { useEasterEggsStore } from '@/stores/easterEggs.js'
 
 const router = useRouter()
 const route = useRoute()
+const store = useEasterEggsStore()
 
 // 表单数据
 const formData = reactive({
@@ -127,6 +129,11 @@ const handleLogin = async () => {
       // 登录成功，存储token和用户信息
       localStorage.setItem('admin_token', data.data.token)
       localStorage.setItem('admin_user', data.data.user.username)
+      
+      // 更新store中的认证状态
+      store.auth.isAuthenticated = true
+      store.auth.user = data.data.user
+      store.auth.token = data.data.token
       
       // 检查是否有重定向路径
       const redirectPath = route.query.redirect || '/admin/dashboard'

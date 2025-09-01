@@ -13,6 +13,10 @@ import tvRoutes from './routes/tv.js';
 import newsRoutes from './routes/news.js';
 import searchRoutes from './routes/search.js';
 import authRoutes from './routes/auth.js';
+import categoriesRoutes from './routes/categories.js';
+import reviewsRoutes from './routes/reviews.js';
+import ratingsRoutes from './routes/ratings.js';
+import commentsRoutes from './routes/comments.js';
 
 // Database connection will be added later when migrating to Neon
 
@@ -43,12 +47,12 @@ const limiter = rateLimit({
   skip: (req) => process.env.NODE_ENV === 'development' && process.env.DISABLE_RATE_LIMIT === 'true'
 });
 
-// 只在非开发环境或未禁用时应用限流
-if (process.env.NODE_ENV !== 'development' || process.env.DISABLE_RATE_LIMIT !== 'true') {
+// 在开发环境下直接禁用限流
+if (process.env.NODE_ENV === 'development') {
+  console.log('⚠️ Rate limiting disabled for development');
+} else {
   app.use(limiter);
   console.log('🔒 Rate limiting enabled');
-} else {
-  console.log('⚠️ Rate limiting disabled for development');
 }
 
 // Compression middleware
@@ -73,11 +77,15 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoriesRoutes);
+app.use('/api/reviews', reviewsRoutes);
 app.use('/api/games', gamesRoutes);
 app.use('/api/movies', moviesRoutes);
 app.use('/api/tv', tvRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/ratings', ratingsRoutes);
+app.use('/api/comments', commentsRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
