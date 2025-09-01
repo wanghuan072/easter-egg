@@ -16,11 +16,11 @@ onMounted(async () => {
   try {
     // 检查认证状态
     store.checkAuth()
-    
+
     // 预加载数据以提高性能
     console.log('开始预加载数据...')
     await store.preloadData()
-    
+
     // 标记初始化完成
     isInitialized.value = true
     console.log('应用初始化完成，所有数据已加载')
@@ -40,7 +40,7 @@ onMounted(async () => {
   box-sizing: border-box;
 }
 
-.container{
+.container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 10px;
@@ -69,7 +69,7 @@ onMounted(async () => {
     max-width: 100%;
     padding: 0 20px;
   }
-  
+
   .loading-section {
     padding: 30px 15px;
     margin: 15px 0;
@@ -81,7 +81,7 @@ onMounted(async () => {
   .container {
     padding: 0 10px;
   }
-  
+
   .loading-section {
     padding: 20px 10px;
     margin: 10px 0;
