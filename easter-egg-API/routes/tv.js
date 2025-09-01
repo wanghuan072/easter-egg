@@ -143,4 +143,149 @@ router.get('/classifications/all', async (req, res) => {
   }
 });
 
+// JWT 认证中间件
+const verifyToken = (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      return sendError(res, 'Access token required', 401);
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return sendError(res, 'Invalid or expired token', 401);
+  }
+};
+
+// Create new TV show
+router.post('/', verifyToken, async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      publish_date,
+      is_latest,
+      is_home,
+      label,
+      classify,
+      image_url,
+      image_alt,
+      address_bar,
+      iframe_url,
+      seo_title,
+      seo_description,
+      seo_keywords,
+      details_html
+    } = req.body;
+
+    // 验证必填字段
+    if (!title || !description || !address_bar) {
+      return sendError(res, 'Missing required fields', 400);
+    }
+
+    // 检查address_bar是否已存在
+    const existingTv = await query(
+      `SELECT id FROM ${DATA_STRUCTURE.TABLES.TV} WHERE address_bar = $1`,
+      [address_bar]
+    );
+
+    if (existingTv.rows.length > 0) {
+      return sendError(res, 'Address bar already exists', 400);
+    }
+
+    const result = await query(
+      `INSERT INTO ${DATA_STRUCTURE.TABLES.TV} (
+        title, description, publish_date, is_latest, is_home, label, classify,
+        image_url, image_alt, address_bar, iframe_url, seo_title, seo_description,
+        seo_keywords, details_html, created_by, updated_by
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING *`,
+      [
+        title, description, publish_date || new Date().toISOString().split('T')[0], is_latest || false, is_home || false,
+        label, classify || [], image_url, image_alt, address_bar, iframe_url,
+        seo_title, seo_description, seo_keywords, details_html, req.user.id || 1, req.user.id || 1
+      ]
+    );
+
+    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    sendResponse(res, transformedData, null, 'TV show created successfully');
+  } catch (error) {
+    console.error('Error creating TV show:', error);
+    sendError(res, 'Failed to create TV show');
+  }
+});
+
+// Update TV show
+router.put('/:id', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      title,
+      description,
+      publish_date,
+      is_latest,
+      is_home,
+      label,
+      classify,
+      image_url,
+      image_alt,
+      iframe_url,
+      seo_title,
+      seo_description,
+      seo_keywords,
+      details_html
+    } = req.body;
+
+    // 验证必填字段
+    if (!title || !description) {
+      return sendError(res, 'Missing required fields', 400);
+    }
+
+    const result = await query(
+      `UPDATE ${DATA_STRUCTURE.TABLES.TV} SET
+        title = $1, description = $2, publish_date = $3, is_latest = $4, is_home = $5,
+        label = $6, classify = $7, image_url = $8, image_alt = $9, iframe_url = $10,
+        seo_title = $11, seo_description = $12, seo_keywords = $13, details_html = $14,
+        updated_by = $15, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $16 RETURNING *`,
+      [
+        title, description, publish_date, is_latest || false, is_home || false,
+        label, classify || [], image_url, image_alt, iframe_url,
+        seo_title, seo_description, seo_keywords, details_html, req.user.id || 1, id
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      return sendError(res, 'TV show not found', 404);
+    }
+
+    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    sendResponse(res, transformedData, null, 'TV show updated successfully');
+  } catch (error) {
+    console.error('Error updating TV show:', error);
+    sendError(res, 'Failed to update TV show');
+  }
+});
+
+// Delete TV show
+router.delete('/:id', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await query(
+      `DELETE FROM ${DATA_STRUCTURE.TABLES.TV} WHERE id = $1 RETURNING id`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return sendError(res, 'TV show not found', 404);
+    }
+
+    sendResponse(res, { id: parseInt(id) }, null, 'TV show deleted successfully');
+  } catch (error) {
+    console.error('Error deleting TV show:', error);
+    sendError(res, 'Failed to delete TV show');
+  }
+});
+
 export default router;
