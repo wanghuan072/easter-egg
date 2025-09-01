@@ -140,18 +140,25 @@ router.get('/home', async (req, res) => {
 router.get('/latest', async (req, res) => {
   try {
     const { limit = 8 } = req.query;
+    const limitNum = Math.min(parseInt(limit), DATA_STRUCTURE.PAGINATION.MAX_LIMIT);
+    
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+    
     const result = await pool.query(
-      'SELECT * FROM egg_movies WHERE is_latest = true ORDER BY publish_date DESC LIMIT $1',
-      [limit]
+      `SELECT * FROM ${DATA_STRUCTURE.TABLES.MOVIES} WHERE is_latest = true ORDER BY publish_date DESC LIMIT $1`,
+      [limitNum]
     );
     
-    // 转换数据格式
     const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
-    
-    res.json({ success: true, data: transformedData });
+    sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching latest movies:', error);
-    res.status(500).json({ success: false, error: 'Failed to fetch latest movies' });
+    sendError(res, 'Failed to fetch latest movies');
   }
 });
 

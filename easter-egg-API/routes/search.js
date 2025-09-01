@@ -1,123 +1,164 @@
-
 import express from 'express';
-import { Pool } from 'pg';
-import { transformData } from '../config/dataStructure.js';
+import { query } from '../config/database.js';
+import { DATA_STRUCTURE, transformData } from '../config/dataStructure.js';
 
 const router = express.Router();
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+
+// 统一响应格式
+const sendResponse = (res, data, pagination = null, message = '') => {
+  const response = {
+    success: true,
+    data: data,
+    pagination: pagination,
+    message: message
+  };
+  res.json(response);
+};
+
+const sendError = (res, error, status = 500) => {
+  const response = {
+    success: false,
+    error: error.message || error,
+    message: 'Request failed'
+  };
+  res.status(status).json(response);
+};
 
 // 全表联合模糊搜索
 router.get('/', async (req, res) => {
   try {
-    const { q: query, page = 1, limit = 20, mediaType, classify } = req.query;
-    if (!query) {
-      return res.status(400).json({ success: false, error: 'Search query is required' });
+    const { q: searchQuery, page = 1, limit = 20, mediaType, classify } = req.query;
+    if (!searchQuery) {
+      return sendError(res, 'Search query is required', 400);
     }
     
-    // 检查数据库连接
-    if (!process.env.DATABASE_URL) {
-      console.error('DATABASE_URL not configured');
-      return res.status(500).json({ success: false, error: 'Database not configured' });
-    }
-    
-    const offset = (page - 1) * limit;
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(parseInt(limit), DATA_STRUCTURE.PAGINATION.MAX_LIMIT);
+    const offset = (pageNum - 1) * limitNum;
     let results = [];
 
-    // 构建 SQL 查询 - 修复字段名和添加label字段
-    const gamesSql = `SELECT id, title, description, publish_date, classify, image_url AS "imageUrl", address_bar AS "addressBar", 'games' AS "mediaType", label FROM egg_games WHERE title ILIKE $1 OR description ILIKE $1`;
-    const moviesSql = `SELECT id, title, description, publish_date, classify, image_url AS "imageUrl", address_bar AS "addressBar", 'movies' AS "mediaType", label FROM egg_movies WHERE title ILIKE $1 OR description ILIKE $1`;
-    const tvSql = `SELECT id, title, description, publish_date, classify, image_url AS "imageUrl", address_bar AS "addressBar", 'tv' AS "mediaType", label FROM egg_tv WHERE title ILIKE $1 OR description ILIKE $1`;
+    // 构建 SQL 查询
+    const gamesSql = `SELECT id, title, description, publish_date, classify, image_url, address_bar, 'games' AS media_type, label FROM ${DATA_STRUCTURE.TABLES.GAMES} WHERE title ILIKE $1 OR description ILIKE $1`;
+    const moviesSql = `SELECT id, title, description, publish_date, classify, image_url, address_bar, 'movies' AS media_type, label FROM ${DATA_STRUCTURE.TABLES.MOVIES} WHERE title ILIKE $1 OR description ILIKE $1`;
+    const tvSql = `SELECT id, title, description, publish_date, classify, image_url, address_bar, 'tv' AS media_type, label FROM ${DATA_STRUCTURE.TABLES.TV} WHERE title ILIKE $1 OR description ILIKE $1`;
 
-    const searchParam = `%${query}%`;
+    const searchParam = `%${searchQuery}%`;
     const [gamesRes, moviesRes, tvRes] = await Promise.all([
-      pool.query(gamesSql, [searchParam]),
-      pool.query(moviesSql, [searchParam]),
-      pool.query(tvSql, [searchParam])
+      query(gamesSql, [searchParam]),
+      query(moviesSql, [searchParam]),
+      query(tvSql, [searchParam])
     ]);
+    
     results = [
       ...gamesRes.rows,
       ...moviesRes.rows,
       ...tvRes.rows
     ];
 
-    // 可选：按 mediaType/classify 过滤
+    // 按 mediaType 过滤
     if (mediaType) {
       const types = mediaType.split(',');
-      results = results.filter(item => types.includes(item.mediaType));
+      results = results.filter(item => types.includes(item.media_type));
     }
+
+    // 按 classify 过滤
     if (classify) {
       const classifications = classify.split(',');
-      results = results.filter(item =>
-        item.classify && classifications.some(cat => item.classify.includes(cat))
+      results = results.filter(item => 
+        item.classify && item.classify.some(c => classifications.includes(c))
       );
     }
 
-    // 按标题匹配度排序
+    // 按相关性排序（标题匹配优先）
     results.sort((a, b) => {
-      const aTitleMatch = a.title.toLowerCase().includes(query.toLowerCase());
-      const bTitleMatch = b.title.toLowerCase().includes(query.toLowerCase());
-      if (aTitleMatch && !bTitleMatch) return -1;
-      if (!aTitleMatch && bTitleMatch) return 1;
+      const aTitle = a.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const bTitle = b.title.toLowerCase().includes(searchQuery.toLowerCase());
+      if (aTitle && !bTitle) return -1;
+      if (!aTitle && bTitle) return 1;
       return new Date(b.publish_date) - new Date(a.publish_date);
     });
 
+    // 分页
     const total = results.length;
-    const paginatedData = results.slice(offset, offset + parseInt(limit));
+    const paginatedResults = results.slice(offset, offset + limitNum);
+    
+    // 转换数据格式
+    const transformedData = paginatedResults.map(row => transformData.dbToFrontend(row));
 
-    // 对搜索结果进行数据转换，确保字段名一致
-    const transformedData = paginatedData.map(item => {
-      // 为缺少label字段的记录提供默认值
-      if (!item.label) {
-        if (item.mediaType === 'movies') {
-          item.label = ['MOVIE']
-        } else if (item.mediaType === 'games') {
-          item.label = ['GAME']
-        } else if (item.mediaType === 'tv') {
-          item.label = ['TV']
-        }
-      }
-      
-      // 确保字段名与transformData.dbToFrontend期望的一致
-      const normalizedItem = {
-        ...item,
-        address_bar: item.addressBar, // 将addressBar映射到address_bar
-        media_type: item.mediaType,   // 将mediaType映射到media_type
-        image_url: item.imageUrl      // 将imageUrl映射到image_url
-      }
-      
-      return transformData.dbToFrontend(normalizedItem)
-    });
+    const pagination = {
+      page: pageNum,
+      limit: limitNum,
+      total: total,
+      pages: Math.ceil(total / limitNum)
+    };
 
-    res.json({
-      success: true,
-      data: transformedData,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      },
-      searchInfo: {
-        query,
-        mediaType: mediaType || 'all',
-        classify: classify || 'all'
-      }
-    });
+    sendResponse(res, transformedData, pagination);
   } catch (error) {
-    console.error('Error performing search:', error);
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack,
-      code: error.code
-    });
-    res.status(500).json({ 
-      success: false, 
-      error: 'Search failed',
-      details: error.message 
-    });
+    console.error('Search error:', error);
+    sendError(res, 'Search failed');
+  }
+});
+
+// 搜索建议
+router.get('/suggestions', async (req, res) => {
+  try {
+    const { q: searchQuery, limit = 5 } = req.query;
+    if (!searchQuery) {
+      return sendResponse(res, []);
+    }
+
+    const limitNum = Math.min(parseInt(limit), 10);
+    const searchParam = `%${searchQuery}%`;
+
+    // 从所有表中获取标题建议
+    const gamesSql = `SELECT DISTINCT title FROM ${DATA_STRUCTURE.TABLES.GAMES} WHERE title ILIKE $1 LIMIT $2`;
+    const moviesSql = `SELECT DISTINCT title FROM ${DATA_STRUCTURE.TABLES.MOVIES} WHERE title ILIKE $1 LIMIT $2`;
+    const tvSql = `SELECT DISTINCT title FROM ${DATA_STRUCTURE.TABLES.TV} WHERE title ILIKE $1 LIMIT $2`;
+
+    const [gamesRes, moviesRes, tvRes] = await Promise.all([
+      query(gamesSql, [searchParam, limitNum]),
+      query(moviesSql, [searchParam, limitNum]),
+      query(tvSql, [searchParam, limitNum])
+    ]);
+
+    const suggestions = [
+      ...gamesRes.rows.map(row => row.title),
+      ...moviesRes.rows.map(row => row.title),
+      ...tvRes.rows.map(row => row.title)
+    ];
+
+    // 去重并限制数量
+    const uniqueSuggestions = [...new Set(suggestions)].slice(0, limitNum);
+
+    sendResponse(res, uniqueSuggestions);
+  } catch (error) {
+    console.error('Suggestions error:', error);
+    sendError(res, 'Failed to get suggestions');
+  }
+});
+
+// 搜索统计
+router.get('/stats', async (req, res) => {
+  try {
+    const [gamesCount, moviesCount, tvCount, newsCount] = await Promise.all([
+      query(`SELECT COUNT(*) FROM ${DATA_STRUCTURE.TABLES.GAMES}`),
+      query(`SELECT COUNT(*) FROM ${DATA_STRUCTURE.TABLES.MOVIES}`),
+      query(`SELECT COUNT(*) FROM ${DATA_STRUCTURE.TABLES.TV}`),
+      query(`SELECT COUNT(*) FROM ${DATA_STRUCTURE.TABLES.NEWS}`)
+    ]);
+
+    const stats = {
+      games: parseInt(gamesCount.rows[0].count),
+      movies: parseInt(moviesCount.rows[0].count),
+      tv: parseInt(tvCount.rows[0].count),
+      news: parseInt(newsCount.rows[0].count),
+      total: parseInt(gamesCount.rows[0].count) + parseInt(moviesCount.rows[0].count) + parseInt(tvCount.rows[0].count) + parseInt(newsCount.rows[0].count)
+    };
+
+    sendResponse(res, stats);
+  } catch (error) {
+    console.error('Stats error:', error);
+    sendError(res, 'Failed to get stats');
   }
 });
 
