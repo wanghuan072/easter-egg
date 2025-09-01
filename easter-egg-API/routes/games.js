@@ -4,10 +4,22 @@ import { Pool } from 'pg';
 import { DATA_STRUCTURE, transformData, validateData } from '../config/dataStructure.js';
 
 const router = express.Router();
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+
+// 创建数据库连接池（如果环境变量存在）
+let pool = null;
+try {
+  if (process.env.DATABASE_URL) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    });
+    console.log('Database pool created successfully');
+  } else {
+    console.log('No DATABASE_URL found');
+  }
+} catch (error) {
+  console.error('Failed to create database pool:', error);
+}
 
 // 统一响应格式
 const sendResponse = (res, data, pagination = null, message = '') => {
@@ -29,12 +41,32 @@ const sendError = (res, error, status = 500) => {
   res.status(status).json(response);
 };
 
+// 检查数据库连接
+const checkDatabaseConnection = async () => {
+  if (!pool) return false;
+  try {
+    const client = await pool.connect();
+    await client.query('SELECT 1');
+    client.release();
+    return true;
+  } catch (error) {
+    console.error('Database connection check failed:', error);
+    return false;
+  }
+};
+
 // Get all games from database
 router.get('/', async (req, res) => {
   try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     const { page = DATA_STRUCTURE.PAGINATION.DEFAULT_PAGE, limit = DATA_STRUCTURE.PAGINATION.DEFAULT_LIMIT, search, classify } = req.query;
     
-    // 验证参数
     const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(parseInt(limit), DATA_STRUCTURE.PAGINATION.MAX_LIMIT);
     const offset = (pageNum - 1) * limitNum;
@@ -60,10 +92,8 @@ router.get('/', async (req, res) => {
 
     const result = await pool.query(query, params);
     
-    // 转换数据格式
     const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
     
-    // 计算分页信息
     const countQuery = `SELECT COUNT(*) FROM ${DATA_STRUCTURE.TABLES.GAMES}`;
     const countResult = await pool.query(countQuery);
     const total = parseInt(countResult.rows[0].count);
@@ -83,9 +113,16 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Get games for home page from database
+// Get games for home page
 router.get('/home', async (req, res) => {
   try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     const result = await pool.query(
       `SELECT * FROM ${DATA_STRUCTURE.TABLES.GAMES} WHERE is_home = true ORDER BY publish_date DESC LIMIT 6`
     );
@@ -207,6 +244,12 @@ router.post('/', async (req, res) => {
       details_html
     } = req.body;
 
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     // 验证必填字段
     if (!title || !description || !address_bar) {
       return sendError(res, 'Missing required fields', 400);
@@ -270,6 +313,12 @@ router.put('/:id', async (req, res) => {
       seo_keywords,
       details_html
     } = req.body;
+
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
 
     // 验证必填字段
     if (!title || !description) {

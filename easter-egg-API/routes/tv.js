@@ -1,20 +1,76 @@
 
 import express from 'express';
 import { Pool } from 'pg';
-import { transformData } from '../config/dataStructure.js';
+import { DATA_STRUCTURE, transformData, validateData } from '../config/dataStructure.js';
 
 const router = express.Router();
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
 
+// 创建数据库连接池（如果环境变量存在）
+let pool = null;
+try {
+  if (process.env.DATABASE_URL) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    });
+    console.log('Database pool created successfully');
+  } else {
+    console.log('No DATABASE_URL found');
+  }
+} catch (error) {
+  console.error('Failed to create database pool:', error);
+}
+
+// 统一响应格式
+const sendResponse = (res, data, pagination = null, message = '') => {
+  const response = {
+    success: true,
+    data: data,
+    pagination: pagination,
+    message: message
+  };
+  res.json(response);
+};
+
+const sendError = (res, error, status = 500) => {
+  const response = {
+    success: false,
+    error: error.message || error,
+    message: 'Request failed'
+  };
+  res.status(status).json(response);
+};
+
+// 检查数据库连接
+const checkDatabaseConnection = async () => {
+  if (!pool) return false;
+  try {
+    const client = await pool.connect();
+    await client.query('SELECT 1');
+    client.release();
+    return true;
+  } catch (error) {
+    console.error('Database connection check failed:', error);
+    return false;
+  }
+};
 
 // Get all TV shows from database
 router.get('/', async (req, res) => {
   try {
-    const { page = 1, limit = 10, search, classify } = req.query;
-    const offset = (page - 1) * limit;
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
+    const { page = DATA_STRUCTURE.PAGINATION.DEFAULT_PAGE, limit = DATA_STRUCTURE.PAGINATION.DEFAULT_LIMIT, search, classify } = req.query;
+    
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(parseInt(limit), DATA_STRUCTURE.PAGINATION.MAX_LIMIT);
+    const offset = (pageNum - 1) * limitNum;
+    
     let where = [];
     let params = [];
 
@@ -26,40 +82,56 @@ router.get('/', async (req, res) => {
       params.push(classify);
       where.push(`$${params.length} = ANY(classify)`);
     }
-    let query = 'SELECT * FROM egg_tv';
+    
+    let query = `SELECT * FROM ${DATA_STRUCTURE.TABLES.TV}`;
     if (where.length) {
       query += ' WHERE ' + where.join(' AND ');
     }
     query += ` ORDER BY publish_date DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-    params.push(limit, offset);
+    params.push(limitNum, offset);
 
     const result = await pool.query(query, params);
     
-    // 转换数据格式
     const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
     
-    res.json({ success: true, data: transformedData });
+    const countQuery = `SELECT COUNT(*) FROM ${DATA_STRUCTURE.TABLES.TV}`;
+    const countResult = await pool.query(countQuery);
+    const total = parseInt(countResult.rows[0].count);
+    const pages = Math.ceil(total / limitNum);
+    
+    const pagination = {
+      page: pageNum,
+      limit: limitNum,
+      total: total,
+      pages: pages
+    };
+    
+    sendResponse(res, transformedData, pagination);
   } catch (error) {
     console.error('Error fetching TV shows:', error);
-    res.status(500).json({ success: false, error: 'Failed to fetch TV shows' });
+    sendError(res, 'Failed to fetch TV shows');
   }
 });
 
-
-// Get TV shows for home page from database
+// Get TV shows for home page
 router.get('/home', async (req, res) => {
   try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     const result = await pool.query(
-      'SELECT * FROM egg_tv WHERE is_home = true ORDER BY publish_date DESC LIMIT 6'
+      `SELECT * FROM ${DATA_STRUCTURE.TABLES.TV} WHERE is_home = true ORDER BY publish_date DESC LIMIT 6`
     );
     
-    // 转换数据格式
     const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
-    
-    res.json({ success: true, data: transformedData });
+    sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching home TV shows:', error);
-    res.status(500).json({ success: false, error: 'Failed to fetch home TV shows' });
+    sendError(res, 'Failed to fetch home TV shows');
   }
 });
 

@@ -3,10 +3,22 @@ import { Pool } from 'pg';
 import { DATA_STRUCTURE, transformData, validateData } from '../config/dataStructure.js';
 
 const router = express.Router();
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+
+// 创建数据库连接池（如果环境变量存在）
+let pool = null;
+try {
+  if (process.env.DATABASE_URL) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    });
+    console.log('Database pool created successfully');
+  } else {
+    console.log('No DATABASE_URL found');
+  }
+} catch (error) {
+  console.error('Failed to create database pool:', error);
+}
 
 // 统一响应格式
 const sendResponse = (res, data, pagination = null, message = '') => {
@@ -28,9 +40,30 @@ const sendError = (res, error, status = 500) => {
   res.status(status).json(response);
 };
 
+// 检查数据库连接
+const checkDatabaseConnection = async () => {
+  if (!pool) return false;
+  try {
+    const client = await pool.connect();
+    await client.query('SELECT 1');
+    client.release();
+    return true;
+  } catch (error) {
+    console.error('Database connection check failed:', error);
+    return false;
+  }
+};
+
 // 获取所有新闻（分页、搜索、筛选）
 router.get('/', async (req, res) => {
   try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     const { page = DATA_STRUCTURE.PAGINATION.DEFAULT_PAGE, limit = DATA_STRUCTURE.PAGINATION.DEFAULT_LIMIT, search, classify } = req.query;
     
     // 验证参数
@@ -85,6 +118,13 @@ router.get('/', async (req, res) => {
 // 获取首页新闻
 router.get('/home', async (req, res) => {
   try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     const result = await pool.query(
       `SELECT * FROM ${DATA_STRUCTURE.TABLES.NEWS} WHERE is_home = true ORDER BY publish_date DESC LIMIT 6`
     );
@@ -97,9 +137,42 @@ router.get('/home', async (req, res) => {
   }
 });
 
+// 获取最新新闻
+router.get('/latest', async (req, res) => {
+  try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
+    const { limit = 8 } = req.query;
+    const limitNum = Math.min(parseInt(limit), DATA_STRUCTURE.PAGINATION.MAX_LIMIT);
+    
+    const result = await pool.query(
+      `SELECT * FROM ${DATA_STRUCTURE.TABLES.NEWS} WHERE is_latest = true ORDER BY publish_date DESC LIMIT $1`,
+      [limitNum]
+    );
+    
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    sendResponse(res, transformedData);
+  } catch (error) {
+    console.error('Error fetching latest news:', error);
+    sendError(res, 'Failed to fetch latest news');
+  }
+});
+
 // 根据地址栏获取新闻详情
 router.get('/:addressBar', async (req, res) => {
   try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     const { addressBar } = req.params;
     
     const result = await pool.query(
@@ -122,6 +195,13 @@ router.get('/:addressBar', async (req, res) => {
 // 获取新闻分类
 router.get('/classifications/all', async (req, res) => {
   try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     const result = await pool.query(
       `SELECT DISTINCT UNNEST(classify) AS classification FROM ${DATA_STRUCTURE.TABLES.NEWS} WHERE classify IS NOT NULL AND array_length(classify, 1) > 0`
     );
@@ -137,6 +217,13 @@ router.get('/classifications/all', async (req, res) => {
 // 创建新闻（需要认证）
 router.post('/', async (req, res) => {
   try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     const newsData = req.body;
     
     // 验证必需字段
@@ -189,6 +276,13 @@ router.post('/', async (req, res) => {
 // 更新新闻（需要认证）
 router.put('/:id', async (req, res) => {
   try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     const { id } = req.params;
     const updateData = req.body;
     
@@ -237,6 +331,13 @@ router.put('/:id', async (req, res) => {
 // 删除新闻（需要认证）
 router.delete('/:id', async (req, res) => {
   try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     const { id } = req.params;
     
     const result = await pool.query(
@@ -258,6 +359,13 @@ router.delete('/:id', async (req, res) => {
 // 批量更新新闻状态（首页显示、分类等）
 router.patch('/:id/status', async (req, res) => {
   try {
+    // 检查数据库连接
+    const dbConnected = await checkDatabaseConnection();
+    
+    if (!dbConnected) {
+      return sendError(res, 'Database connection not available', 503);
+    }
+
     const { id } = req.params;
     const { is_home, classify } = req.body;
     
