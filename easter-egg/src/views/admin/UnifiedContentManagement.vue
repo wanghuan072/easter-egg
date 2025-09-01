@@ -254,10 +254,16 @@ const handleDeleteContent = async (contentId) => {
   
   try {
     const token = localStorage.getItem('admin_token')
+    if (!token) {
+      alert('请先登录管理员账户')
+      return
+    }
+    
     const response = await fetch(getApiUrl(`${pageConfig.value.apiEndpoint}/${contentId}`), {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     })
     
@@ -265,23 +271,24 @@ const handleDeleteContent = async (contentId) => {
       // 从列表中移除
       contentList.value = contentList.value.filter(item => item.id !== contentId)
       
-      // 重新计算统计
-      stats.value = {
-        total: contentList.value.length,
-        home: contentList.value.filter(item => item.isHome).length,
-        latest: pageConfig.value.supportsLatest 
-          ? contentList.value.filter(item => item.isLatest).length 
-          : 0
-      }
-      
       // 发送刷新事件
       emit('refresh')
+      
+      alert(`${pageConfig.value.contentName}删除成功！`)
     } else {
-      alert('删除失败，请重试')
+      let errorMessage = '删除失败，请重试'
+      try {
+        const errorData = await response.json()
+        errorMessage = errorData.error || errorData.message || errorMessage
+      } catch (e) {
+        // 如果响应不是JSON格式，使用默认错误消息
+        console.warn('无法解析错误响应:', e)
+      }
+      alert(`删除失败：${errorMessage}`)
     }
   } catch (error) {
     console.error(`删除${pageConfig.value.contentName}错误:`, error)
-    alert('删除失败，请重试')
+    alert(`删除失败：${error.message || '网络错误，请重试'}`)
   }
 }
 
