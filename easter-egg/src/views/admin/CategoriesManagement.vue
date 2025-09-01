@@ -221,19 +221,30 @@ const submitForm = async () => {
       is_active: true // 默认启用
     }
     
+    let response
     if (showEditModal.value) {
       // 更新分类
-      await categoriesApi.update(editingCategory.value.id, submitData)
+      response = await categoriesApi.update(editingCategory.value.id, submitData)
     } else {
       // 创建分类
-      await categoriesApi.create(submitData)
+      response = await categoriesApi.create(submitData)
     }
     
-    // 刷新数据
-    await fetchCategories()
-    closeModal()
+    if (response.success) {
+      alert(showEditModal.value ? '分类更新成功' : '分类创建成功')
+      // 刷新数据
+      await fetchCategories()
+      closeModal()
+    } else {
+      alert(`操作失败: ${response.message || response.error}`)
+    }
   } catch (error) {
     console.error('Failed to submit form:', error)
+    if (error.message.includes('401')) {
+      alert('操作失败：请重新登录')
+    } else {
+      alert('操作失败，请重试')
+    }
   } finally {
     isSubmitting.value = false
   }
@@ -244,10 +255,20 @@ const deleteCategory = async (id) => {
   if (!confirm('确定要删除这个分类标签吗？删除后相关内容的分类信息可能会丢失。')) return
   
   try {
-    await categoriesApi.delete(id)
-    await fetchCategories()
+    const response = await categoriesApi.delete(id)
+    if (response.success) {
+      alert('分类删除成功')
+      await fetchCategories()
+    } else {
+      alert(`删除失败: ${response.message || response.error}`)
+    }
   } catch (error) {
     console.error('Failed to delete category:', error)
+    if (error.message.includes('401')) {
+      alert('删除失败：请重新登录')
+    } else {
+      alert('删除失败，请重试')
+    }
   }
 }
 

@@ -120,8 +120,12 @@ export const categoriesApi = {
   // 创建分类
   create: async (categoryData) => {
     const url = buildApiUrl('/categories');
+    const token = localStorage.getItem('admin_token');
     return await apiRequest(url, {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(categoryData)
     });
   },
@@ -129,8 +133,12 @@ export const categoriesApi = {
   // 更新分类
   update: async (id, categoryData) => {
     const url = buildApiUrl(`/categories/${id}`);
+    const token = localStorage.getItem('admin_token');
     return await apiRequest(url, {
       method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(categoryData)
     });
   },
@@ -138,16 +146,24 @@ export const categoriesApi = {
   // 删除分类
   delete: async (id) => {
     const url = buildApiUrl(`/categories/${id}`);
+    const token = localStorage.getItem('admin_token');
     return await apiRequest(url, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
   },
 
   // 批量更新排序
   updateSort: async (categories) => {
     const url = buildApiUrl('/categories/sort/batch');
+    const token = localStorage.getItem('admin_token');
     return await apiRequest(url, {
       method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ categories })
     });
   }
