@@ -188,3 +188,4 @@ test-*.mjs
 scripts/encrypt-password.js
 scripts/create-admin-table.sql
 scripts/README-database-setup.md
+.vercel
