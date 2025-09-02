@@ -88,14 +88,16 @@ router.get('/:mediaType', async (req, res) => {
 // 创建新分类
 router.post('/', verifyToken, async (req, res) => {
   try {
+    console.log('Received category data:', req.body); // 调试日志
     const { name, display_name, media_type, sort_order = 0, is_active = true } = req.body;
     
     // 验证必需字段
     if (!name || !display_name || !media_type) {
+      console.log('Validation failed:', { name, display_name, media_type }); // 调试日志
       return res.status(400).json({
         success: false,
         error: 'Missing required fields',
-        message: 'Name, display_name, and media_type are required'
+        message: `Name, display_name, and media_type are required. Received: name=${name}, display_name=${display_name}, media_type=${media_type}`
       });
     }
     

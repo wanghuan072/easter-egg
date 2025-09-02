@@ -124,6 +124,7 @@ export const categoriesApi = {
     return await apiRequest(url, {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(categoryData)
@@ -137,6 +138,7 @@ export const categoriesApi = {
     return await apiRequest(url, {
       method: 'PUT',
       headers: {
+        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(categoryData)

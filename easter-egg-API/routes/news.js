@@ -151,14 +151,12 @@ router.post('/', verifyToken, async (req, res) => {
       title,
       description,
       publish_date,
-      is_latest,
       is_home,
       label,
       classify,
       image_url,
       image_alt,
       address_bar,
-      iframe_url,
       seo_title,
       seo_description,
       seo_keywords,
@@ -167,7 +165,7 @@ router.post('/', verifyToken, async (req, res) => {
 
     // 验证必填字段
     if (!title || !description || !address_bar) {
-      return sendError(res, 'Missing required fields', 400);
+      return sendError(res, 'Missing required fields: title, description, address_bar', 400);
     }
 
     // 检查address_bar是否已存在
@@ -182,14 +180,26 @@ router.post('/', verifyToken, async (req, res) => {
 
     const result = await query(
       `INSERT INTO ${DATA_STRUCTURE.TABLES.NEWS} (
-        title, description, publish_date, is_latest, is_home, label, classify,
-        image_url, image_alt, address_bar, iframe_url, seo_title, seo_description,
+        title, description, publish_date, is_home, label, classify,
+        image_url, image_alt, address_bar, seo_title, seo_description,
         seo_keywords, details_html, created_by, updated_by
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING *`,
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`,
       [
-        title, description, publish_date || new Date().toISOString().split('T')[0], is_latest || false, is_home || false,
-        label, classify || [], image_url, image_alt, address_bar, iframe_url,
-        seo_title, seo_description, seo_keywords, details_html, req.user.id || 1, req.user.id || 1
+        title, 
+        description, 
+        publish_date || new Date().toISOString().split('T')[0], 
+        is_home || false,
+        label || 'NEWS', 
+        classify || [], 
+        image_url, 
+        image_alt, 
+        address_bar, 
+        seo_title, 
+        seo_description, 
+        seo_keywords, 
+        details_html, 
+        req.user.id || 1, 
+        req.user.id || 1
       ]
     );
 
@@ -209,13 +219,11 @@ router.put('/:id', verifyToken, async (req, res) => {
       title,
       description,
       publish_date,
-      is_latest,
       is_home,
       label,
       classify,
       image_url,
       image_alt,
-      iframe_url,
       seo_title,
       seo_description,
       seo_keywords,
@@ -229,14 +237,14 @@ router.put('/:id', verifyToken, async (req, res) => {
 
     const result = await query(
       `UPDATE ${DATA_STRUCTURE.TABLES.NEWS} SET
-        title = $1, description = $2, publish_date = $3, is_latest = $4, is_home = $5,
-        label = $6, classify = $7, image_url = $8, image_alt = $9, iframe_url = $10,
-        seo_title = $11, seo_description = $12, seo_keywords = $13, details_html = $14,
-        updated_by = $15, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $16 RETURNING *`,
+        title = $1, description = $2, publish_date = $3, is_home = $4,
+        label = $5, classify = $6, image_url = $7, image_alt = $8,
+        seo_title = $9, seo_description = $10, seo_keywords = $11, details_html = $12,
+        updated_by = $13, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $14 RETURNING *`,
       [
-        title, description, publish_date, is_latest || false, is_home || false,
-        label, classify || [], image_url, image_alt, iframe_url,
+        title, description, publish_date, is_home || false,
+        label, classify || [], image_url, image_alt,
         seo_title, seo_description, seo_keywords, details_html, req.user.id || 1, id
       ]
     );

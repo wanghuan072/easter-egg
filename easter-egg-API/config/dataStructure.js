@@ -85,19 +85,21 @@ export const transformData = {
       title: dbRow.title,
       description: dbRow.description,
       publishDate: dbRow.publish_date,
-      isLatest: dbRow.is_latest,
       isHome: dbRow.is_home,
       label: dbRow.label,
       classify: dbRow.classify || [],
       imageUrl: dbRow.image_url,
       imageAlt: dbRow.image_alt,
       addressBar: dbRow.address_bar,
-      iframeUrl: dbRow.iframe_url,
       seoTitle: dbRow.seo_title,
       seoDescription: dbRow.seo_description,
       seoKeywords: dbRow.seo_keywords,
       detailsHtml: dbRow.details_html,
-      mediaType: dbRow.media_type
+      avgRating: dbRow.avg_rating,
+      ratingCount: dbRow.rating_count,
+      createdBy: dbRow.created_by,
+      updatedBy: dbRow.updated_by,
+      updatedAt: dbRow.updated_at
     };
     
     return result;
@@ -109,19 +111,16 @@ export const transformData = {
       title: frontendData.title,
       description: frontendData.description,
       publish_date: frontendData.publishDate,
-      is_latest: frontendData.isLatest,
       is_home: frontendData.isHome,
       label: frontendData.label,
       classify: frontendData.classify,
       image_url: frontendData.imageUrl,
       image_alt: frontendData.imageAlt,
       address_bar: frontendData.addressBar,
-      iframe_url: frontendData.iframeUrl,
       seo_title: frontendData.seoTitle,
       seo_description: frontendData.seoDescription,
       seo_keywords: frontendData.seoKeywords,
-      details_html: frontendData.detailsHtml,
-      media_type: frontendData.mediaType
+      details_html: frontendData.detailsHtml
     }
   }
 }
