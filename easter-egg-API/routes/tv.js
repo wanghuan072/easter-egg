@@ -94,7 +94,7 @@ router.get('/home', async (req, res) => {
 // Get latest TV shows from database
 router.get('/latest', async (req, res) => {
   try {
-    const { limit = 8 } = req.query;
+    const { limit = 100 } = req.query; // 默认获取更多数据
     const limitNum = Math.min(parseInt(limit), DATA_STRUCTURE.PAGINATION.MAX_LIMIT);
     
     const result = await query(

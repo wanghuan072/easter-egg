@@ -242,13 +242,13 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
   }
   
   // 获取最新发现
-  const fetchLatestDiscoveries = async (limit = 4) => {
+  const fetchLatestDiscoveries = async () => {
     try {
-      // 获取游戏、电影、电视中 is_latest = true 的内容
+      // 获取游戏、电影、电视中 is_latest = true 的内容，不限制数量
       const [gamesRes, moviesRes, tvRes] = await Promise.all([
-        gamesApi.getLatest(limit),
-        moviesApi.getLatest(limit),
-        tvApi.getLatest(limit)
+        gamesApi.getLatest(100), // 设置一个较大的数字，实际由后端控制
+        moviesApi.getLatest(100),
+        tvApi.getLatest(100)
       ])
       
       // 合并所有结果
@@ -275,9 +275,8 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
         allLatest.push(...tvRes)
       }
       
-      // 按发布时间排序，取最新的 limit 条
+      // 按发布时间排序，不限制数量
       allLatest.sort((a, b) => new Date(b.publish_date || b.publishDate) - new Date(a.publish_date || a.publishDate))
-      allLatest = allLatest.slice(0, limit)
       
       latestDiscoveries.value = allLatest
       

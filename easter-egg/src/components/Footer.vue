@@ -104,7 +104,7 @@ const getDetailRoute = (item) => {
 // 生命周期
 onMounted(async () => {
   if (!isLatestDiscoveriesLoaded.value) {
-    await store.fetchLatestDiscoveries(4) // 只获取4个用于footer显示
+    await store.fetchLatestDiscoveries() // 获取所有Latest Discoveries数据
   }
 })
 </script>
