@@ -109,7 +109,6 @@ onMounted(async () => {
       if (categories.value.length > 0) {
         activeCategory.value = categories.value[0].name
       }
-      console.log('MoviesView 数据加载完成')
     } else {
       // 使用更短的轮询间隔，提高响应速度
       setTimeout(waitForData, 50)

@@ -18,12 +18,10 @@ onMounted(async () => {
     store.checkAuth()
 
     // 预加载数据以提高性能
-    console.log('开始预加载数据...')
     await store.preloadData()
 
     // 标记初始化完成
     isInitialized.value = true
-    console.log('应用初始化完成，所有数据已加载')
   } catch (error) {
     console.error('预加载数据失败，但应用将继续运行:', error)
     // 即使预加载失败，也不阻止应用继续运行

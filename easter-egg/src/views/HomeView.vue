@@ -390,7 +390,6 @@ onMounted(async () => {
     if (store.areDataTypesLoaded(['games', 'movies', 'tv'])) {
       // 数据已加载，获取最新发现
       store.fetchLatestDiscoveries(4)
-      console.log('首页数据加载完成')
     } else {
       // 使用更短的轮询间隔，提高响应速度
       setTimeout(waitForData, 50)

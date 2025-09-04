@@ -168,8 +168,6 @@ const submitReview = async () => {
       comment_text: reviewForm.value.comment.trim()
     }
 
-    console.log('🔍 提交评价数据:', reviewData)
-    console.log('🌐 API地址:', `${apiBase}/api/reviews`)
 
     const response = await axios.post(`${apiBase}/api/reviews`, reviewData, {
       timeout: 10000, // 10秒超时

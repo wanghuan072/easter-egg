@@ -244,7 +244,6 @@ const fetchComments = async () => {
     const response = await axios.get(`${apiBase}/api/comments`, { params })
     
     if (response.data.success) {
-      console.log('📊 获取到的评论数据:', response.data.data)
       comments.value = response.data.data
       pagination.value = response.data.pagination
     }

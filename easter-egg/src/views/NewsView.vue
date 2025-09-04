@@ -170,7 +170,6 @@ onMounted(async () => {
   // 等待数据预加载完成
   const waitForData = () => {
     if (isDataReady.value) {
-      console.log('新闻数据已加载完成')
     } else {
       // 使用更短的轮询间隔，提高响应速度
       setTimeout(waitForData, 50)

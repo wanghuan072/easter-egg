@@ -97,8 +97,6 @@ const props = defineProps({
   }
 })
 
-// 调试信息
-console.log('🔍 AdminSidebar - 接收到的activeModule:', props.activeModule)
 
 // 返回首页
 const goHome = () => {

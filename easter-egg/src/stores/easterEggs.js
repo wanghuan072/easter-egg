@@ -107,9 +107,7 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     errors.value[type] = ''
     
     try {
-      console.log(`开始获取 ${type} 数据...`)
       const response = await apiMethod(params)
-      console.log(`${type} API响应:`, response)
       
       // 统一处理响应格式
       let data = []
@@ -124,8 +122,6 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
       } else {
         data = []
       }
-      
-      console.log(`${type} 处理后的数据:`, data)
       
       // 根据类型设置数据
       switch (type) {
@@ -145,7 +141,6 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
 
       // 标记数据已加载
       dataLoaded.value[type] = true
-      console.log(`${type} 数据加载完成，标记为已加载`)
       
       return data
     } catch (error) {
@@ -216,10 +211,7 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     isPageLoading.value = true
     
     try {
-  
-      
       // 一次性加载所有数据，提高性能
-      console.log('加载所有数据...')
       const [gamesData, moviesData, tvData, newsData, gamesCat, moviesCat, tvCat, newsCat] = await Promise.all([
         fetchData('games', gamesApi.getAll),
         fetchData('movies', moviesApi.getAll),
