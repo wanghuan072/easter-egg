@@ -50,7 +50,23 @@
           <div class="details-content">
             <!-- iframe 展示区域 -->
             <div class="iframe-container">
+              <!-- 预览图片和播放按钮 -->
+              <div v-if="!isIframeLoaded" class="iframe-preview" @click="loadIframe">
+                <img 
+                  :src="itemData?.imageUrl" 
+                  :alt="itemData?.title"
+                  class="preview-image"
+                />
+                <div class="preview-overlay">
+                  <div class="play-button">
+                    <div class="play-icon">▶</div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- iframe 内容 -->
               <iframe 
+                v-if="isIframeLoaded"
                 :src="itemData?.iframeUrl" 
                 frameborder="0"
                 class="content-iframe"
@@ -164,6 +180,7 @@ const contentType = computed(() => {
 
 const itemData = ref(null)
 const isLoading = ref(false)
+const isIframeLoaded = ref(false)
 const formatDate = (date) => {
   if (!date) return ''
   return new Date(date).toLocaleDateString('en-US', {
@@ -173,9 +190,15 @@ const formatDate = (date) => {
   })
 }
 
+// 加载iframe
+const loadIframe = () => {
+  isIframeLoaded.value = true
+}
+
 const fetchData = async () => {
   try {
     isLoading.value = true
+    isIframeLoaded.value = false
     const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3000'
     const type = contentType.value
     
@@ -780,6 +803,62 @@ onUnmounted(() => {
   display: block;
 }
 
+/* 预览图片和播放按钮样式 */
+.iframe-preview {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.play-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(139, 92, 246, 0.9);
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
+}
+
+.play-icon {
+  font-size: 24px;
+  color: #ffffff;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* 只有播放按钮的悬停效果 */
+.play-button:hover {
+  transform: scale(1.1);
+  background: rgba(139, 92, 246, 1);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.6);
+}
+
 /* Loading and Error States */
 .loading-section {
   display: flex;
@@ -935,6 +1014,19 @@ onUnmounted(() => {
     height: 400px;
   }
   
+  .iframe-preview {
+    height: 400px;
+  }
+  
+  .play-button {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .play-icon {
+    font-size: 20px;
+  }
+  
   .sidebar {
     gap: 28px;
   }
@@ -1049,6 +1141,19 @@ onUnmounted(() => {
   
   .content-iframe {
     height: 300px;
+  }
+  
+  .iframe-preview {
+    height: 300px;
+  }
+  
+  .play-button {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .play-icon {
+    font-size: 18px;
   }
   
   .sidebar {

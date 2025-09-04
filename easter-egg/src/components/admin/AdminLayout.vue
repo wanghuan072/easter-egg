@@ -144,7 +144,6 @@ const handleSaveContent = async (data) => {
       return
     }
 
-    const contentType = activeModule.value.slice(0, -1) // 移除复数形式
     let apiUrl, method
 
     if (editData.value) {
