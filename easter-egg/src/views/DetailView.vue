@@ -402,28 +402,367 @@ onUnmounted(() => {
 }
 
 .content-body {
-  line-height: 1.8;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 20px;
+  line-height: 1.7;
   color: #e2e8f0;
 }
 
-.content-body h2 {
+/* Content Body 内部标签样式 */
+.content-body :deep(h2) {
   font-size: 1.75rem;
-  font-weight: 600;
-  margin: 32px 0 16px;
+  font-weight: 700;
   color: #ffffff;
+  margin: 32px 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #8b5cf6;
 }
 
-.content-body h3 {
+.content-body :deep(h3) {
   font-size: 1.5rem;
   font-weight: 600;
-  margin: 24px 0 12px;
-  color: #f1f5f9;
+  color: #8b5cf6;
+  margin: 28px 0 14px 0;
 }
 
-.content-body p {
-  margin-bottom: 16px;
-  font-size: 1.1rem;
+.content-body :deep(h4) {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #06b6d4;
+  margin: 24px 0 12px 0;
 }
+
+.content-body :deep(h5) {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #a78bfa;
+  margin: 20px 0 10px 0;
+  padding: 6px 10px;
+  background: rgba(167, 139, 250, 0.1);
+  border-radius: 4px;
+  border-left: 3px solid #a78bfa;
+}
+
+.content-body :deep(p) {
+  font-size: 1rem;
+  color: #e2e8f0;
+  margin: 16px 0;
+  line-height: 1.7;
+  text-align: justify;
+}
+
+.content-body :deep(span) {
+  color: inherit;
+  font-size: inherit;
+}
+
+.content-body :deep(strong) {
+  font-weight: 700;
+  color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
+  padding: 2px 4px;
+  border-radius: 3px;
+  text-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+}
+
+.content-body :deep(ul) {
+  margin: 16px 0;
+  padding-left: 24px;
+  color: #e2e8f0;
+}
+
+.content-body :deep(ol) {
+  margin: 16px 0;
+  padding-left: 24px;
+  color: #e2e8f0;
+}
+
+.content-body :deep(li) {
+  margin: 8px 0;
+  color: #e2e8f0;
+}
+
+.content-body :deep(a) {
+  color: #06b6d4;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(6, 182, 212, 0.3);
+  transition: all 0.3s ease;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.content-body :deep(a:hover) {
+  color: #8b5cf6;
+  border-bottom-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
+  text-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.content-body :deep(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 20px 0;
+  border: 1px solid #334155;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.content-body :deep(img:hover) {
+  transform: scale(1.02);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
+  border-color: #8b5cf6;
+}
+
+/* 代码块样式 */
+.content-body :deep(pre) {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 20px 0;
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
+  color: #e2e8f0;
+}
+
+.content-body :deep(code) {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.content-body :deep(pre code) {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #e2e8f0;
+}
+
+/* 引用块样式 */
+.content-body :deep(blockquote) {
+  border-left: 4px solid #8b5cf6;
+  background: rgba(139, 92, 246, 0.05);
+  margin: 20px 0;
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  color: #a0a0a0;
+  position: relative;
+}
+
+.content-body :deep(blockquote::before) {
+  content: "";
+  font-size: 3rem;
+  color: #8b5cf6;
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  opacity: 0.3;
+}
+
+/* 表格样式 */
+.content-body :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #334155;
+}
+
+.content-body :deep(th),
+.content-body :deep(td) {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #334155;
+}
+
+.content-body :deep(th) {
+  background: rgba(139, 92, 246, 0.2);
+  color: #8b5cf6;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9em;
+  letter-spacing: 0.5px;
+}
+
+.content-body :deep(td) {
+  color: #e2e8f0;
+}
+
+.content-body :deep(tr:hover) {
+  background: rgba(139, 92, 246, 0.05);
+}
+
+/* 分割线样式 */
+.content-body :deep(hr) {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
+  margin: 32px 0;
+  border-radius: 1px;
+}
+
+/* 响应式调整 */
+@media (max-width: 1024px) {
+  .content-body :deep(h2) {
+    font-size: 1.5rem;
+    margin: 28px 0 14px 0;
+    padding-bottom: 10px;
+  }
+  
+  .content-body :deep(h3) {
+    font-size: 1.3rem;
+    margin: 24px 0 12px 0;
+  }
+  
+  .content-body :deep(h4) {
+    font-size: 1.1rem;
+    margin: 20px 0 10px 0;
+  }
+  
+  .content-body :deep(h5) {
+    font-size: 1rem;
+    margin: 18px 0 8px 0;
+  }
+  
+  .content-body :deep(p) {
+    font-size: 0.95rem;
+    margin: 14px 0;
+  }
+  
+  .content-body :deep(li) {
+    margin: 6px 0;
+  }
+  
+  .content-body :deep(ul),
+  .content-body :deep(ol) {
+    margin: 14px 0;
+  }
+  
+  .content-body :deep(img) {
+    margin: 16px 0;
+  }
+  
+  .content-body :deep(pre) {
+    padding: 12px;
+    margin: 16px 0;
+  }
+  
+  .content-body :deep(blockquote) {
+    margin: 16px 0;
+    padding: 12px 16px;
+  }
+  
+  .content-body :deep(table) {
+    margin: 16px 0;
+  }
+  
+  .content-body :deep(th),
+  .content-body :deep(td) {
+    padding: 10px 12px;
+  }
+  
+  .content-body :deep(hr) {
+    margin: 24px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-body :deep(h2) {
+    font-size: 20px;
+    margin: 10px 0;
+    padding-bottom: 8px;
+  }
+  
+  .content-body :deep(h3) {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+  
+  .content-body :deep(h4) {
+    font-size: 16px;
+    margin: 10px 0;
+  }
+  
+  .content-body :deep(h5) {
+    font-size: 16px;
+    margin: 10px 0;
+  }
+  
+  .content-body :deep(p) {
+    font-size: 12px;
+    margin: 10px 0;
+    line-height: 1.6;
+  }
+  
+  .content-body :deep(li) {
+    margin: 10px 0;
+    font-size: 12px;
+  }
+  
+  .content-body :deep(ul),
+  .content-body :deep(ol) {
+    margin: 10px 0;
+    padding-left: 20px;
+  }
+  
+  .content-body :deep(a) {
+    font-size: 12px;
+    padding: 1px 3px;
+  }
+  
+  .content-body :deep(img) {
+    margin: 10px 0;
+    border-radius: 6px;
+  }
+  
+  .content-body :deep(pre) {
+    padding: 8px;
+    margin: 10px 0;
+    font-size: 10px;
+  }
+  
+  .content-body :deep(code) {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+  
+  .content-body :deep(blockquote) {
+    margin: 10px 0;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .content-body :deep(blockquote::before) {
+    font-size: 2rem;
+    top: -8px;
+    left: 8px;
+  }
+  
+  .content-body :deep(table) {
+    margin: 10px 0;
+    font-size: 10px;
+  }
+  
+  .content-body :deep(th),
+  .content-body :deep(td) {
+    padding: 6px 8px;
+  }
+  
+  .content-body :deep(hr) {
+    margin: 10px 0;
+  }
+}
+
 
 /* iframe 样式 */
 .iframe-container {
@@ -588,25 +927,6 @@ onUnmounted(() => {
     padding-bottom: 14px;
   }
   
-  .content-body {
-    font-size: 16px;
-  }
-  
-  .content-body h2 {
-    font-size: 1.5rem;
-    margin: 28px 0 14px;
-  }
-  
-  .content-body h3 {
-    font-size: 1.25rem;
-    margin: 20px 0 10px;
-  }
-  
-  .content-body p {
-    margin-bottom: 14px;
-    font-size: 16px;
-  }
-  
   .iframe-container {
     margin-bottom: 32px;
   }
@@ -721,25 +1041,6 @@ onUnmounted(() => {
     font-size: 16px;
     margin-bottom: 20px;
     padding-bottom: 10px;
-  }
-  
-  .content-body {
-    font-size: 12px;
-  }
-  
-  .content-body h2 {
-    font-size: 16px;
-    margin: 20px 0 10px;
-  }
-  
-  .content-body h3 {
-    font-size: 16px;
-    margin: 16px 0 8px;
-  }
-  
-  .content-body p {
-    margin-bottom: 10px;
-    font-size: 12px;
   }
   
   .iframe-container {
