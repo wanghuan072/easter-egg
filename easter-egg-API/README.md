@@ -110,7 +110,7 @@ NODE_ENV=development
 
 # CORS配置
 CORS_ORIGIN_DEV=http://localhost:5173
-CORS_ORIGIN_PROD=https://easter-egg-sandy.vercel.app
+CORS_ORIGIN_PROD=https://eastereggvault.com/
 
 # 速率限制
 RATE_LIMIT_WINDOW_MS=900000
