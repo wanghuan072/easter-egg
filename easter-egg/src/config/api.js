@@ -42,14 +42,32 @@ export const apiRequest = async (url, options = {}) => {
   };
 
   try {
+    console.log('🚀 Making request to:', url);
     const response = await fetch(url, config);
+    
+    console.log('📡 Response received:', {
+      url: url,
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+      headers: Object.fromEntries(response.headers.entries())
+    });
+    
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
     }
     const data = await response.json();
+    console.log('✅ Success response:', data);
     return data;
   } catch (error) {
-    console.error('API request failed:', error);
+    console.error('💥 API request failed:', {
+      url: url,
+      error: error.message,
+      name: error.name,
+      stack: error.stack
+    });
     throw error;
   }
 };
