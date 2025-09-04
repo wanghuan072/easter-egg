@@ -141,9 +141,9 @@ router.put('/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
     const { name, display_name, media_type, sort_order, is_active } = req.body;
     
-    // 检查分类是否存在
+    // 检查分类是否存在，并获取旧名称
     const existingCategory = await query(
-      'SELECT id FROM egg_categories WHERE id = $1',
+      'SELECT id, name FROM egg_categories WHERE id = $1',
       [id]
     );
     
@@ -155,8 +155,10 @@ router.put('/:id', verifyToken, async (req, res) => {
       });
     }
     
+    const oldName = existingCategory.rows[0].name;
+    
     // 如果更改了名称，检查是否与其他分类重复
-    if (name) {
+    if (name && name !== oldName) {
       const duplicateCategory = await query(
         'SELECT id FROM egg_categories WHERE name = $1 AND media_type = $2 AND id != $3',
         [name, media_type, id]
@@ -171,10 +173,30 @@ router.put('/:id', verifyToken, async (req, res) => {
       }
     }
     
+    // 更新分类
     const result = await query(
       'UPDATE egg_categories SET name = COALESCE($1, name), display_name = COALESCE($2, display_name), media_type = COALESCE($3, media_type), sort_order = COALESCE($4, sort_order), is_active = COALESCE($5, is_active) WHERE id = $6 RETURNING *',
       [name, display_name, media_type, sort_order, is_active, id]
     );
+    
+    // 如果分类名称发生了变化，同步更新所有相关内容项的分类字段
+    if (name && name !== oldName) {
+      // 更新所有表的相关内容
+      const tables = ['egg_games', 'egg_movies', 'egg_tv', 'egg_news'];
+      
+      for (const table of tables) {
+        try {
+          // 更新classify数组中包含旧分类名称的记录
+          await query(
+            `UPDATE ${table} SET classify = array_replace(classify, $1, $2) WHERE $1 = ANY(classify)`,
+            [oldName, name]
+          );
+        } catch (tableError) {
+          console.error(`更新 ${table} 表时出错:`, tableError);
+          // 继续处理其他表，不中断整个操作
+        }
+      }
+    }
     
     res.json({
       success: true,

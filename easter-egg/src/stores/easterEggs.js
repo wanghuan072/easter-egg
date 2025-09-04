@@ -180,9 +180,9 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     
     try {
       const [gamesRes, moviesRes, tvRes] = await Promise.all([
-        gamesApi.getLatest(8),
-        moviesApi.getLatest(8),
-        tvApi.getLatest(8)
+        gamesApi.getHome(),
+        moviesApi.getHome(),
+        tvApi.getHome()
       ])
       
       // 统一处理响应
@@ -213,10 +213,10 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     try {
       // 一次性加载所有数据，提高性能
       const [gamesData, moviesData, tvData, newsData, gamesCat, moviesCat, tvCat, newsCat] = await Promise.all([
-        fetchData('games', gamesApi.getAll),
-        fetchData('movies', moviesApi.getAll),
-        fetchData('tv', tvApi.getAll),
-        fetchData('news', newsApi.getAll),
+        fetchData('games', gamesApi.getHome),  // 使用getHome而不是getAll
+        fetchData('movies', moviesApi.getHome), // 使用getHome而不是getAll
+        fetchData('tv', tvApi.getHome),        // 使用getHome而不是getAll
+        fetchData('news', newsApi.getAll),     // 新闻没有getHome，继续使用getAll
         gamesApi.getClassifications(),
         moviesApi.getClassifications(),
         tvApi.getClassifications(),

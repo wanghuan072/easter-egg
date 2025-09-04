@@ -16,9 +16,9 @@
 
         <!-- 数据加载完成后的内容 -->
         <div v-else-if="itemData" class="hero-content">
-          <div class="hero-badge">
+          <!-- <div class="hero-badge">
             <span class="badge-text">{{ Array.isArray(itemData?.label) ? itemData.label[0] : itemData?.label }}</span>
-          </div>
+          </div> -->
           <h1 class="hero-title">{{ itemData?.title }}</h1>
           <p class="hero-description">{{ itemData?.description }}</p>
           <div class="hero-meta">

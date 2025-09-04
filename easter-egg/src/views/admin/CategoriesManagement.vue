@@ -234,6 +234,20 @@ const submitForm = async () => {
       alert(showEditModal.value ? '分类更新成功' : '分类创建成功')
       // 刷新数据
       await fetchCategories()
+      // 触发全局事件，通知其他组件刷新分类数据
+      const eventDetail = { 
+        action: showEditModal.value ? 'update' : 'create',
+        category: response.data 
+      }
+      
+      // 如果是编辑操作，添加旧分类名称用于同步更新
+      if (showEditModal.value && editingCategory.value) {
+        eventDetail.category.oldName = editingCategory.value.name
+      }
+      
+      window.dispatchEvent(new CustomEvent('categories-updated', {
+        detail: eventDetail
+      }))
       closeModal()
     } else {
       alert(`操作失败: ${response.message || response.error}`)
@@ -259,6 +273,13 @@ const deleteCategory = async (id) => {
     if (response.success) {
       alert('分类删除成功')
       await fetchCategories()
+      // 触发全局事件，通知其他组件刷新分类数据
+      window.dispatchEvent(new CustomEvent('categories-updated', {
+        detail: { 
+          action: 'delete',
+          categoryId: id 
+        }
+      }))
     } else {
       alert(`删除失败: ${response.message || response.error}`)
     }

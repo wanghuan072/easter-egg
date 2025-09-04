@@ -48,15 +48,20 @@
               />
             </div>
             
-            <div class="form-group" v-if="!isEdit">
+            <div class="form-group">
               <label for="address_bar">地址栏标识 *</label>
               <input
                 id="address_bar"
                 v-model="formData.address_bar"
                 type="text"
-                required
-                placeholder="请输入地址栏标识"
+                :required="!isEdit"
+                :readonly="isEdit"
+                :placeholder="isEdit ? '地址栏标识（不可编辑）' : '请输入地址栏标识'"
+                :class="{ 'readonly-field': isEdit }"
               />
+              <small v-if="isEdit" class="form-help readonly-help">
+                地址栏标识在编辑模式下不可修改
+              </small>
             </div>
           </div>
         </div>
@@ -274,7 +279,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { categoriesApi } from '@/services/api.js'
 
 const props = defineProps({
@@ -475,10 +480,46 @@ const handleOverlayClick = () => {
 // 监听编辑数据变化
 watch(() => props.editData, initFormData, { immediate: true })
 
+// 监听分类更新事件
+const handleCategoriesUpdate = (event) => {
+  fetchCategories()
+  
+  // 如果是编辑分类，需要同步更新已添加的分类标签
+  if (event.detail && event.detail.action === 'update' && event.detail.category) {
+    updateExistingClassifyTags(event.detail.category)
+  }
+}
+
+// 更新已添加的分类标签名称
+const updateExistingClassifyTags = (updatedCategory) => {
+  if (!formData.value.classify || !Array.isArray(formData.value.classify)) {
+    return
+  }
+  
+  // 查找并更新匹配的分类标签
+  const updatedClassify = formData.value.classify.map(tag => {
+    // 如果当前标签匹配更新前的分类名称，则更新为新名称
+    if (tag === updatedCategory.oldName) {
+      return updatedCategory.name
+    }
+    return tag
+  })
+  
+  // 更新表单数据
+  formData.value.classify = updatedClassify
+}
+
 // 组件挂载时初始化
 onMounted(() => {
   initFormData()
   fetchCategories()
+  // 监听分类更新事件
+  window.addEventListener('categories-updated', handleCategoriesUpdate)
+})
+
+// 组件卸载时清理事件监听器
+onUnmounted(() => {
+  window.removeEventListener('categories-updated', handleCategoriesUpdate)
 })
 </script>
 
@@ -760,6 +801,28 @@ onMounted(() => {
 .btn-secondary:hover {
   background: rgba(51, 65, 85, 1);
   color: #ffffff;
+}
+
+/* 只读字段样式 */
+.readonly-field {
+  background: rgba(51, 65, 85, 0.5) !important;
+  border: 1px solid rgba(139, 92, 246, 0.2) !important;
+  color: #a0a0a0 !important;
+  cursor: not-allowed !important;
+}
+
+.readonly-field:focus {
+  outline: none !important;
+  border-color: rgba(139, 92, 246, 0.2) !important;
+  box-shadow: none !important;
+  background: rgba(51, 65, 85, 0.5) !important;
+}
+
+.readonly-help {
+  color: #8b5cf6 !important;
+  font-style: italic;
+  margin-top: 5px;
+  display: block;
 }
 
 /* 响应式设计 */

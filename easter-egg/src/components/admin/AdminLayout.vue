@@ -194,6 +194,12 @@ const closeForm = () => {
   isFormSubmitting.value = false
 }
 
+// 刷新数据
+const handleRefresh = () => {
+  // 触发全局刷新事件
+  window.dispatchEvent(new CustomEvent('refresh-data'))
+}
+
 // 检查认证状态
 onMounted(() => {
   const token = localStorage.getItem('admin_token')

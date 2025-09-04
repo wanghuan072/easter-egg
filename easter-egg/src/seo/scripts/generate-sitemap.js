@@ -146,13 +146,17 @@ async function generateSitemap() {
   // 生成XML
   const sitemapXML = generateSitemapXML(routes)
   
-  // 写入文件
-  const outputPath = path.join(__dirname, '../../../dist/sitemap.xml')
-  fs.writeFileSync(outputPath, sitemapXML, 'utf8')
+  // 写入文件到dist和public目录
+  const distPath = path.join(__dirname, '../../../dist/sitemap.xml')
+  const publicPath = path.join(__dirname, '../../../public/sitemap.xml')
+  
+  fs.writeFileSync(distPath, sitemapXML, 'utf8')
+  fs.writeFileSync(publicPath, sitemapXML, 'utf8')
   
   console.log(`✅ 站点地图生成完成！`)
   console.log(`📊 总路由数: ${routes.length}`)
-  console.log(`📁 输出路径: ${outputPath}`)
+  console.log(`📁 输出路径: ${distPath}`)
+  console.log(`📁 公共路径: ${publicPath}`)
   
   // 输出统计信息
   const staticCount = staticRoutes.length
