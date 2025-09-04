@@ -9,7 +9,7 @@ const protectedRoutes = ['/admin/dashboard']
 // 全局前置守卫
 export const globalBeforeEach = (to, from, next) => {
   // 统一设置canonical URL（参考Fish-Games的实现）
-  const canonicalUrl = `https://easter-egg-sandy.vercel.app${to.path}`
+  const canonicalUrl = `https://eastereggvault.com${to.path}`
   setCanonicalUrl(canonicalUrl)
 
   // 设置SEO信息

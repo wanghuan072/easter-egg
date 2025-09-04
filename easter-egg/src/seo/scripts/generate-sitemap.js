@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename)
 
 // API配置
 const API_BASE_URL = process.env.VITE_API_URL || 'http://localhost:3000'
-const SITE_URL = 'https://easter-egg-sandy.vercel.app'
+const SITE_URL = 'https://eastereggvault.com'
 
 // 静态路由配置（与路由文件中的meta信息对应）
 const staticRoutes = [

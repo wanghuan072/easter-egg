@@ -16,7 +16,7 @@ Allow: /js/
 Allow: /favicon.ico
 
 # 站点地图位置
-Sitemap: https://easter-egg-sandy.vercel.app/sitemap.xml
+Sitemap: https://eastereggvault.com/sitemap.xml
 
 # 爬取延迟（秒）- 对搜索引擎友好
 Crawl-delay: 1

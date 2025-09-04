@@ -16,9 +16,9 @@ export default defineConfig({
       UserAgent: '*',
       Allow: '/',
       Disallow: ['/admin/', '/api/', '/_nuxt/', '/node_modules/', '/.git/', '/src/'],
-      Sitemap: 'https://easter-egg-sandy.vercel.app/sitemap.xml',
+      Sitemap: 'https://eastereggvault.com/sitemap.xml',
       'Crawl-delay': 1,
-      Host: 'https://easter-egg-sandy.vercel.app'
+      Host: 'https://eastereggvault.com'
     })
   ],
   resolve: {
