@@ -30,8 +30,12 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet());
 
 // CORS configuration
+const corsOrigin = process.env.NODE_ENV === 'production' 
+  ? process.env.CORS_ORIGIN_PROD 
+  : process.env.CORS_ORIGIN_DEV;
+
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || true,
+  origin: corsOrigin || true,
   credentials: true
 };
 app.use(cors(corsOptions));
