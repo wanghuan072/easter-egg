@@ -1,7 +1,7 @@
 // API配置文件
 const API_CONFIG = {
-  // 从环境变量获取API配置
-  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  // 从环境变量获取API配置，生产环境硬编码为正确的API地址
+  BASE_URL: import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://easter-egg-api.vercel.app' : 'http://localhost:3000'),
   // API版本（可选）
   API_VERSION: import.meta.env.VITE_API_VERSION || 'api',
   // 请求超时时间
