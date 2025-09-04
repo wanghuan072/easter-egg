@@ -30,14 +30,20 @@ const staticRoutes = [
 // 获取API数据的函数
 async function fetchApiData(endpoint) {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/${endpoint}`)
+    const url = `${API_BASE_URL}/api/${endpoint}`
+    console.log(`🔗 请求URL: ${url}`)
+    
+    const response = await fetch(url)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const data = await response.json()
-    return data.data || data
+    const result = data.data || data
+    
+    console.log(`📊 ${endpoint} 数据: ${Array.isArray(result) ? result.length : 'N/A'} 条记录`)
+    return result
   } catch (error) {
-    console.warn(`Warning: Failed to fetch ${endpoint}:`, error.message)
+    console.warn(`⚠️  Warning: Failed to fetch ${endpoint}:`, error.message)
     return []
   }
 }
@@ -67,76 +73,78 @@ function generateSitemapXML(routes) {
 // 主函数
 async function generateSitemap() {
   console.log('🚀 开始生成动态站点地图...')
+  console.log(`🔗 API基础URL: ${API_BASE_URL}`)
   
   const routes = [...staticRoutes]
+  let totalDynamicRoutes = 0
   
   try {
     // 获取游戏数据
-    console.log('📡 获取游戏数据...')
+    console.log('\n📡 获取游戏数据...')
     const games = await fetchApiData('games')
     if (games && games.length > 0) {
-      games.forEach(game => {
-        if (game.addressBar) {
-          routes.push({
-            path: `/games/${game.addressBar}`,
-            priority: 0.8,
-            changefreq: 'weekly',
-            lastmod: game.updatedAt || game.publishDate || new Date().toISOString()
-          })
-        }
+      const gamesWithAddress = games.filter(game => game.addressBar)
+      gamesWithAddress.forEach(game => {
+        routes.push({
+          path: `/games/${game.addressBar}`,
+          priority: 0.8,
+          changefreq: 'weekly',
+          lastmod: game.updatedAt || game.publishDate || new Date().toISOString()
+        })
       })
-      console.log(`✅ 添加了 ${games.length} 个游戏页面`)
+      console.log(`✅ 添加了 ${gamesWithAddress.length} 个游戏页面`)
+      totalDynamicRoutes += gamesWithAddress.length
     }
     
     // 获取电影数据
-    console.log('📡 获取电影数据...')
+    console.log('\n📡 获取电影数据...')
     const movies = await fetchApiData('movies')
     if (movies && movies.length > 0) {
-      movies.forEach(movie => {
-        if (movie.addressBar) {
-          routes.push({
-            path: `/movies/${movie.addressBar}`,
-            priority: 0.8,
-            changefreq: 'weekly',
-            lastmod: movie.updatedAt || movie.publishDate || new Date().toISOString()
-          })
-        }
+      const moviesWithAddress = movies.filter(movie => movie.addressBar)
+      moviesWithAddress.forEach(movie => {
+        routes.push({
+          path: `/movies/${movie.addressBar}`,
+          priority: 0.8,
+          changefreq: 'weekly',
+          lastmod: movie.updatedAt || movie.publishDate || new Date().toISOString()
+        })
       })
-      console.log(`✅ 添加了 ${movies.length} 个电影页面`)
+      console.log(`✅ 添加了 ${moviesWithAddress.length} 个电影页面`)
+      totalDynamicRoutes += moviesWithAddress.length
     }
     
     // 获取电视节目数据
-    console.log('📡 获取电视节目数据...')
+    console.log('\n📡 获取电视节目数据...')
     const tvShows = await fetchApiData('tv')
     if (tvShows && tvShows.length > 0) {
-      tvShows.forEach(tv => {
-        if (tv.addressBar) {
-          routes.push({
-            path: `/tv/${tv.addressBar}`,
-            priority: 0.8,
-            changefreq: 'weekly',
-            lastmod: tv.updatedAt || tv.publishDate || new Date().toISOString()
-          })
-        }
+      const tvWithAddress = tvShows.filter(tv => tv.addressBar)
+      tvWithAddress.forEach(tv => {
+        routes.push({
+          path: `/tv/${tv.addressBar}`,
+          priority: 0.8,
+          changefreq: 'weekly',
+          lastmod: tv.updatedAt || tv.publishDate || new Date().toISOString()
+        })
       })
-      console.log(`✅ 添加了 ${tvShows.length} 个电视节目页面`)
+      console.log(`✅ 添加了 ${tvWithAddress.length} 个电视节目页面`)
+      totalDynamicRoutes += tvWithAddress.length
     }
     
     // 获取新闻数据
-    console.log('📡 获取新闻数据...')
+    console.log('\n📡 获取新闻数据...')
     const news = await fetchApiData('news')
     if (news && news.length > 0) {
-      news.forEach(item => {
-        if (item.addressBar) {
-          routes.push({
-            path: `/news/${item.addressBar}`,
-            priority: 0.7,
-            changefreq: 'weekly',
-            lastmod: item.updatedAt || item.publishDate || new Date().toISOString()
-          })
-        }
+      const newsWithAddress = news.filter(item => item.addressBar)
+      newsWithAddress.forEach(item => {
+        routes.push({
+          path: `/news/${item.addressBar}`,
+          priority: 0.7,
+          changefreq: 'weekly',
+          lastmod: item.updatedAt || item.publishDate || new Date().toISOString()
+        })
       })
-      console.log(`✅ 添加了 ${news.length} 个新闻页面`)
+      console.log(`✅ 添加了 ${newsWithAddress.length} 个新闻页面`)
+      totalDynamicRoutes += newsWithAddress.length
     }
     
   } catch (error) {
@@ -153,16 +161,29 @@ async function generateSitemap() {
   fs.writeFileSync(distPath, sitemapXML, 'utf8')
   fs.writeFileSync(publicPath, sitemapXML, 'utf8')
   
-  console.log(`✅ 站点地图生成完成！`)
+  console.log(`\n✅ 站点地图生成完成！`)
   console.log(`📊 总路由数: ${routes.length}`)
   console.log(`📁 输出路径: ${distPath}`)
   console.log(`📁 公共路径: ${publicPath}`)
   
   // 输出统计信息
   const staticCount = staticRoutes.length
-  const dynamicCount = routes.length - staticCount
-  console.log(`📈 静态路由: ${staticCount}`)
-  console.log(`📈 动态路由: ${dynamicCount}`)
+  console.log(`\n📈 统计信息:`)
+  console.log(`   - 静态路由: ${staticCount}`)
+  console.log(`   - 动态路由: ${totalDynamicRoutes}`)
+  console.log(`   - 总路由数: ${routes.length}`)
+  
+  // 显示一些动态路由示例
+  if (totalDynamicRoutes > 0) {
+    console.log(`\n🔗 动态路由示例:`)
+    const dynamicRoutes = routes.slice(staticCount, staticCount + 5)
+    dynamicRoutes.forEach(route => {
+      console.log(`   - ${route.path}`)
+    })
+    if (totalDynamicRoutes > 5) {
+      console.log(`   - ... 还有 ${totalDynamicRoutes - 5} 个路由`)
+    }
+  }
 }
 
 // 运行生成器
