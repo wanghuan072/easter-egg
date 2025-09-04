@@ -33,7 +33,14 @@ async function fetchApiData(endpoint) {
     const url = `${API_BASE_URL}/api/${endpoint}`
     console.log(`🔗 请求URL: ${url}`)
     
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      timeout: 5000, // 5秒超时
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -44,6 +51,7 @@ async function fetchApiData(endpoint) {
     return result
   } catch (error) {
     console.warn(`⚠️  Warning: Failed to fetch ${endpoint}:`, error.message)
+    console.warn(`   请确保API服务器正在运行在 ${API_BASE_URL}`)
     return []
   }
 }
@@ -74,6 +82,19 @@ function generateSitemapXML(routes) {
 async function generateSitemap() {
   console.log('🚀 开始生成动态站点地图...')
   console.log(`🔗 API基础URL: ${API_BASE_URL}`)
+  
+  // 检查API服务器是否可用
+  try {
+    const testResponse = await fetch(`${API_BASE_URL}/api/games`, { 
+      method: 'HEAD',
+      timeout: 3000 
+    })
+    console.log('✅ API服务器连接正常')
+  } catch (error) {
+    console.warn('⚠️  API服务器连接失败，将只生成静态路由')
+    console.warn(`   错误: ${error.message}`)
+    console.warn(`   请确保API服务器正在运行: npm start (在 easter-egg-API 目录中)`)
+  }
   
   const routes = [...staticRoutes]
   let totalDynamicRoutes = 0
