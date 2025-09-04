@@ -71,7 +71,9 @@ app.get('/health', (req, res) => {
     status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    corsOrigin: process.env.CORS_ORIGIN || 'not set',
+    corsOriginProd: process.env.CORS_ORIGIN_PROD || 'not set'
   });
 });
 
