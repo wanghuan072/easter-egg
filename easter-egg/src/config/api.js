@@ -15,7 +15,19 @@ const API_CONFIG = {
 // 构建完整的API URL，自动适配 API_VERSION
 export const buildApiUrl = (endpoint) => {
   const version = API_CONFIG.API_VERSION ? `/${API_CONFIG.API_VERSION}` : '';
-  return `${API_CONFIG.BASE_URL}${version}${endpoint}`;
+  const fullUrl = `${API_CONFIG.BASE_URL}${version}${endpoint}`;
+  
+  // 临时调试信息
+  console.log('🔍 API URL Debug:', {
+    baseUrl: API_CONFIG.BASE_URL,
+    version: version,
+    endpoint: endpoint,
+    fullUrl: fullUrl,
+    isProd: import.meta.env.PROD,
+    viteApiUrl: import.meta.env.VITE_API_URL
+  });
+  
+  return fullUrl;
 };
 
 // 通用请求方法
