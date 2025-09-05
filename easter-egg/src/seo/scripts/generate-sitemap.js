@@ -126,7 +126,7 @@ async function generateSitemap() {
   try {
     // 获取游戏数据
     console.log('\n📡 获取游戏数据...')
-    const games = await fetchApiData('games')
+    const games = await fetchApiData('games?limit=100')
     if (games && games.length > 0) {
       const gamesWithAddress = games.filter(game => game.addressBar)
       gamesWithAddress.forEach(game => {
@@ -143,7 +143,7 @@ async function generateSitemap() {
     
     // 获取电影数据
     console.log('\n📡 获取电影数据...')
-    const movies = await fetchApiData('movies')
+    const movies = await fetchApiData('movies?limit=100')
     if (movies && movies.length > 0) {
       const moviesWithAddress = movies.filter(movie => movie.addressBar)
       moviesWithAddress.forEach(movie => {
@@ -160,7 +160,7 @@ async function generateSitemap() {
     
     // 获取电视节目数据
     console.log('\n📡 获取电视节目数据...')
-    const tvShows = await fetchApiData('tv')
+    const tvShows = await fetchApiData('tv?limit=100')
     if (tvShows && tvShows.length > 0) {
       const tvWithAddress = tvShows.filter(tv => tv.addressBar)
       tvWithAddress.forEach(tv => {
@@ -177,7 +177,7 @@ async function generateSitemap() {
     
     // 获取新闻数据
     console.log('\n📡 获取新闻数据...')
-    const news = await fetchApiData('news')
+    const news = await fetchApiData('news?limit=100')
     if (news && news.length > 0) {
       const newsWithAddress = news.filter(item => item.addressBar)
       newsWithAddress.forEach(item => {

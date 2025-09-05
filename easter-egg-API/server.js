@@ -17,6 +17,7 @@ import categoriesRoutes from './routes/categories.js';
 import reviewsRoutes from './routes/reviews.js';
 import ratingsRoutes from './routes/ratings.js';
 import commentsRoutes from './routes/comments.js';
+import sitemapRoutes from './routes/sitemap.js';
 
 // Database connection will be added later when migrating to Neon
 
@@ -92,6 +93,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/ratings', ratingsRoutes);
 app.use('/api/comments', commentsRoutes);
+app.use('/api/sitemap', sitemapRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
