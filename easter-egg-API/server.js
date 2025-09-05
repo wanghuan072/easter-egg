@@ -17,7 +17,6 @@ import categoriesRoutes from './routes/categories.js';
 import reviewsRoutes from './routes/reviews.js';
 import ratingsRoutes from './routes/ratings.js';
 import commentsRoutes from './routes/comments.js';
-import sitemapRoutes from './routes/sitemap.js';
 
 // Database connection will be added later when migrating to Neon
 
@@ -81,9 +80,6 @@ app.get('/health', (req, res) => {
     corsOriginProd: process.env.CORS_ORIGIN_PROD || 'not set'
   });
 });
-
-// 动态站点地图路由 (放在API路由之前，避免被/api/*匹配)
-app.use('/', sitemapRoutes);
 
 // API routes
 app.use('/api/auth', authRoutes);
