@@ -14,7 +14,15 @@
               :src="item.imageUrl"
               :alt="item.imageAlt"
             />
-            <div class="media-category">{{ getAllClassifyTags(item) }}</div>
+            <div class="media-categories">
+              <span 
+                v-for="tag in getValidClassifyTags(item)" 
+                :key="tag" 
+                class="media-category-tag"
+              >
+                {{ tag }}
+              </span>
+            </div>
           </div>
           <div class="media-content">
             <h3 class="media-title">{{ item.title }}</h3>
@@ -23,7 +31,7 @@
             </p>
             <div class="media-meta">
               <span class="media-date">{{ formatDate(item.publishDate) }}</span>
-              <span class="media-author">The Vault Team</span>
+              <!-- <span class="media-author">The Vault Team</span> -->
             </div>
           </div>
         </article>
@@ -97,23 +105,114 @@ const moreButtonLink = computed(() => {
   return `/${props.type}`
 })
 
-// 获取显示的所有分类标签
-const getAllClassifyTags = (item) => {
+// 获取有效的分类标签数组
+const getValidClassifyTags = (item) => {
   // 显示classify字段的所有有效标签
   if (item.classify && Array.isArray(item.classify)) {
     const validTags = item.classify.filter(tag => tag && tag.trim() !== '')
     if (validTags.length > 0) {
-      return validTags.join(', ')
+      return validTags
     }
   }
   
   // 如果没有有效的classify，则显示label字段
   if (item.label) {
-    return Array.isArray(item.label) ? item.label[0] : item.label
+    const labelValue = Array.isArray(item.label) ? item.label[0] : item.label
+    return labelValue ? [labelValue] : []
   }
   
   // 默认显示媒体类型
-  return props.type.toUpperCase()
+  return [props.type.toUpperCase()]
+}
+
+// 智能推断媒体类型
+const getSmartMediaType = (item) => {
+  // 优先使用 media_type 字段
+  if (item.mediaType) {
+    switch (item.mediaType.toLowerCase()) {
+      case 'games':
+      case 'game':
+        return 'games'
+      case 'movies':
+      case 'movie':
+        return 'movies'
+      case 'tv':
+      case 'tvshow':
+        return 'tv'
+      case 'news':
+        return 'news'
+    }
+  }
+  
+  // 其次使用 label 字段
+  if (item.label) {
+    let labelValue = item.label
+    if (Array.isArray(labelValue)) {
+      labelValue = labelValue[0]
+    }
+    if (typeof labelValue === 'string') {
+      switch (labelValue.toUpperCase()) {
+        case 'GAME':
+          return 'games'
+        case 'MOVIE':
+          return 'movies'
+        case 'TV':
+          return 'tv'
+        case 'NEWS':
+          return 'news'
+      }
+    }
+  }
+  
+  // 根据标题内容推断类型
+  const title = item.title?.toLowerCase() || ''
+  
+  // 电视剧关键词
+  const tvKeywords = [
+    'breaking bad', 'bridgerton', 'stranger things', 'sopranos', 'black mirror',
+    'season', 'episode', 'series', 'show', 'tv', 'television', 'netflix', 'hbo',
+    'amazon prime', 'disney+', 'hulu', 'streaming', 'drama', 'comedy', 'thriller'
+  ]
+  
+  // 游戏关键词
+  const gameKeywords = [
+    'game', 'play', 'level', 'player', 'gaming', 'console', 'pc', 'xbox', 'playstation',
+    'nintendo', 'steam', 'mobile game', 'rpg', 'fps', 'strategy', 'puzzle'
+  ]
+  
+  // 电影关键词
+  const movieKeywords = [
+    'movie', 'film', 'cinema', 'theater', 'blockbuster', 'hollywood', 'director',
+    'actor', 'actress', 'oscar', 'award', 'premiere', 'release', 'saw', 'horror'
+  ]
+  
+  // 新闻关键词
+  const newsKeywords = [
+    'news', 'update', 'announcement', 'report', 'breaking', 'latest', 'trending'
+  ]
+  
+  // 检查电视剧关键词
+  if (tvKeywords.some(keyword => title.includes(keyword))) {
+    return 'tv'
+  }
+  
+  // 检查游戏关键词
+  if (gameKeywords.some(keyword => title.includes(keyword))) {
+    return 'games'
+  }
+  
+  // 检查电影关键词
+  if (movieKeywords.some(keyword => title.includes(keyword))) {
+    return 'movies'
+  }
+  
+  // 检查新闻关键词
+  if (newsKeywords.some(keyword => title.includes(keyword))) {
+    return 'news'
+  }
+  
+  // 默认返回传入的type或games
+  return props.type || 'games'
 }
 
 // 跳转到详情页
@@ -121,9 +220,14 @@ const goToDetail = (item) => {
   // 使用统一的数据工具函数
   const addressBar = dataUtils.getAddressBar(item)
   
-  // 优先使用传入的type属性，如果没有则使用数据工具函数推断
+  // 检查传入的type是否为有效的媒体类型
+  const validMediaTypes = ['games', 'movies', 'tv', 'news']
+  const isTypeValid = props.type && validMediaTypes.includes(props.type)
+  
   let routeName
-  if (props.type) {
+  
+  if (isTypeValid) {
+    // 如果传入的type是有效的媒体类型，直接使用
     switch (props.type) {
       case 'games':
         routeName = 'games-detail'
@@ -137,11 +241,26 @@ const goToDetail = (item) => {
       case 'news':
         routeName = 'news-detail'
         break
-      default:
-        routeName = dataUtils.getRouteName(item)
     }
   } else {
-    routeName = dataUtils.getRouteName(item)
+    // 如果传入的type不是有效的媒体类型（如"latest"），使用智能推断
+    const smartType = getSmartMediaType(item)
+    switch (smartType) {
+      case 'games':
+        routeName = 'games-detail'
+        break
+      case 'movies':
+        routeName = 'movies-detail'
+        break
+      case 'tv':
+        routeName = 'tv-detail'
+        break
+      case 'news':
+        routeName = 'news-detail'
+        break
+      default:
+        routeName = 'games-detail'
+    }
   }
   
   // 使用命名路由进行导航
@@ -199,10 +318,17 @@ const goToDetail = (item) => {
   transform: scale(1.05);
 }
 
-.media-category {
+.media-categories {
   position: absolute;
   top: 16px;
   left: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  z-index: 2;
+}
+
+.media-category-tag {
   padding: 6px 12px;
   background: linear-gradient(90deg, #8b5cf6, #06b6d4);
   color: #000;
@@ -211,6 +337,7 @@ const goToDetail = (item) => {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .media-content {

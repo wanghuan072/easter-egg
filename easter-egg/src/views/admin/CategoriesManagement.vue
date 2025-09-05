@@ -139,7 +139,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { categoriesApi } from '@/services/api.js'
+
+const router = useRouter()
 
 // 响应式数据
 const categories = ref([])
@@ -276,7 +279,8 @@ const submitForm = async () => {
     let errorMessage = '操作失败，请重试'
     
     if (error.message.includes('401')) {
-      errorMessage = '操作失败：请重新登录'
+      handleAuthTimeout()
+      return
     } else if (error.message.includes('Category already exists') || error.message.includes('duplicate key')) {
       // 处理重复分类名称错误
       try {
@@ -317,7 +321,8 @@ const deleteCategory = async (id) => {
   } catch (error) {
     console.error('Failed to delete category:', error)
     if (error.message.includes('401')) {
-      alert('删除失败：请重新登录')
+      handleAuthTimeout()
+      return
     } else {
       alert('删除失败，请重试')
     }
@@ -352,6 +357,17 @@ const checkCategoryNameDuplicate = (name, excludeId = null) => {
 const formatDate = (dateString) => {
   if (!dateString) return ''
   return new Date(dateString).toLocaleDateString('zh-CN')
+}
+
+// 处理认证超时
+const handleAuthTimeout = () => {
+  // 清除认证信息
+  localStorage.removeItem('admin_token')
+  localStorage.removeItem('admin_user')
+  
+  // 显示提示并跳转到登录页面
+  alert('登录已超时，请重新登录')
+  router.push('/admin/login')
 }
 
 // 组件挂载时获取数据

@@ -6,7 +6,7 @@
     <!-- Error State -->
     <div v-if="store.errors.home" class="error-banner">
       <p>⚠️ {{ store.errors.home }}</p>
-      <button @click="retryFetch" class="retry-button">重试</button>
+      <button @click="retryFetch" class="retry-button">Retry</button>
     </div>
 
     <!-- Hero Section -->
@@ -54,7 +54,7 @@
             <div class="hero-stats">
               <div class="stat-item">
                 <div class="stat-dot stat-dot-purple"></div>
-                <span>1000+ Secrets</span>
+                <span>Multiple Secrets</span>
               </div>
               <div class="stat-item">
                 <div class="stat-dot stat-dot-cyan"></div>
@@ -191,44 +191,62 @@
             <h2 class="section-title">About <span class="gradient-text">EasterEggVault</span></h2>
             <p class="section-description">
               Your ultimate destination for discovering hidden secrets, easter eggs, and fascinating
-              details in entertainment media.
+              details in entertainment media. Turn every viewing into an exploration adventure.
             </p>
           </div>
 
           <div class="introduction-grid">
             <div class="intro-card">
-              <div class="intro-icon">🔍</div>
-              <h3 class="intro-title">Comprehensive Discovery</h3>
+              <div class="intro-icon">🎮</div>
+              <h3 class="intro-title">Video Game Secrets</h3>
               <p class="intro-description">
-                Explore thousands of carefully documented easter eggs, hidden references, and secret
-                details from video games, movies, and TV shows.
+                Uncover hidden levels, developer easter eggs, character references, and story details
+                in games. From classic titles to the latest releases, discover every carefully crafted secret.
               </p>
             </div>
 
             <div class="intro-card">
-              <div class="intro-icon">🎯</div>
-              <h3 class="intro-title">Expert Curation</h3>
+              <div class="intro-icon">🎬</div>
+              <h3 class="intro-title">Movie Details</h3>
               <p class="intro-description">
-                Our team of dedicated hunters and entertainment experts verify and document every
-                discovery with accuracy and detail.
+                Explore hidden easter eggs, tribute elements, prop details, and behind-the-scenes
+                secrets in films. Understand the director's vision and production team's dedication.
               </p>
             </div>
 
             <div class="intro-card">
-              <div class="intro-icon">🚀</div>
-              <h3 class="intro-title">Always Updated</h3>
+              <div class="intro-icon">📺</div>
+              <h3 class="intro-title">TV Show Easter Eggs</h3>
               <p class="intro-description">
-                Stay current with the latest discoveries and updates as new content is constantly
-                being added to our vault.
+                Discover recurring easter eggs, character connections, plot foreshadowing, and
+                production details in television series. Track hidden clues across seasons.
               </p>
             </div>
 
             <div class="intro-card">
-              <div class="intro-icon">🤝</div>
-              <h3 class="intro-title">Community Driven</h3>
+              <div class="intro-icon">📰</div>
+              <h3 class="intro-title">Latest News</h3>
               <p class="intro-description">
-                Join our community of passionate hunters who share discoveries and help expand our
-                knowledge base.
+                Get the latest easter egg discoveries, behind-the-scenes stories, and industry
+                insights. Stay updated with entertainment trends and never miss fascinating details.
+              </p>
+            </div>
+
+            <div class="intro-card">
+              <div class="intro-icon">📚</div>
+              <h3 class="intro-title">Curated Content</h3>
+              <p class="intro-description">
+                Carefully organized and categorized content library with detailed descriptions
+                and explanations. Each easter egg is documented with context and background information.
+              </p>
+            </div>
+
+            <div class="intro-card">
+              <div class="intro-icon">📱</div>
+              <h3 class="intro-title">Mobile Friendly</h3>
+              <p class="intro-description">
+                Access our vault anywhere, anytime with our responsive design. Discover secrets
+                on your phone, tablet, or desktop with seamless cross-device experience.
               </p>
             </div>
           </div>
@@ -262,18 +280,16 @@
             <div class="faq-item">
               <h3 class="faq-title">How often is new content added?</h3>
               <p class="faq-answer">
-                We add new discoveries daily! Our team works around the clock to document new
-                easter eggs and hidden details as they're discovered by our community and
-                researchers.
+                We update our content weekly with new easter egg discoveries and detailed explanations. 
+                Our team carefully researches and documents each finding to ensure quality and accuracy.
               </p>
             </div>
 
             <div class="faq-item">
               <h3 class="faq-title">Can I submit my own discoveries?</h3>
               <p class="faq-answer">
-                Absolutely! We welcome submissions from our community. If you've found something
-                interesting, you can submit it through our submission form, and our team will
-                review and verify it.
+                We'd love to hear about your discoveries! Please contact us via email to share your findings 
+                or suggestions. We're always interested in learning about new easter eggs and hidden details.
               </p>
             </div>
 
@@ -288,33 +304,32 @@
             <div class="faq-item">
               <h3 class="faq-title">Are all easter eggs verified?</h3>
               <p class="faq-answer">
-                Yes, every easter egg in our vault has been personally verified by our team. We
-                ensure accuracy and provide detailed explanations with evidence to support each
-                discovery.
+                We carefully research and document each easter egg to ensure accuracy. Our team takes great care 
+                to provide detailed explanations and context for every discovery in our vault.
               </p>
             </div>
 
             <div class="faq-item">
-              <h3 class="faq-title">How can I become a contributor?</h3>
+              <h3 class="faq-title">How can I contact you?</h3>
               <p class="faq-answer">
-                We're always looking for passionate easter egg hunters to join our team. If you have a keen eye for details, 
-                love researching hidden secrets, and want to share your discoveries with the world, contact us through our community section.
+                For questions, suggestions, or to share discoveries, please reach out to us via email. 
+                We appreciate your feedback and are always interested in hearing from fellow easter egg enthusiasts.
               </p>
             </div>
 
             <div class="faq-item">
-              <h3 class="faq-title">Do you cover international media?</h3>
+              <h3 class="faq-title">What types of content do you cover?</h3>
               <p class="faq-answer">
-                Yes! Our vault includes easter eggs from media around the world, including international films, anime, 
-                foreign TV shows, and games from different regions. We believe great secrets can be found everywhere.
+                We focus on popular video games, movies, and TV shows with a strong emphasis on mainstream 
+                entertainment content. Our collection includes well-known titles and their hidden secrets.
               </p>
             </div>
 
             <div class="faq-item">
-              <h3 class="faq-title">Are there easter eggs in the vault itself?</h3>
+              <h3 class="faq-title">Is the website free to use?</h3>
               <p class="faq-answer">
-                Maybe! 🕵️‍♂️ We love easter eggs as much as you do, so we've hidden a few surprises throughout the website. 
-                Keep your eyes peeled for hidden messages, secret animations, and other fun discoveries as you explore.
+                Yes! EasterEggVault is completely free to browse and explore. We believe that discovering 
+                hidden secrets should be accessible to everyone who loves entertainment media.
               </p>
             </div>
           </div>

@@ -160,9 +160,94 @@ const getValidTags = (classify) => {
   return classify.filter(tag => tag && tag.trim() !== '').slice(0, 3)
 }
 
-// 获取媒体类型 - 使用统一的数据工具函数
+// 获取媒体类型 - 根据搜索结果的实际来源判断
 const getMediaType = (item) => {
-  return dataUtils.getMediaType(item)
+  // 优先使用 media_type 字段
+  if (item.mediaType) {
+    switch (item.mediaType.toLowerCase()) {
+      case 'games':
+      case 'game':
+        return 'games'
+      case 'movies':
+      case 'movie':
+        return 'movies'
+      case 'tv':
+      case 'tvshow':
+        return 'tv'
+      case 'news':
+        return 'news'
+    }
+  }
+  
+  // 其次使用 label 字段
+  if (item.label) {
+    let labelValue = item.label
+    if (Array.isArray(labelValue)) {
+      labelValue = labelValue[0]
+    }
+    if (typeof labelValue === 'string') {
+      switch (labelValue.toUpperCase()) {
+        case 'GAME':
+          return 'games'
+        case 'MOVIE':
+          return 'movies'
+        case 'TV':
+          return 'tv'
+        case 'NEWS':
+          return 'news'
+      }
+    }
+  }
+  
+  // 根据标题内容推断类型
+  const title = item.title?.toLowerCase() || ''
+  
+  // 电视剧关键词
+  const tvKeywords = [
+    'breaking bad', 'bridgerton', 'stranger things', 'sopranos', 'black mirror',
+    'season', 'episode', 'series', 'show', 'tv', 'television', 'netflix', 'hbo',
+    'amazon prime', 'disney+', 'hulu', 'streaming', 'drama', 'comedy', 'thriller'
+  ]
+  
+  // 游戏关键词
+  const gameKeywords = [
+    'game', 'play', 'level', 'player', 'gaming', 'console', 'pc', 'xbox', 'playstation',
+    'nintendo', 'steam', 'mobile game', 'rpg', 'fps', 'strategy', 'puzzle'
+  ]
+  
+  // 电影关键词
+  const movieKeywords = [
+    'movie', 'film', 'cinema', 'theater', 'blockbuster', 'hollywood', 'director',
+    'actor', 'actress', 'oscar', 'award', 'premiere', 'release'
+  ]
+  
+  // 新闻关键词
+  const newsKeywords = [
+    'news', 'update', 'announcement', 'report', 'breaking', 'latest', 'trending'
+  ]
+  
+  // 检查电视剧关键词
+  if (tvKeywords.some(keyword => title.includes(keyword))) {
+    return 'tv'
+  }
+  
+  // 检查游戏关键词
+  if (gameKeywords.some(keyword => title.includes(keyword))) {
+    return 'games'
+  }
+  
+  // 检查电影关键词
+  if (movieKeywords.some(keyword => title.includes(keyword))) {
+    return 'movies'
+  }
+  
+  // 检查新闻关键词
+  if (newsKeywords.some(keyword => title.includes(keyword))) {
+    return 'news'
+  }
+  
+  // 默认返回 games
+  return 'games'
 }
 
 // 重试搜索
@@ -263,7 +348,7 @@ onMounted(() => {
 /* Search Header */
 .search-header {
   text-align: center;
-  padding: 60px 0 40px;
+  padding: 100px 0 40px;
 }
 
 .search-title {

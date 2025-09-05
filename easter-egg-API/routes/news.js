@@ -55,7 +55,7 @@ router.get('/', async (req, res) => {
 
     const result = await query(queryText, params);
     
-    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row, 'news'));
     
     const countQuery = `SELECT COUNT(*) FROM ${DATA_STRUCTURE.TABLES.NEWS}`;
     const countResult = await query(countQuery);
@@ -87,7 +87,7 @@ router.get('/latest', async (req, res) => {
       [limitNum]
     );
     
-    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row, 'news'));
     sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching latest news:', error);
@@ -108,7 +108,7 @@ router.get('/:addressBar', async (req, res) => {
       return sendError(res, 'News not found', 404);
     }
     
-    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    const transformedData = transformData.dbToFrontend(result.rows[0], 'news');
     sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching news:', error);
@@ -203,7 +203,7 @@ router.post('/', verifyToken, async (req, res) => {
       ]
     );
 
-    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    const transformedData = transformData.dbToFrontend(result.rows[0], 'news');
     sendResponse(res, transformedData, null, 'News created successfully');
   } catch (error) {
     console.error('Error creating news:', error);
@@ -253,7 +253,7 @@ router.put('/:id', verifyToken, async (req, res) => {
       return sendError(res, 'News not found', 404);
     }
 
-    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    const transformedData = transformData.dbToFrontend(result.rows[0], 'news');
     sendResponse(res, transformedData, null, 'News updated successfully');
   } catch (error) {
     console.error('Error updating news:', error);

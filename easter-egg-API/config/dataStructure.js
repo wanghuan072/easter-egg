@@ -79,7 +79,7 @@ export const DATA_STRUCTURE = {
 // 数据转换函数
 export const transformData = {
   // 数据库行转换为前端格式
-  dbToFrontend: (dbRow) => {
+  dbToFrontend: (dbRow, mediaType = null) => {
     const result = {
       id: dbRow.id,
       title: dbRow.title,
@@ -101,7 +101,8 @@ export const transformData = {
       ratingCount: dbRow.rating_count,
       createdBy: dbRow.created_by,
       updatedBy: dbRow.updated_by,
-      updatedAt: dbRow.updated_at
+      updatedAt: dbRow.updated_at,
+      mediaType: mediaType // 添加媒体类型字段
     };
     
     return result;

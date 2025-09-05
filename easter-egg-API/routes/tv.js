@@ -55,7 +55,7 @@ router.get('/', async (req, res) => {
 
     const result = await query(queryText, params);
     
-    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row, 'tv'));
     
     const countQuery = `SELECT COUNT(*) FROM ${DATA_STRUCTURE.TABLES.TV}`;
     const countResult = await query(countQuery);
@@ -83,7 +83,7 @@ router.get('/home', async (req, res) => {
       `SELECT * FROM ${DATA_STRUCTURE.TABLES.TV} WHERE is_home = true ORDER BY publish_date DESC LIMIT 6`
     );
     
-    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row, 'tv'));
     sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching home TV shows:', error);
@@ -102,7 +102,7 @@ router.get('/latest', async (req, res) => {
       [limitNum]
     );
     
-    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row, 'tv'));
     sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching latest TV shows:', error);
@@ -123,7 +123,7 @@ router.get('/:addressBar', async (req, res) => {
       return sendError(res, 'TV show not found', 404);
     }
     
-    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    const transformedData = transformData.dbToFrontend(result.rows[0], 'tv');
     sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching TV show:', error);
@@ -208,7 +208,7 @@ router.post('/', verifyToken, async (req, res) => {
       ]
     );
 
-    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    const transformedData = transformData.dbToFrontend(result.rows[0], 'tv');
     sendResponse(res, transformedData, null, 'TV show created successfully');
   } catch (error) {
     console.error('Error creating TV show:', error);
@@ -260,7 +260,7 @@ router.put('/:id', verifyToken, async (req, res) => {
       return sendError(res, 'TV show not found', 404);
     }
 
-    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    const transformedData = transformData.dbToFrontend(result.rows[0], 'tv');
     sendResponse(res, transformedData, null, 'TV show updated successfully');
   } catch (error) {
     console.error('Error updating TV show:', error);

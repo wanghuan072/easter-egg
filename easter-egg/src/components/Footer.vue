@@ -11,10 +11,15 @@
               hidden gem.
             </p>
             <div class="footer-social">
-              <a href="#twitter" class="social-link">🐦</a>
-              <a href="#youtube" class="social-link">📺</a>
-              <a href="#github" class="social-link">💻</a>
-              <a href="#discord" class="social-link">🎮</a>
+              <a href="#twitter" class="social-link" target="_blank">
+                <svg t="1757054287175" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2580" width="200" height="200"><path d="M761.759375 122h132.320625L605 452.4003125 945.08 902H678.8L470.24 629.3196875 231.599375 902H99.2l309.1996875-353.4L82.16 122h273.0403125l188.52 249.24z m-46.4390625 700.8h73.32L315.359375 197.0403125h-78.680625z" fill="#2c2c2c" p-id="2581"></path></svg>
+              </a>
+              <a href="#youtube" class="social-link" target="_blank">
+                <svg t="1757054321480" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3753" width="200" height="200"><path d="M426.666667 682.666667V384l256 149.845333L426.666667 682.666667z m587.093333-355.541334s-10.026667-71.04-40.704-102.357333c-38.954667-41.088-82.602667-41.258667-102.613333-43.648C727.168 170.666667 512.213333 170.666667 512.213333 170.666667h-0.426666s-214.954667 0-358.229334 10.453333c-20.053333 2.389333-63.658667 2.56-102.656 43.648-30.677333 31.317333-40.661333 102.4-40.661333 102.4S0 410.538667 0 493.952v78.293333c0 83.456 10.24 166.912 10.24 166.912s9.984 71.04 40.661333 102.357334c38.997333 41.088 90.154667 39.765333 112.938667 44.074666C245.76 893.568 512 896 512 896s215.168-0.341333 358.442667-10.752c20.053333-2.432 63.658667-2.602667 102.613333-43.690667 30.72-31.317333 40.704-102.4 40.704-102.4s10.24-83.413333 10.24-166.869333v-78.250667c0-83.456-10.24-166.912-10.24-166.912z" fill="#FF0000" p-id="3754"></path></svg>
+              </a>
+              <a href="#facebook" class="social-link" target="_blank">
+                <svg t="1757054421030" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7352" width="200" height="200"><path d="M512 0C228.430769 0 0 228.430769 0 512s228.430769 512 512 512 512-228.430769 512-512S795.569231 0 512 0z m173.292308 291.446154h-63.015385c-15.753846-3.938462-35.446154 3.938462-47.261538 15.753846-7.876923 11.815385-11.815385 27.569231-11.815385 43.323077v74.830769h118.153846l-15.753846 118.153846h-102.4v303.261539h-122.092308v-303.261539H338.707692v-118.153846h102.4V334.769231c-3.938462-43.323077 11.815385-82.707692 43.323077-114.215385 31.507692-27.569231 70.892308-43.323077 110.276923-39.384615 27.569231-3.938462 59.076923 0 90.584616 3.938461v106.338462z" fill="#080405" p-id="7353"></path></svg>
+              </a>
             </div>
           </div>
 
@@ -58,12 +63,7 @@
 
         <div class="footer-bottom">
           <div class="footer-copyright">
-            <p>&copy; 2025 EasterEggVault. All rights reserved.</p>
-          </div>
-          <div class="footer-legal">
-            <router-link to="/privacy">Privacy Policy</router-link>
-            <router-link to="/terms">Terms of Service</router-link>
-            <router-link to="/copyright">Copyright</router-link>
+            <p>&copy; 2025 eastereggvault.com. All rights reserved.</p>
           </div>
         </div>
       </div>
@@ -158,7 +158,8 @@ onMounted(async () => {
   justify-content: center;
   width: 40px;
   height: 40px;
-  background-color: #374151;
+  padding: 8px;
+  background-color: #fff;
   border-radius: 8px;
   color: #a0a0a0;
   text-decoration: none;
@@ -167,9 +168,7 @@ onMounted(async () => {
 }
 
 .social-link:hover {
-  background-color: rgba(139, 92, 246, 0.2);
-  color: #8b5cf6;
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+  transform: scale(1.1);
 }
 
 .footer-links {
@@ -220,7 +219,7 @@ onMounted(async () => {
 
 .footer-bottom {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding-top: 24px;
   border-top: 1px solid #374151;
@@ -250,6 +249,8 @@ onMounted(async () => {
   margin: 0 auto;
   padding: 0 20px;
 }
+
+
 
 /* 响应式设计 - 1024px 断点 */
 @media (max-width: 1024px) {

@@ -40,6 +40,7 @@
       @close="closeForm"
       @save="handleSaveContent"
     />
+
   </div>
 </template>
 
@@ -174,6 +175,12 @@ const handleSaveContent = async (data) => {
       // 自动刷新数据
       window.dispatchEvent(new CustomEvent('refresh-data'))
     } else {
+      // 检查是否是认证错误
+      if (response.status === 401) {
+        handleAuthTimeout()
+        return
+      }
+      
       const errorText = await response.text()
       console.error('保存失败:', errorText)
       alert(`保存失败: ${errorText}`)
@@ -198,6 +205,17 @@ const closeForm = () => {
 const handleRefresh = () => {
   // 触发全局刷新事件
   window.dispatchEvent(new CustomEvent('refresh-data'))
+}
+
+// 处理认证超时
+const handleAuthTimeout = () => {
+  // 清除认证信息
+  localStorage.removeItem('admin_token')
+  localStorage.removeItem('admin_user')
+  
+  // 显示提示并跳转到登录页面
+  alert('登录已超时，请重新登录')
+  router.push('/admin/login')
 }
 
 // 检查认证状态

@@ -48,8 +48,8 @@
         <div class="content-wrapper">
           <!-- 详情内容 -->
           <div class="details-content">
-            <!-- iframe 展示区域 -->
-            <div class="iframe-container">
+            <!-- iframe 展示区域 - 新闻不显示 -->
+            <div v-if="contentType !== 'news'" class="iframe-container">
               <!-- 预览图片和播放按钮 -->
               <div v-if="!isIframeLoaded" class="iframe-preview" @click="loadIframe">
                 <img 
@@ -72,10 +72,6 @@
                 class="content-iframe"
                 title="Content Display"
               ></iframe>
-            </div>
-            
-            <div class="content-header">
-              <h2>Content Details</h2>
             </div>
             <div class="content-body" v-html="itemData?.detailsHtml"></div>
           </div>
@@ -132,8 +128,9 @@
         </div>
       </div>
     </section>
-
     <Footer />
+
+    
   </div>
 </template>
 
@@ -437,7 +434,7 @@ onUnmounted(() => {
   font-size: 1.75rem;
   font-weight: 700;
   color: #ffffff;
-  margin: 32px 0 16px 0;
+  margin: 0 0 16px 0;
   padding-bottom: 12px;
   border-bottom: 2px solid #8b5cf6;
 }
@@ -638,7 +635,7 @@ onUnmounted(() => {
 @media (max-width: 1024px) {
   .content-body :deep(h2) {
     font-size: 1.5rem;
-    margin: 28px 0 14px 0;
+    margin: 0 0 14px 0;
     padding-bottom: 10px;
   }
   
@@ -702,7 +699,7 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .content-body :deep(h2) {
     font-size: 20px;
-    margin: 10px 0;
+    margin: 0 0 10px 0;
     padding-bottom: 8px;
   }
   

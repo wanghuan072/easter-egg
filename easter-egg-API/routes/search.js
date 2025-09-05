@@ -83,7 +83,7 @@ router.get('/', async (req, res) => {
     const paginatedResults = results.slice(offset, offset + limitNum);
     
     // 转换数据格式
-    const transformedData = paginatedResults.map(row => transformData.dbToFrontend(row));
+    const transformedData = paginatedResults.map(row => transformData.dbToFrontend(row, row.media_type));
 
     const pagination = {
       page: pageNum,

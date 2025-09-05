@@ -71,7 +71,7 @@ router.get('/', async (req, res) => {
 
     const result = await query(queryText, params);
     
-    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row, 'movies'));
     
     const countQuery = `SELECT COUNT(*) FROM ${DATA_STRUCTURE.TABLES.MOVIES}`;
     const countResult = await query(countQuery);
@@ -99,7 +99,7 @@ router.get('/home', async (req, res) => {
       `SELECT * FROM ${DATA_STRUCTURE.TABLES.MOVIES} WHERE is_home = true ORDER BY publish_date DESC LIMIT 6`
     );
     
-    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row, 'movies'));
     sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching home movies:', error);
@@ -118,7 +118,7 @@ router.get('/latest', async (req, res) => {
       [limitNum]
     );
     
-    const transformedData = result.rows.map(row => transformData.dbToFrontend(row));
+    const transformedData = result.rows.map(row => transformData.dbToFrontend(row, 'movies'));
     sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching latest movies:', error);
@@ -139,7 +139,7 @@ router.get('/:addressBar', async (req, res) => {
       return sendError(res, 'Movie not found', 404);
     }
     
-    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    const transformedData = transformData.dbToFrontend(result.rows[0], 'movies');
     sendResponse(res, transformedData);
   } catch (error) {
     console.error('Error fetching movie:', error);
@@ -230,7 +230,7 @@ router.post('/', verifyToken, async (req, res) => {
       insertData
     );
 
-    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    const transformedData = transformData.dbToFrontend(result.rows[0], 'movies');
     sendResponse(res, transformedData, null, 'Movie created successfully');
   } catch (error) {
     console.error('Error creating movie:', error);
@@ -283,7 +283,7 @@ router.put('/:id', verifyToken, async (req, res) => {
       return sendError(res, 'Movie not found', 404);
     }
 
-    const transformedData = transformData.dbToFrontend(result.rows[0]);
+    const transformedData = transformData.dbToFrontend(result.rows[0], 'movies');
     sendResponse(res, transformedData, null, 'Movie updated successfully');
   } catch (error) {
     console.error('Error updating movie:', error);
