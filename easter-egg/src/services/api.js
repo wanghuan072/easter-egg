@@ -145,9 +145,9 @@ export const categoriesApi = {
     });
   },
 
-  // 删除分类
+  // 删除分类（硬删除）
   delete: async (id) => {
-    const url = buildApiUrl(`/categories/${id}`);
+    const url = buildApiUrl(`/categories/${id}?hard=true`);
     const token = localStorage.getItem('admin_token');
     return await apiRequest(url, {
       method: 'DELETE',

@@ -14,7 +14,7 @@
               :src="item.imageUrl"
               :alt="item.imageAlt"
             />
-            <div class="media-category">{{ Array.isArray(item.label) ? item.label[0] : item.label }}</div>
+            <div class="media-category">{{ getAllClassifyTags(item) }}</div>
           </div>
           <div class="media-content">
             <h3 class="media-title">{{ item.title }}</h3>
@@ -97,11 +97,52 @@ const moreButtonLink = computed(() => {
   return `/${props.type}`
 })
 
+// 获取显示的所有分类标签
+const getAllClassifyTags = (item) => {
+  // 显示classify字段的所有有效标签
+  if (item.classify && Array.isArray(item.classify)) {
+    const validTags = item.classify.filter(tag => tag && tag.trim() !== '')
+    if (validTags.length > 0) {
+      return validTags.join(', ')
+    }
+  }
+  
+  // 如果没有有效的classify，则显示label字段
+  if (item.label) {
+    return Array.isArray(item.label) ? item.label[0] : item.label
+  }
+  
+  // 默认显示媒体类型
+  return props.type.toUpperCase()
+}
+
 // 跳转到详情页
 const goToDetail = (item) => {
   // 使用统一的数据工具函数
   const addressBar = dataUtils.getAddressBar(item)
-  const routeName = dataUtils.getRouteName(item)
+  
+  // 优先使用传入的type属性，如果没有则使用数据工具函数推断
+  let routeName
+  if (props.type) {
+    switch (props.type) {
+      case 'games':
+        routeName = 'games-detail'
+        break
+      case 'movies':
+        routeName = 'movies-detail'
+        break
+      case 'tv':
+        routeName = 'tv-detail'
+        break
+      case 'news':
+        routeName = 'news-detail'
+        break
+      default:
+        routeName = dataUtils.getRouteName(item)
+    }
+  } else {
+    routeName = dataUtils.getRouteName(item)
+  }
   
   // 使用命名路由进行导航
   router.push({

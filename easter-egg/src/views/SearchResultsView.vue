@@ -54,7 +54,7 @@
                   <span class="result-date">{{ formatDate(item.publishDate) }}</span>
                   <div class="result-tags">
                     <span 
-                      v-for="tag in item.classify.slice(0, 3)" 
+                      v-for="tag in getValidTags(item.classify)" 
                       :key="tag"
                       class="tag"
                     >
@@ -153,6 +153,12 @@ const performSearch = async () => {
 }
 
 
+
+// 获取有效的标签
+const getValidTags = (classify) => {
+  if (!classify || !Array.isArray(classify)) return []
+  return classify.filter(tag => tag && tag.trim() !== '').slice(0, 3)
+}
 
 // 获取媒体类型 - 使用统一的数据工具函数
 const getMediaType = (item) => {

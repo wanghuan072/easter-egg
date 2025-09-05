@@ -104,8 +104,12 @@
               placeholder="请输入分类名称（如：射击类、动作类）"
               required
               class="form-input"
+              :class="{ 'error': checkCategoryNameDuplicate(formData.name, showEditModal ? editingCategory?.id : null) }"
             />
             <small class="form-help">分类名称将同时用于系统内部标识和前端显示</small>
+            <div v-if="checkCategoryNameDuplicate(formData.name, showEditModal ? editingCategory?.id : null)" class="form-error">
+              ⚠️ 分类名称 "{{ formData.name }}" 已存在，当前用于 {{ getMediaTypeLabel(checkCategoryNameDuplicate(formData.name, showEditModal ? editingCategory?.id : null).media_type) }} 类型
+            </div>
           </div>
           
           <div class="form-group">
@@ -213,6 +217,19 @@ const submitForm = async () => {
   isSubmitting.value = true
   
   try {
+    // 前端验证：检查分类名称是否已存在
+    if (!showEditModal.value) {
+      const existingCategory = categories.value.find(cat => 
+        cat.name.toLowerCase() === formData.value.name.toLowerCase()
+      )
+      
+      if (existingCategory) {
+        alert(`分类名称 "${formData.value.name}" 已存在，当前用于 ${getMediaTypeLabel(existingCategory.media_type)} 类型。请使用不同的名称。`)
+        isSubmitting.value = false
+        return
+      }
+    }
+    
     // 准备提交数据，设置默认值
     const submitData = {
       ...formData.value,
@@ -254,24 +271,38 @@ const submitForm = async () => {
     }
   } catch (error) {
     console.error('Failed to submit form:', error)
+    
+    // 解析错误信息
+    let errorMessage = '操作失败，请重试'
+    
     if (error.message.includes('401')) {
-      alert('操作失败：请重新登录')
-    } else {
-      alert('操作失败，请重试')
+      errorMessage = '操作失败：请重新登录'
+    } else if (error.message.includes('Category already exists') || error.message.includes('duplicate key')) {
+      // 处理重复分类名称错误
+      try {
+        const errorData = JSON.parse(error.message.split('message: ')[1])
+        errorMessage = errorData || '分类名称已存在，请使用不同的名称'
+      } catch (parseError) {
+        errorMessage = '分类名称已存在，请使用不同的名称'
+      }
+    } else if (error.message.includes('Missing required fields')) {
+      errorMessage = '请填写所有必填字段'
     }
+    
+    alert(errorMessage)
   } finally {
     isSubmitting.value = false
   }
 }
 
-// 删除分类
+// 删除分类（硬删除）
 const deleteCategory = async (id) => {
-  if (!confirm('确定要删除这个分类标签吗？删除后相关内容的分类信息可能会丢失。')) return
+  if (!confirm('⚠️ 警告：确定要删除这个分类标签吗？\n\n此操作将：\n- 完全从数据库中删除该分类\n- 无法恢复\n- 可能影响已使用该分类的内容\n\n请谨慎操作！')) return
   
   try {
     const response = await categoriesApi.delete(id)
     if (response.success) {
-      alert('分类删除成功')
+      alert('分类已删除')
       await fetchCategories()
       // 触发全局事件，通知其他组件刷新分类数据
       window.dispatchEvent(new CustomEvent('categories-updated', {
@@ -303,6 +334,18 @@ const getMediaTypeLabel = (mediaType) => {
     tv: '电视'
   }
   return labels[mediaType] || mediaType
+}
+
+// 检查分类名称是否重复
+const checkCategoryNameDuplicate = (name, excludeId = null) => {
+  if (!name) return null
+  
+  const existingCategory = categories.value.find(cat => 
+    cat.name.toLowerCase() === name.toLowerCase() && 
+    (excludeId === null || cat.id !== excludeId)
+  )
+  
+  return existingCategory
 }
 
 // 格式化日期
@@ -687,6 +730,23 @@ onMounted(() => {
 
 .form-input::placeholder {
   color: #6b7280;
+}
+
+.form-input.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.form-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #ef4444;
+  line-height: 1.4;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .form-select option {

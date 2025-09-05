@@ -57,7 +57,7 @@
                   :alt="newsItem.title"
                   class="news-img"
                 />
-                <div class="news-category-badge">{{ Array.isArray(newsItem.label) ? newsItem.label[0] : newsItem.label }}</div>
+                <div class="news-category-badge">{{ getAllClassifyTags(newsItem) }}</div>
               </div>
               
               <!-- 右侧内容 -->
@@ -152,6 +152,25 @@ const goToDetail = (newsItem) => {
 
 const changePage = (page) => {
   store.fetchNews({ page })
+}
+
+// 获取显示的所有分类标签
+const getAllClassifyTags = (item) => {
+  // 显示classify字段的所有有效标签
+  if (item.classify && Array.isArray(item.classify)) {
+    const validTags = item.classify.filter(tag => tag && tag.trim() !== '')
+    if (validTags.length > 0) {
+      return validTags.join(', ')
+    }
+  }
+  
+  // 如果没有有效的classify，则显示label字段
+  if (item.label) {
+    return Array.isArray(item.label) ? item.label[0] : item.label
+  }
+  
+  // 默认显示媒体类型
+  return 'NEWS'
 }
 
 const formatDate = (dateString) => {

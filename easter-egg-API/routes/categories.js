@@ -101,17 +101,18 @@ router.post('/', verifyToken, async (req, res) => {
       });
     }
     
-    // 检查分类名称是否已存在
+    // 检查分类名称是否已存在（全局唯一约束）
     const existingCategory = await query(
-      'SELECT id FROM egg_categories WHERE name = $1 AND media_type = $2',
-      [name, media_type]
+      'SELECT id, media_type FROM egg_categories WHERE name = $1',
+      [name]
     );
     
     if (existingCategory.rows.length > 0) {
+      const existingMediaType = existingCategory.rows[0].media_type;
       return res.status(400).json({
         success: false,
         error: 'Category already exists',
-        message: 'A category with this name already exists for this media type'
+        message: `分类名称 "${name}" 已存在，当前用于 ${existingMediaType} 类型。请使用不同的名称。`
       });
     }
     
@@ -157,18 +158,19 @@ router.put('/:id', verifyToken, async (req, res) => {
     
     const oldName = existingCategory.rows[0].name;
     
-    // 如果更改了名称，检查是否与其他分类重复
+    // 如果更改了名称，检查是否与其他分类重复（全局唯一约束）
     if (name && name !== oldName) {
       const duplicateCategory = await query(
-        'SELECT id FROM egg_categories WHERE name = $1 AND media_type = $2 AND id != $3',
-        [name, media_type, id]
+        'SELECT id, media_type FROM egg_categories WHERE name = $1 AND id != $2',
+        [name, id]
       );
       
       if (duplicateCategory.rows.length > 0) {
+        const existingMediaType = duplicateCategory.rows[0].media_type;
         return res.status(400).json({
           success: false,
           error: 'Category name already exists',
-          message: 'A category with this name already exists for this media type'
+          message: `分类名称 "${name}" 已存在，当前用于 ${existingMediaType} 类型。请使用不同的名称。`
         });
       }
     }

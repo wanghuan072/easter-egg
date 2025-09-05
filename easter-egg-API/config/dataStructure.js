@@ -88,7 +88,7 @@ export const transformData = {
       isLatest: dbRow.is_latest,
       isHome: dbRow.is_home,
       label: dbRow.label,
-      classify: dbRow.classify || [],
+      classify: Array.isArray(dbRow.classify) ? dbRow.classify.filter(tag => tag && tag.trim() !== '') : [],
       imageUrl: dbRow.image_url,
       imageAlt: dbRow.image_alt,
       addressBar: dbRow.address_bar,
