@@ -216,12 +216,6 @@ onMounted(async () => {
   background-color: #100e19;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
 /* Hero Section */
 .hero-section {
   position: relative;
@@ -354,14 +348,14 @@ onMounted(async () => {
 .news-list {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 20px;
   margin-bottom: 48px;
 }
 
 .news-item {
   display: flex;
-  gap: 32px;
-  padding: 32px;
+  gap: 20px;
+  padding: 20px;
   background: rgba(30, 41, 59, 0.8);
   border-radius: 16px;
   border: 1px solid #334155;
@@ -710,14 +704,14 @@ onMounted(async () => {
   }
   
   .news-list {
-    gap: 20px;
+    gap: 10px;
     margin-bottom: 20px;
   }
   
   .news-item {
     flex-direction: column;
-    gap: 20px;
-    padding: 20px;
+    gap: 10px;
+    padding: 10px;
   }
   
   .news-image {
@@ -733,20 +727,17 @@ onMounted(async () => {
   }
   
   .news-title {
-    font-size: 16px;
+    font-size: 14px;
     margin-bottom: 10px;
   }
   
   .news-description {
     font-size: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   
   .news-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
   }
   
   .news-date {

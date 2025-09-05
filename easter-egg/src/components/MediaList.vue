@@ -1,6 +1,5 @@
 <template>
   <section class="media-section">
-    <div class="container">
       <!-- 媒体网格 -->
       <div class="media-grid">
         <article 
@@ -44,7 +43,6 @@
           <span class="arrow">→</span>
         </router-link>
       </div>
-    </div>
   </section>
 </template>
 
@@ -282,8 +280,8 @@ const goToDetail = (item) => {
 .media-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  margin-bottom: 48px;
+  gap: 20px;
+  margin-bottom: 40px;
 }
 
 .media-card {
@@ -416,8 +414,7 @@ const goToDetail = (item) => {
 @media (max-width: 1024px) {
   .media-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 28px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
   }
   
   .media-content {
@@ -460,7 +457,7 @@ const goToDetail = (item) => {
 @media (max-width: 768px) {
   .media-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: 10px;
     margin-bottom: 20px;
   }
   
@@ -469,7 +466,7 @@ const goToDetail = (item) => {
   }
   
   .media-content {
-    padding: 12px;
+    padding: 10px;
   }
   
   .media-title {
@@ -508,6 +505,16 @@ const goToDetail = (item) => {
   
   .arrow {
     font-size: 16px;
+  }
+
+  .media-categories{
+    top: 5px;
+    left: 5px;
+  }
+
+  .media-category-tag{
+    padding: 5px 10px;
+    font-size: 0.5rem;
   }
 }
 </style>

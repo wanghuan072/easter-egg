@@ -137,14 +137,6 @@ onMounted(async () => {
   background-color: #100e19;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-
-
 /* Hero Section */
 .hero-section {
   position: relative;

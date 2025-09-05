@@ -200,12 +200,10 @@ const fetchData = async () => {
     const type = contentType.value
     
     if (!type || !props.addressBar) {
-      console.error('Missing required parameters:', { type, addressBar: props.addressBar })
       return
     }
     
     const apiUrl = `${apiBase}/api/${type}/${props.addressBar}`
-    console.log('Fetching data from:', apiUrl)
     
     const res = await axios.get(apiUrl)
     
@@ -214,7 +212,6 @@ const fetchData = async () => {
     }
     
     const rawData = res.data.data || res.data
-    console.log('Received data:', rawData)
     
     // Ensure label field is array format
     if (!rawData.label) {
@@ -401,14 +398,14 @@ onUnmounted(() => {
 .content-wrapper {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 60px;
+  gap: 20px;
   align-items: start;
 }
 
 .details-content {
   background-color: #1e293b;
   border-radius: 16px;
-  padding: 40px;
+  padding: 20px;
   border: 1px solid #334155;
 }
 
@@ -424,7 +421,6 @@ onUnmounted(() => {
 .content-body {
   width: 100%;
   overflow: hidden;
-  margin-top: 20px;
   line-height: 1.7;
   color: #e2e8f0;
 }
@@ -786,7 +782,7 @@ onUnmounted(() => {
 
 /* iframe 样式 */
 .iframe-container {
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #334155;
@@ -891,15 +887,13 @@ onUnmounted(() => {
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 20px;
 }
-
-
 
 .info-card {
   background-color: #1e293b;
   border-radius: 16px;
-  padding: 24px;
+  padding: 20px;
   border: 1px solid #334155;
 }
 
@@ -990,11 +984,7 @@ onUnmounted(() => {
   
   .content-wrapper {
     grid-template-columns: 1fr;
-    gap: 40px;
-  }
-  
-  .details-content {
-    padding: 32px;
+    gap: 20px;
   }
   
   .content-header h2 {
@@ -1119,11 +1109,11 @@ onUnmounted(() => {
   }
   
   .content-wrapper {
-    gap: 20px;
+    gap: 10px;
   }
   
   .details-content {
-    padding: 20px;
+    padding: 10px;
   }
   
   .content-header h2 {
@@ -1158,7 +1148,7 @@ onUnmounted(() => {
   }
   
   .info-card {
-    padding: 16px;
+    padding: 10px;
   }
   
   .info-card h3 {

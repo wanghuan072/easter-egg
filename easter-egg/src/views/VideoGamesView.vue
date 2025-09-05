@@ -2,9 +2,6 @@
   <div class="video-games-view">
     <!-- Header Component -->
     <Header />
-
-
-
     <!-- Hero Section -->
     <section class="hero-section">
       <!-- 背景装饰元素 -->
@@ -134,12 +131,6 @@ onMounted(async () => {
   line-height: 1.6;
   color: #f5f5f5;
   background-color: #100e19;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
 }
 
 /* Hero Section */

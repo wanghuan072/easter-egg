@@ -176,7 +176,6 @@ const submitReview = async () => {
       }
     })
 
-    console.log('📥 服务器响应:', response)
 
     if (response.data && response.data.success) {
       // 重置表单
@@ -281,7 +280,7 @@ const formatDate = (dateString) => {
 const checkApiConnection = async () => {
   try {
     const response = await axios.get(`${apiBase}/health`)
-    console.log('API connection check:', response.data)
+    // console.log('API connection check:', response.data)
     return true
   } catch (error) {
     console.error('API connection failed:', error)
@@ -291,11 +290,11 @@ const checkApiConnection = async () => {
 
 // 组件挂载时获取数据
 onMounted(async () => {
-  console.log('AnonymousReview mounted with props:', {
-    contentId: props.contentId,
-    contentType: props.contentType,
-    apiBase
-  })
+  // console.log('AnonymousReview mounted with props:', {
+  //   contentId: props.contentId,
+  //   contentType: props.contentType,
+  //   apiBase
+  // })
 
   // 检查API连接
   const isApiConnected = await checkApiConnection()
@@ -320,7 +319,7 @@ onMounted(async () => {
 .review-section {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 15px;
-  padding: 25px;
+  padding: 20px;
   border: 1px solid rgba(139, 92, 246, 0.2);
   margin-bottom: 30px;
 }
@@ -382,7 +381,7 @@ onMounted(async () => {
 /* 评价表单 */
 .review-form {
   margin-bottom: 30px;
-  padding: 25px;
+  padding: 20px;
   background: rgba(30, 41, 59, 0.5);
   border-radius: 12px;
   border: 1px solid rgba(139, 92, 246, 0.2);
@@ -504,7 +503,7 @@ onMounted(async () => {
 
 .no-reviews {
   text-align: center;
-  padding: 40px 20px;
+  padding: 20px;
   color: #a0a0a0;
 }
 
@@ -693,7 +692,7 @@ onMounted(async () => {
 /* 响应式设计 - 768px 断点 (移动端) */
 @media (max-width: 768px) {
   .review-section {
-    padding: 16px;
+    padding: 10px;
     margin-bottom: 20px;
   }
   
@@ -728,7 +727,7 @@ onMounted(async () => {
   }
   
   .review-form {
-    padding: 16px;
+    padding: 10px;
     margin-bottom: 20px;
   }
   
@@ -791,7 +790,7 @@ onMounted(async () => {
   }
   
   .no-reviews {
-    padding: 30px 15px;
+    padding: 15px;
     font-size: 12px;
   }
   
