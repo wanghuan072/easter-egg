@@ -27,11 +27,11 @@
             <div class="footer-link-group">
               <h3 class="footer-link-title">QUICK LINKS</h3>
               <ul class="footer-link-list">
-                <li><router-link to="/">Home</router-link></li>
-                <li><router-link to="/games">Video Games</router-link></li>
-                <li><router-link to="/movies">Movies</router-link></li>
-                <li><router-link to="/tv">TV Shows</router-link></li>
-                <li><router-link to="/news">Latest News</router-link></li>
+                <li><a href="/">Home</a></li>
+                <li><a href="/games">Video Games</a></li>
+                <li><a href="/movies">Movies</a></li>
+                <li><a href="/tv">TV Shows</a></li>
+                <li><a href="/news">Latest News</a></li>
               </ul>
             </div>
 
@@ -41,9 +41,9 @@
                 <li v-if="!isLatestDiscoveriesLoaded" class="footer-loading">Loading...</li>
                 <li v-else-if="latestDiscoveries.length === 0" class="footer-empty">No content available</li>
                 <li v-else v-for="item in latestDiscoveries.slice(0, 4)" :key="item.id">
-                  <router-link :to="getDetailRoute(item)" class="footer-popular-link">
+                  <a :href="getDetailRoute(item)" class="footer-popular-link">
                     {{ item.title }}
-                  </router-link>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -51,11 +51,11 @@
             <div class="footer-link-group">
               <h3 class="footer-link-title">Legal</h3>
               <ul class="footer-link-list">
-                <li><router-link to="/privacy">Privacy Policy</router-link></li>
-                <li><router-link to="/terms">Terms of Use</router-link></li>
-                <li><router-link to="/copyright">Copyright</router-link></li>
-                <li><router-link to="/about">About Us</router-link></li>
-                <li><router-link to="/contact">Contact Us</router-link></li>
+                <li><a href="/privacy">Privacy Policy</a></li>
+                <li><a href="/terms">Terms of Use</a></li>
+                <li><a href="/copyright">Copyright</a></li>
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/contact">Contact Us</a></li>
               </ul>
             </div>
           </div>

@@ -38,10 +38,10 @@
 
       <!-- More按钮 - 只在需要时显示 -->
       <div v-if="showMoreButton" class="more-button-container">
-        <router-link :to="moreButtonLink" class="more-button">
+        <a :href="moreButtonLink" class="more-button">
           <span>More {{ typeLabel }}</span>
           <span class="arrow">→</span>
-        </router-link>
+        </a>
       </div>
   </section>
 </template>

@@ -96,9 +96,9 @@
           <h2>No results found</h2>
           <p>Try adjusting your search terms or browse our categories:</p>
           <div class="suggested-categories">
-            <router-link to="/games" class="category-link">🎮 Games</router-link>
-            <router-link to="/movies" class="category-link">🎬 Movies</router-link>
-            <router-link to="/tv" class="category-link">📺 TV Shows</router-link>
+            <a href="/games" class="category-link">🎮 Games</a>
+            <a href="/movies" class="category-link">🎬 Movies</a>
+            <a href="/tv" class="category-link">📺 TV Shows</a>
             <!-- News 相关链接已移除 -->
           </div>
         </div>

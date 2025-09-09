@@ -9,11 +9,11 @@
         <!-- 桌面端导航菜单 -->
         <nav class="nav-menu desktop-nav">
           <ul class="nav-list">
-            <li><router-link to="/" class="nav-item">Home</router-link></li>
-            <li><router-link to="/games" class="nav-item">Video Games</router-link></li>
-            <li><router-link to="/movies" class="nav-item">Movies</router-link></li>
-            <li><router-link to="/tv" class="nav-item">TV Shows</router-link></li>
-            <li><router-link to="/news" class="nav-item">News</router-link></li>
+            <li><a href="/" class="nav-item">Home</a></li>
+            <li><a href="/games" class="nav-item">Video Games</a></li>
+            <li><a href="/movies" class="nav-item">Movies</a></li>
+            <li><a href="/tv" class="nav-item">TV Shows</a></li>
+            <li><a href="/news" class="nav-item">News</a></li>
           </ul>
         </nav>
 
@@ -29,18 +29,14 @@
       <div class="mobile-menu-overlay" :class="{ 'active': isMobileMenuOpen }" @click="closeMobileMenu"></div>
       <nav class="mobile-nav" :class="{ 'active': isMobileMenuOpen }">
         <ul class="mobile-nav-list">
-          <li><router-link to="/" class="mobile-nav-item" @click="closeMobileMenu">Home</router-link></li>
-          <li><router-link to="/games" class="mobile-nav-item" @click="closeMobileMenu">Video Games</router-link></li>
-          <li><router-link to="/movies" class="mobile-nav-item" @click="closeMobileMenu">Movies</router-link></li>
-          <li><router-link to="/tv" class="mobile-nav-item" @click="closeMobileMenu">TV Shows</router-link></li>
-          <li><router-link to="/news" class="mobile-nav-item" @click="closeMobileMenu">News</router-link></li>
+          <li><a href="/" class="mobile-nav-item" @click="closeMobileMenu">Home</a></li>
+          <li><a href="/games" class="mobile-nav-item" @click="closeMobileMenu">Video Games</a></li>
+          <li><a href="/movies" class="mobile-nav-item" @click="closeMobileMenu">Movies</a></li>
+          <li><a href="/tv" class="mobile-nav-item" @click="closeMobileMenu">TV Shows</a></li>
+          <li><a href="/news" class="mobile-nav-item" @click="closeMobileMenu">News</a></li>
         </ul>
       </nav>
     </div>
-
-
-
-
   </header>
 
 
