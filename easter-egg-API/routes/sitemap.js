@@ -127,6 +127,8 @@ function generateSitemapXML(routes) {
 router.get('/', async (req, res) => {
   try {
     console.log('🗺️ 生成动态站点地图...');
+    console.log(`   请求时间: ${new Date().toISOString()}`);
+    console.log(`   请求头: ${JSON.stringify(req.headers)}`);
     
     // 获取所有动态内容
     const dynamicRoutes = await getAllDynamicContent();
@@ -137,13 +139,17 @@ router.get('/', async (req, res) => {
     // 生成XML
     const sitemapXML = generateSitemapXML(allRoutes);
     
-    // 设置正确的Content-Type
+    // 设置正确的Content-Type和缓存策略
     res.set({
       'Content-Type': 'application/xml',
-      'Cache-Control': 'public, max-age=3600' // 缓存1小时
+      'Cache-Control': 'public, max-age=300, must-revalidate', // 缓存5分钟，必须重新验证
+      'Last-Modified': new Date().toUTCString(),
+      'ETag': `"${Date.now()}"` // 添加ETag强制刷新
     });
     
     console.log(`✅ 站点地图生成完成，包含 ${allRoutes.length} 个URL`);
+    console.log(`   - 静态路由: ${staticRoutes.length}`);
+    console.log(`   - 动态路由: ${dynamicRoutes.length}`);
     res.send(sitemapXML);
     
   } catch (error) {

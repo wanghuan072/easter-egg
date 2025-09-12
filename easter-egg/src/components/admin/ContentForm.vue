@@ -1,5 +1,5 @@
 <template>
-  <div class="form-overlay" @click="handleOverlayClick">
+  <div class="form-overlay">
     <div class="form-modal" @click.stop>
       <div class="form-header">
         <h2>{{ isEdit ? '编辑' : '添加' }}{{ contentTypeText }}</h2>
@@ -195,7 +195,7 @@
           
           <div class="form-row" v-if="contentType !== 'news'">
             <div class="form-group">
-              <label for="iframe_url">视频URL</label>
+              <label for="iframe_url">视频URL(https://www.youtube.com/embed/your-video-id)</label>
               <input
                 id="iframe_url"
                 v-model="formData.iframe_url"
@@ -472,10 +472,6 @@ const handleSubmit = async () => {
   emit('save', dataToSave)
 }
 
-// 处理遮罩层点击
-const handleOverlayClick = () => {
-  emit('close')
-}
 
 // 监听编辑数据变化
 watch(() => props.editData, initFormData, { immediate: true })
