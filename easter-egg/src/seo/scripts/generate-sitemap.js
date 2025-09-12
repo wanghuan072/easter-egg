@@ -26,9 +26,7 @@ const staticRoutes = [
   { path: '/terms', priority: 0.3, changefreq: 'monthly' },
   { path: '/copyright', priority: 0.3, changefreq: 'monthly' },
   { path: '/about', priority: 0.5, changefreq: 'monthly' },
-  { path: '/contact', priority: 0.4, changefreq: 'monthly' },
-  { path: '/admin/login', priority: 0.1, changefreq: 'monthly' },
-  { path: '/admin/dashboard', priority: 0.1, changefreq: 'monthly' }
+  { path: '/contact', priority: 0.4, changefreq: 'monthly' }
 ]
 
 // 获取API数据的函数（带重试机制）
