@@ -19,7 +19,8 @@ import ratingsRoutes from './routes/ratings.js';
 import commentsRoutes from './routes/comments.js';
 import sitemapRoutes from './routes/sitemap.js';
 
-// Database connection will be added later when migrating to Neon
+// Import database connection
+import { testConnection } from './config/database.js';
 
 // Load environment variables
 dotenv.config();
@@ -122,6 +123,11 @@ app.use((err, req, res, next) => {
 // Start server
 const startServer = async () => {
   try {
+    // Test database connection before starting server
+    console.log('🔌 Testing database connection...');
+    await testConnection();
+    console.log('✅ Database connection successful');
+    
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
@@ -130,6 +136,7 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
+    console.error('💡 Please check your DATABASE_URL environment variable');
     process.exit(1);
   }
 };
