@@ -237,11 +237,15 @@ const updateSitemap = async () => {
     if (response.ok) {
       const result = await response.json()
       console.log('✅ 站点地图更新成功:', result)
+      console.log(`   - 总URL数: ${result.totalRoutes}`)
+      console.log(`   - 动态URL数: ${result.dynamicRoutes}`)
+      console.log(`   - 静态URL数: ${result.staticRoutes}`)
     } else {
-      console.warn('⚠️ 站点地图更新失败:', response.status)
+      const errorText = await response.text()
+      console.error('❌ 站点地图更新失败:', response.status, errorText)
     }
   } catch (error) {
-    console.warn('⚠️ 站点地图更新出错:', error)
+    console.error('❌ 站点地图更新出错:', error)
     // 不显示错误给用户，因为这不是关键功能
   }
 }

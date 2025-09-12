@@ -170,8 +170,41 @@ router.post('/update', async (req, res) => {
     // 生成XML
     const sitemapXML = generateSitemapXML(allRoutes);
     
-    // 这里可以添加将站点地图保存到文件系统的逻辑
-    // 或者触发前端重新生成站点地图
+    // 保存到文件系统
+    const fs = await import('fs');
+    const path = await import('path');
+    const { fileURLToPath } = await import('url');
+    
+    // 获取正确的路径
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    
+    // 保存到public和dist目录
+    const publicPath = path.join(__dirname, '..', '..', 'easter-egg', 'public', 'sitemap.xml');
+    const distPath = path.join(__dirname, '..', '..', 'easter-egg', 'dist', 'sitemap.xml');
+    
+    try {
+      console.log(`📁 准备保存站点地图文件到:`);
+      console.log(`   - Public: ${publicPath}`);
+      console.log(`   - Dist: ${distPath}`);
+      
+      // 确保目录存在
+      fs.mkdirSync(path.dirname(publicPath), { recursive: true });
+      fs.mkdirSync(path.dirname(distPath), { recursive: true });
+      
+      // 写入文件
+      fs.writeFileSync(publicPath, sitemapXML, 'utf8');
+      fs.writeFileSync(distPath, sitemapXML, 'utf8');
+      
+      console.log(`✅ 站点地图文件已成功保存`);
+      console.log(`   - 文件大小: ${sitemapXML.length} 字符`);
+      console.log(`   - 包含URL数量: ${allRoutes.length}`);
+    } catch (fileError) {
+      console.error('❌ 保存站点地图文件失败:', fileError);
+      console.error(`   错误详情: ${fileError.message}`);
+      console.error(`   尝试保存到: ${publicPath}`);
+      // 不阻止响应，因为API数据已经生成
+    }
     
     console.log(`✅ 站点地图更新完成，包含 ${allRoutes.length} 个URL`);
     
