@@ -242,8 +242,16 @@ const updateSitemap = async () => {
       console.log(`   - 静态URL数: ${result.staticRoutes}`)
       console.log(`   - 站点地图URL: ${result.sitemapUrl}`)
       
-      // 显示成功提示给用户
-      alert(`站点地图更新成功！\n总URL数: ${result.totalRoutes}\n动态URL数: ${result.dynamicRoutes}\n静态URL数: ${result.staticRoutes}`)
+      // 显示成功提示给用户，包含查看链接
+      const message = `站点地图更新成功！\n总URL数: ${result.totalRoutes}\n动态URL数: ${result.dynamicRoutes}\n静态URL数: ${result.staticRoutes}\n\n点击确定查看最新站点地图`
+      alert(message)
+      
+      // 自动打开站点地图页面（带时间戳强制刷新）
+      if (result.sitemapUrl) {
+        const timestamp = Date.now()
+        const urlWithTimestamp = `${result.sitemapUrl}?t=${timestamp}`
+        window.open(urlWithTimestamp, '_blank')
+      }
     } else {
       const errorText = await response.text()
       console.error('❌ 站点地图更新失败:', response.status, errorText)

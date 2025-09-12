@@ -140,11 +140,13 @@ router.get('/', async (req, res) => {
     const sitemapXML = generateSitemapXML(allRoutes);
     
     // 设置正确的Content-Type和缓存策略
+    const timestamp = Date.now();
     res.set({
       'Content-Type': 'application/xml',
       'Cache-Control': 'public, max-age=60, must-revalidate', // 缓存1分钟，必须重新验证
       'Last-Modified': new Date().toUTCString(),
-      'ETag': `"${Date.now()}"` // 添加ETag强制刷新
+      'ETag': `"${timestamp}"`, // 添加ETag强制刷新
+      'X-Sitemap-Generated': timestamp.toString() // 添加自定义头用于调试
     });
     
     console.log(`✅ 站点地图生成完成，包含 ${allRoutes.length} 个URL`);
@@ -192,7 +194,7 @@ router.post('/update', async (req, res) => {
       totalRoutes: allRoutes.length,
       dynamicRoutes: dynamicRoutes.length,
       staticRoutes: staticRoutes.length,
-      sitemapUrl: `${process.env.NODE_ENV === 'production' ? 'https://eastereggvault.com' : 'http://localhost:5173'}/sitemap.xml`,
+      sitemapUrl: process.env.NODE_ENV === 'production' ? 'https://eastereggvault.com/sitemap.xml' : 'http://localhost:5173/sitemap.xml',
       note: 'Sitemap is dynamically generated via API endpoint'
     });
     

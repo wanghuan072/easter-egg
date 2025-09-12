@@ -5,6 +5,10 @@
       "destination": "https://easter-egg-api.vercel.app/api/sitemap"
     },
     {
+      "source": "/sitemap.xml?*",
+      "destination": "https://easter-egg-api.vercel.app/api/sitemap?$1"
+    },
+    {
       "source": "/robots.txt",
       "destination": "/robots.txt"
     },
