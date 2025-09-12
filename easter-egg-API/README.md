@@ -121,7 +121,7 @@ DATABASE_URL=postgresql://username:password@host:port/database?sslmode=require
 
 # JWT配置
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-JWT_EXPIRES_IN=1h
+JWT_EXPIRES_IN=30d
 ```
 
 ## Development

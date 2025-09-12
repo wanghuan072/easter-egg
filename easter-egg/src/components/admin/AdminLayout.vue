@@ -240,13 +240,18 @@ const updateSitemap = async () => {
       console.log(`   - 总URL数: ${result.totalRoutes}`)
       console.log(`   - 动态URL数: ${result.dynamicRoutes}`)
       console.log(`   - 静态URL数: ${result.staticRoutes}`)
+      console.log(`   - 站点地图URL: ${result.sitemapUrl}`)
+      
+      // 显示成功提示给用户
+      alert(`站点地图更新成功！\n总URL数: ${result.totalRoutes}\n动态URL数: ${result.dynamicRoutes}\n静态URL数: ${result.staticRoutes}`)
     } else {
       const errorText = await response.text()
       console.error('❌ 站点地图更新失败:', response.status, errorText)
+      alert(`站点地图更新失败: ${response.status} - ${errorText}`)
     }
   } catch (error) {
     console.error('❌ 站点地图更新出错:', error)
-    // 不显示错误给用户，因为这不是关键功能
+    alert(`站点地图更新出错: ${error.message}`)
   }
 }
 

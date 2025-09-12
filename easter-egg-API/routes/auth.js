@@ -47,7 +47,7 @@ router.post('/login', async (req, res) => {
         username: user.username 
       },
       process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '1h' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '30d' } // 改为30天，可通过环境变量配置
     );
 
     // 更新最后登录时间（暂时注释掉，因为表结构中没有此字段）

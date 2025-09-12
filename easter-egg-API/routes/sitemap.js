@@ -142,7 +142,7 @@ router.get('/', async (req, res) => {
     // 设置正确的Content-Type和缓存策略
     res.set({
       'Content-Type': 'application/xml',
-      'Cache-Control': 'public, max-age=300, must-revalidate', // 缓存5分钟，必须重新验证
+      'Cache-Control': 'public, max-age=60, must-revalidate', // 缓存1分钟，必须重新验证
       'Last-Modified': new Date().toUTCString(),
       'ETag': `"${Date.now()}"` // 添加ETag强制刷新
     });
@@ -166,6 +166,8 @@ router.get('/', async (req, res) => {
 router.post('/update', async (req, res) => {
   try {
     console.log('🔄 触发站点地图更新...');
+    console.log(`   请求时间: ${new Date().toISOString()}`);
+    console.log(`   环境: ${process.env.NODE_ENV || 'development'}`);
     
     // 获取所有动态内容
     const dynamicRoutes = await getAllDynamicContent();
@@ -176,50 +178,22 @@ router.post('/update', async (req, res) => {
     // 生成XML
     const sitemapXML = generateSitemapXML(allRoutes);
     
-    // 保存到文件系统
-    const fs = await import('fs');
-    const path = await import('path');
-    const { fileURLToPath } = await import('url');
+    // 在Vercel Serverless环境中，我们不需要保存文件
+    // 因为站点地图是通过API动态生成的
+    console.log(`✅ 站点地图数据已更新，包含 ${allRoutes.length} 个URL`);
+    console.log(`   - 静态路由: ${staticRoutes.length}`);
+    console.log(`   - 动态路由: ${dynamicRoutes.length}`);
+    console.log(`   - XML大小: ${sitemapXML.length} 字符`);
     
-    // 获取正确的路径
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    
-    // 保存到public和dist目录
-    const publicPath = path.join(__dirname, '..', '..', 'easter-egg', 'public', 'sitemap.xml');
-    const distPath = path.join(__dirname, '..', '..', 'easter-egg', 'dist', 'sitemap.xml');
-    
-    try {
-      console.log(`📁 准备保存站点地图文件到:`);
-      console.log(`   - Public: ${publicPath}`);
-      console.log(`   - Dist: ${distPath}`);
-      
-      // 确保目录存在
-      fs.mkdirSync(path.dirname(publicPath), { recursive: true });
-      fs.mkdirSync(path.dirname(distPath), { recursive: true });
-      
-      // 写入文件
-      fs.writeFileSync(publicPath, sitemapXML, 'utf8');
-      fs.writeFileSync(distPath, sitemapXML, 'utf8');
-      
-      console.log(`✅ 站点地图文件已成功保存`);
-      console.log(`   - 文件大小: ${sitemapXML.length} 字符`);
-      console.log(`   - 包含URL数量: ${allRoutes.length}`);
-    } catch (fileError) {
-      console.error('❌ 保存站点地图文件失败:', fileError);
-      console.error(`   错误详情: ${fileError.message}`);
-      console.error(`   尝试保存到: ${publicPath}`);
-      // 不阻止响应，因为API数据已经生成
-    }
-    
-    console.log(`✅ 站点地图更新完成，包含 ${allRoutes.length} 个URL`);
-    
+    // 返回成功响应
     res.json({
       success: true,
-      message: 'Sitemap updated successfully',
+      message: 'Sitemap data updated successfully',
       totalRoutes: allRoutes.length,
       dynamicRoutes: dynamicRoutes.length,
-      staticRoutes: staticRoutes.length
+      staticRoutes: staticRoutes.length,
+      sitemapUrl: `${process.env.NODE_ENV === 'production' ? 'https://eastereggvault.com' : 'http://localhost:5173'}/sitemap.xml`,
+      note: 'Sitemap is dynamically generated via API endpoint'
     });
     
   } catch (error) {
