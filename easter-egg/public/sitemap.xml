@@ -2,193 +2,205 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://eastereggvault.com/</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/games</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/movies</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/tv</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/news</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/search</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/popular</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/privacy</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/terms</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/copyright</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/about</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/contact</loc>
-    <lastmod>2025-09-05T10:29:47.433Z</lastmod>
+    <lastmod>2025-09-12T06:58:32.595Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
+    <loc>https://eastereggvault.com/games/reckoning-easter-egg-guide</loc>
+    <lastmod>Fri Sep 12 2025 06:11:16 GMT+0000 (Coordinated Universal Time)</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://eastereggvault.com/games/der-eisendrache-easter-egg</loc>
+    <lastmod>Fri Sep 12 2025 06:09:55 GMT+0000 (Coordinated Universal Time)</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://eastereggvault.com/games/bo6-super-easter-egg-rewards</loc>
-    <lastmod>2025-09-04T01:58:31.315Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://eastereggvault.com/games/gta5-rockstar-universe-easter-eggs</loc>
-    <lastmod>2025-09-04T01:11:33.453Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://eastereggvault.com/games/battlefield-2042-your-easter-egg</loc>
-    <lastmod>2025-09-04T01:42:25.189Z</lastmod>
+    <lastmod>Fri Sep 12 2025 02:46:43 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/games/gta5-creepy-house-easter-egg</loc>
-    <lastmod>2025-09-04T01:11:19.685Z</lastmod>
+    <lastmod>Thu Sep 04 2025 09:11:19 GMT+0000 (Coordinated Universal Time)</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://eastereggvault.com/games/battlefield-2042-your-easter-egg</loc>
+    <lastmod>Thu Sep 04 2025 09:42:25 GMT+0000 (Coordinated Universal Time)</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://eastereggvault.com/games/gta5-rockstar-universe-easter-eggs</loc>
+    <lastmod>Thu Sep 04 2025 09:11:33 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/games/bo6-reckoning-easter-egg-guide</loc>
-    <lastmod>2025-09-04T00:23:36.476Z</lastmod>
+    <lastmod>Thu Sep 04 2025 08:23:36 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/games/monster-hunter-wilds-wyvern-egg-guide</loc>
-    <lastmod>2025-09-04T22:35:54.804Z</lastmod>
+    <lastmod>Fri Sep 05 2025 06:35:54 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/movies/avengers-endgame-final-battle-explained</loc>
-    <lastmod>2025-09-04T17:41:09.200Z</lastmod>
+    <lastmod>Fri Sep 05 2025 01:41:09 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/movies/fast-and-furious-hidden-facts</loc>
-    <lastmod>2025-09-04T17:55:01.894Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://eastereggvault.com/movies/silent-hill-movie-review-2006</loc>
-    <lastmod>2025-09-04T18:32:15.049Z</lastmod>
+    <lastmod>Fri Sep 05 2025 01:55:01 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/movies/saving-private-ryan-hidden-details</loc>
-    <lastmod>2025-09-04T18:48:19.257Z</lastmod>
+    <lastmod>Fri Sep 05 2025 02:48:19 GMT+0000 (Coordinated Universal Time)</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://eastereggvault.com/movies/silent-hill-movie-review-2006</loc>
+    <lastmod>Sun Sep 07 2025 03:35:21 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/movies/titanic-30-hidden-facts</loc>
-    <lastmod>2025-09-04T18:14:15.070Z</lastmod>
+    <lastmod>Fri Sep 05 2025 02:14:15 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/movies/saw-hidden-details-easter-eggs</loc>
-    <lastmod>2025-09-04T18:22:12.855Z</lastmod>
+    <lastmod>Fri Sep 05 2025 02:22:12 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/tv/bridgerton-season-2-easter-eggs</loc>
-    <lastmod>2025-09-04T20:34:18.396Z</lastmod>
+    <lastmod>Fri Sep 05 2025 04:34:18 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/tv/outlander-fun-facts</loc>
-    <lastmod>2025-09-04T20:08:31.072Z</lastmod>
+    <lastmod>Fri Sep 05 2025 04:08:31 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/tv/black-mirror-white-christmas-analysis</loc>
-    <lastmod>2025-09-04T22:17:44.204Z</lastmod>
+    <lastmod>Fri Sep 05 2025 06:17:44 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/tv/stranger-things-hidden-details</loc>
-    <lastmod>2025-09-04T22:33:29.904Z</lastmod>
+    <lastmod>Fri Sep 05 2025 06:33:29 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/tv/breaking-bad-easter-eggs</loc>
-    <lastmod>2025-09-04T19:49:30.194Z</lastmod>
+    <lastmod>Fri Sep 05 2025 03:49:30 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/tv/sopranos-dreams-analysis</loc>
-    <lastmod>2025-09-04T22:56:39.304Z</lastmod>
+    <lastmod>Fri Sep 05 2025 06:56:39 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/news/easter-eggs-movies-tv-games-guide</loc>
-    <lastmod>2025-09-05T00:06:54.639Z</lastmod>
+    <lastmod>Fri Sep 05 2025 08:06:54 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://eastereggvault.com/news/easter-egg-vault-guide</loc>
-    <lastmod>2025-09-05T00:51:06.613Z</lastmod>
+    <lastmod>Fri Sep 05 2025 08:51:06 GMT+0000 (Coordinated Universal Time)</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

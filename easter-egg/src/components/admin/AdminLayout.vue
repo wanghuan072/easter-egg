@@ -175,8 +175,7 @@ const handleSaveContent = async (data) => {
       // 自动刷新数据
       window.dispatchEvent(new CustomEvent('refresh-data'))
       
-      // 触发站点地图更新
-      await updateSitemap()
+      // 内容已保存，站点地图会自动使用最新的public/sitemap.xml文件
     } else {
       // 检查是否是认证错误
       if (response.status === 401) {
@@ -221,47 +220,6 @@ const handleAuthTimeout = () => {
   router.push('/admin/login')
 }
 
-// 更新站点地图
-const updateSitemap = async () => {
-  try {
-    console.log('🔄 触发站点地图更新...')
-    
-    // 调用后端API更新站点地图
-    const response = await fetch(`${getApiUrl('')}/api/sitemap/update`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    
-    if (response.ok) {
-      const result = await response.json()
-      console.log('✅ 站点地图更新成功:', result)
-      console.log(`   - 总URL数: ${result.totalRoutes}`)
-      console.log(`   - 动态URL数: ${result.dynamicRoutes}`)
-      console.log(`   - 静态URL数: ${result.staticRoutes}`)
-      console.log(`   - 站点地图URL: ${result.sitemapUrl}`)
-      
-      // 显示成功提示给用户，包含查看链接
-      const message = `站点地图更新成功！\n总URL数: ${result.totalRoutes}\n动态URL数: ${result.dynamicRoutes}\n静态URL数: ${result.staticRoutes}\n\n点击确定查看最新站点地图`
-      alert(message)
-      
-      // 自动打开站点地图页面（带时间戳强制刷新）
-      if (result.sitemapUrl) {
-        const timestamp = Date.now()
-        const urlWithTimestamp = `${result.sitemapUrl}?t=${timestamp}`
-        window.open(urlWithTimestamp, '_blank')
-      }
-    } else {
-      const errorText = await response.text()
-      console.error('❌ 站点地图更新失败:', response.status, errorText)
-      alert(`站点地图更新失败: ${response.status} - ${errorText}`)
-    }
-  } catch (error) {
-    console.error('❌ 站点地图更新出错:', error)
-    alert(`站点地图更新出错: ${error.message}`)
-  }
-}
 
 // 检查认证状态
 onMounted(() => {

@@ -30,6 +30,11 @@ async function getAllDynamicContent() {
       `SELECT * FROM ${DATA_STRUCTURE.TABLES.GAMES} WHERE address_bar IS NOT NULL ORDER BY publish_date DESC`
     );
     
+    console.log(`🎮 游戏数据查询结果: ${gamesResult.rows.length} 条记录`);
+    gamesResult.rows.forEach((game, index) => {
+      console.log(`   游戏 ${index + 1}: address_bar = "${game.address_bar}"`);
+    });
+    
     gamesResult.rows.forEach(game => {
       const transformedGame = transformData.dbToFrontend(game, 'games');
       if (transformedGame.addressBar) {
@@ -39,6 +44,9 @@ async function getAllDynamicContent() {
           changefreq: 'weekly',
           lastmod: transformedGame.updatedAt || transformedGame.publishDate || new Date().toISOString()
         });
+        console.log(`   ✅ 添加游戏路由: /games/${transformedGame.addressBar}`);
+      } else {
+        console.log(`   ❌ 跳过游戏: addressBar为空`);
       }
     });
     
@@ -180,14 +188,19 @@ router.post('/update', async (req, res) => {
     // 生成XML
     const sitemapXML = generateSitemapXML(allRoutes);
     
-    // 在Vercel Serverless环境中，我们不需要保存文件
-    // 因为站点地图是通过API动态生成的
+    // 站点地图数据已准备就绪，需要手动生成本地文件
+    console.log(`✅ 站点地图数据已准备就绪，包含 ${allRoutes.length} 个URL`);
+    console.log(`   - 静态路由: ${staticRoutes.length}`);
+    console.log(`   - 动态路由: ${dynamicRoutes.length}`);
+    console.log(`   - XML大小: ${sitemapXML.length} 字符`);
+    console.log(`💡 请使用前端脚本生成本地文件: node generate-local-sitemap.js`);
+    
     console.log(`✅ 站点地图数据已更新，包含 ${allRoutes.length} 个URL`);
     console.log(`   - 静态路由: ${staticRoutes.length}`);
     console.log(`   - 动态路由: ${dynamicRoutes.length}`);
     console.log(`   - XML大小: ${sitemapXML.length} 字符`);
     
-    // 返回成功响应
+    // 返回成功响应，包含完整的站点地图XML
     res.json({
       success: true,
       message: 'Sitemap data updated successfully',
@@ -195,6 +208,7 @@ router.post('/update', async (req, res) => {
       dynamicRoutes: dynamicRoutes.length,
       staticRoutes: staticRoutes.length,
       sitemapUrl: process.env.NODE_ENV === 'production' ? 'https://eastereggvault.com/sitemap.xml' : 'http://localhost:5173/sitemap.xml',
+      sitemapXML: sitemapXML, // 添加完整的XML内容
       note: 'Sitemap is dynamically generated via API endpoint'
     });
     
