@@ -302,7 +302,7 @@ const goToDetail = (item) => {
 .media-image {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 16/9;
+  aspect-ratio: 4/3;
 }
 
 .media-image img {
