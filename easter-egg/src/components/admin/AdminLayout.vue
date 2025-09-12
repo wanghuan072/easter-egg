@@ -174,6 +174,9 @@ const handleSaveContent = async (data) => {
       closeForm()
       // 自动刷新数据
       window.dispatchEvent(new CustomEvent('refresh-data'))
+      
+      // 触发站点地图更新
+      await updateSitemap()
     } else {
       // 检查是否是认证错误
       if (response.status === 401) {
@@ -216,6 +219,31 @@ const handleAuthTimeout = () => {
   // 显示提示并跳转到登录页面
   alert('登录已超时，请重新登录')
   router.push('/admin/login')
+}
+
+// 更新站点地图
+const updateSitemap = async () => {
+  try {
+    console.log('🔄 触发站点地图更新...')
+    
+    // 调用后端API更新站点地图
+    const response = await fetch(`${getApiUrl('')}/api/sitemap/update`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    
+    if (response.ok) {
+      const result = await response.json()
+      console.log('✅ 站点地图更新成功:', result)
+    } else {
+      console.warn('⚠️ 站点地图更新失败:', response.status)
+    }
+  } catch (error) {
+    console.warn('⚠️ 站点地图更新出错:', error)
+    // 不显示错误给用户，因为这不是关键功能
+  }
 }
 
 // 检查认证状态

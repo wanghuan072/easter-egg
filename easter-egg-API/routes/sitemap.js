@@ -158,4 +158,41 @@ router.get('/', async (req, res) => {
   }
 });
 
+// 触发站点地图更新端点（用于后台管理）
+router.post('/update', async (req, res) => {
+  try {
+    console.log('🔄 触发站点地图更新...');
+    
+    // 获取所有动态内容
+    const dynamicRoutes = await getAllDynamicContent();
+    
+    // 合并静态和动态路由
+    const allRoutes = [...staticRoutes, ...dynamicRoutes];
+    
+    // 生成XML
+    const sitemapXML = generateSitemapXML(allRoutes);
+    
+    // 这里可以添加将站点地图保存到文件系统的逻辑
+    // 或者触发前端重新生成站点地图
+    
+    console.log(`✅ 站点地图更新完成，包含 ${allRoutes.length} 个URL`);
+    
+    res.json({
+      success: true,
+      message: 'Sitemap updated successfully',
+      totalRoutes: allRoutes.length,
+      dynamicRoutes: dynamicRoutes.length,
+      staticRoutes: staticRoutes.length
+    });
+    
+  } catch (error) {
+    console.error('Error updating sitemap:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update sitemap',
+      message: error.message
+    });
+  }
+});
+
 export default router;

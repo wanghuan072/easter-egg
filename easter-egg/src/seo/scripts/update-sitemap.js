@@ -1,3 +1,10 @@
+#!/usr/bin/env node
+/**
+ * 动态更新站点地图脚本
+ * 用于在后台管理添加新内容后更新站点地图
+ * 可以通过API调用或定时任务触发
+ */
+
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -9,11 +16,7 @@ const __dirname = path.dirname(__filename)
 const API_BASE_URL = process.env.VITE_API_URL || (process.env.NODE_ENV === 'production' ? 'https://easter-egg-api.vercel.app' : 'http://localhost:3000')
 const SITE_URL = 'https://eastereggvault.com'
 
-// 增加重试机制和更好的错误处理
-const MAX_RETRIES = 3
-const RETRY_DELAY = 2000
-
-// 静态路由配置（与路由文件中的meta信息对应）
+// 静态路由配置
 const staticRoutes = [
   { path: '/', priority: 1.0, changefreq: 'daily' },
   { path: '/games', priority: 0.9, changefreq: 'daily' },
@@ -31,48 +34,29 @@ const staticRoutes = [
   { path: '/admin/dashboard', priority: 0.1, changefreq: 'monthly' }
 ]
 
-// 获取API数据的函数（带重试机制）
-async function fetchApiData(endpoint, retryCount = 0) {
+// 获取API数据的函数
+async function fetchApiData(endpoint) {
   try {
     const url = `${API_BASE_URL}/api/${endpoint}`
-    console.log(`🔗 请求URL: ${url} (尝试 ${retryCount + 1}/${MAX_RETRIES + 1})`)
-    
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 15000) // 增加到15秒超时
+    console.log(`🔗 请求URL: ${url}`)
     
     const response = await fetch(url, {
-      signal: controller.signal,
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'User-Agent': 'EasterEggVault-SitemapGenerator/1.0'
+        'User-Agent': 'EasterEggVault-SitemapUpdater/1.0'
       }
     })
-    
-    clearTimeout(timeoutId)
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
-    const data = await response.json()
-    const result = data.data || data
     
-    console.log(`📊 ${endpoint} 数据: ${Array.isArray(result) ? result.length : 'N/A'} 条记录`)
-    return result
+    const data = await response.json()
+    return data.data || data
   } catch (error) {
-    if (retryCount < MAX_RETRIES) {
-      console.warn(`⚠️  请求失败，${RETRY_DELAY/1000}秒后重试... (${error.message})`)
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY))
-      return await fetchApiData(endpoint, retryCount + 1)
-    } else {
-      if (error.name === 'AbortError') {
-        console.warn(`⚠️  Warning: Request timeout for ${endpoint} after ${MAX_RETRIES + 1} attempts`)
-      } else {
-        console.warn(`⚠️  Warning: Failed to fetch ${endpoint} after ${MAX_RETRIES + 1} attempts:`, error.message)
-      }
-      console.warn(`   API服务器: ${API_BASE_URL}`)
-      return []
-    }
+    console.warn(`⚠️  Warning: Failed to fetch ${endpoint}:`, error.message)
+    return []
   }
 }
 
@@ -99,44 +83,23 @@ function generateSitemapXML(routes) {
 }
 
 // 主函数
-async function generateSitemap() {
-  console.log('🚀 开始生成动态站点地图...')
+async function updateSitemap() {
+  console.log('🚀 开始更新动态站点地图...')
   console.log(`🔗 API基础URL: ${API_BASE_URL}`)
-  
-  // 检查API服务器是否可用
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
-    
-    const testResponse = await fetch(`${API_BASE_URL}/health`, { 
-      method: 'GET',
-      signal: controller.signal,
-      headers: {
-        'Accept': 'application/json'
-      }
-    })
-    
-    clearTimeout(timeoutId)
-    
-    if (testResponse.ok) {
-      console.log('✅ API服务器连接正常')
-    } else {
-      throw new Error(`Health check failed: ${testResponse.status}`)
-    }
-  } catch (error) {
-    console.warn('⚠️  API服务器连接失败，将只生成静态路由')
-    console.warn(`   错误: ${error.message}`)
-    console.warn(`   API服务器: ${API_BASE_URL}`)
-    console.warn(`   请确保API服务器正在运行`)
-  }
   
   const routes = [...staticRoutes]
   let totalDynamicRoutes = 0
   
   try {
-    // 获取游戏数据（移除limit限制，获取所有数据）
-    console.log('\n📡 获取游戏数据...')
-    const games = await fetchApiData('games?limit=1000') // 增加限制到1000
+    // 获取所有类型的数据
+    const [games, movies, tvShows, news] = await Promise.all([
+      fetchApiData('games?limit=1000'),
+      fetchApiData('movies?limit=1000'),
+      fetchApiData('tv?limit=1000'),
+      fetchApiData('news?limit=1000')
+    ])
+    
+    // 处理游戏数据
     if (games && games.length > 0) {
       const gamesWithAddress = games.filter(game => game.addressBar)
       gamesWithAddress.forEach(game => {
@@ -151,9 +114,7 @@ async function generateSitemap() {
       totalDynamicRoutes += gamesWithAddress.length
     }
     
-    // 获取电影数据
-    console.log('\n📡 获取电影数据...')
-    const movies = await fetchApiData('movies?limit=1000') // 增加限制到1000
+    // 处理电影数据
     if (movies && movies.length > 0) {
       const moviesWithAddress = movies.filter(movie => movie.addressBar)
       moviesWithAddress.forEach(movie => {
@@ -168,9 +129,7 @@ async function generateSitemap() {
       totalDynamicRoutes += moviesWithAddress.length
     }
     
-    // 获取电视节目数据
-    console.log('\n📡 获取电视节目数据...')
-    const tvShows = await fetchApiData('tv?limit=1000') // 增加限制到1000
+    // 处理电视节目数据
     if (tvShows && tvShows.length > 0) {
       const tvWithAddress = tvShows.filter(tv => tv.addressBar)
       tvWithAddress.forEach(tv => {
@@ -185,9 +144,7 @@ async function generateSitemap() {
       totalDynamicRoutes += tvWithAddress.length
     }
     
-    // 获取新闻数据
-    console.log('\n📡 获取新闻数据...')
-    const news = await fetchApiData('news?limit=1000') // 增加限制到1000
+    // 处理新闻数据
     if (news && news.length > 0) {
       const newsWithAddress = news.filter(item => item.addressBar)
       newsWithAddress.forEach(item => {
@@ -213,10 +170,14 @@ async function generateSitemap() {
   const distPath = path.join(__dirname, '../../../dist/sitemap.xml')
   const publicPath = path.join(__dirname, '../../../public/sitemap.xml')
   
+  // 确保目录存在
+  fs.mkdirSync(path.dirname(distPath), { recursive: true })
+  fs.mkdirSync(path.dirname(publicPath), { recursive: true })
+  
   fs.writeFileSync(distPath, sitemapXML, 'utf8')
   fs.writeFileSync(publicPath, sitemapXML, 'utf8')
   
-  console.log(`\n✅ 站点地图生成完成！`)
+  console.log(`\n✅ 站点地图更新完成！`)
   console.log(`📊 总路由数: ${routes.length}`)
   console.log(`📁 输出路径: ${distPath}`)
   console.log(`📁 公共路径: ${publicPath}`)
@@ -228,18 +189,17 @@ async function generateSitemap() {
   console.log(`   - 动态路由: ${totalDynamicRoutes}`)
   console.log(`   - 总路由数: ${routes.length}`)
   
-  // 显示一些动态路由示例
-  if (totalDynamicRoutes > 0) {
-    console.log(`\n🔗 动态路由示例:`)
-    const dynamicRoutes = routes.slice(staticCount, staticCount + 5)
-    dynamicRoutes.forEach(route => {
-      console.log(`   - ${route.path}`)
-    })
-    if (totalDynamicRoutes > 5) {
-      console.log(`   - ... 还有 ${totalDynamicRoutes - 5} 个路由`)
-    }
+  return {
+    success: true,
+    totalRoutes: routes.length,
+    dynamicRoutes: totalDynamicRoutes,
+    staticRoutes: staticCount
   }
 }
 
-// 运行生成器
-generateSitemap().catch(console.error)
+// 如果直接运行此脚本
+if (import.meta.url === `file://${process.argv[1]}`) {
+  updateSitemap().catch(console.error)
+}
+
+export default updateSitemap
