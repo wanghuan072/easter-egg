@@ -3,6 +3,7 @@
     <div class="container">
       <div class="header-content">
         <div class="nav-logo">
+          <img src="/images/logo.png" alt="EasterEggVault" class="logo-image" />
           <div class="logo-text">EasterEggVault</div>
         </div>
 
@@ -91,6 +92,17 @@ const closeMobileMenu = () => {
   margin: 0;
   padding: 0;
   gap: 32px;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-logo .logo-image {
+  width: 40px;
+  height: 40px;
 }
 
 .nav-logo .logo-text {

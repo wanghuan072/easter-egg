@@ -4,7 +4,10 @@
       <div class="footer-content">
         <div class="footer-main">
           <div class="footer-brand">
-            <div class="footer-logo">EasterEggVault</div>
+            <div class="footer-logo">
+              <img src="/images/logo.png" alt="EasterEggVault" class="logo-image" />
+              <div class="logo-text">EasterEggVault</div>
+            </div>
             <p class="footer-description">
               The ultimate guide to easter eggs, hidden details, and secrets in video games,
               movies, and TV shows. Join our community of secret hunters and never miss another
@@ -130,13 +133,24 @@ onMounted(async () => {
 }
 
 .footer-brand .footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.footer-logo .logo-image {
+  width: 40px;
+  height: 40px;
+}
+
+.footer-logo .logo-text {
   font-size: 24px;
   font-weight: 700;
   background: linear-gradient(90deg, #8b5cf6, #06b6d4);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 16px;
   filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5));
 }
 
