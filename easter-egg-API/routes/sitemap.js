@@ -42,7 +42,7 @@ async function getAllDynamicContent() {
           path: `/games/${transformedGame.addressBar}`,
           priority: 0.8,
           changefreq: 'weekly',
-          lastmod: transformedGame.updatedAt || transformedGame.publishDate || new Date().toISOString()
+          lastmod: formatDateToISO(transformedGame.updatedAt || transformedGame.publishDate)
         });
         console.log(`   ✅ 添加游戏路由: /games/${transformedGame.addressBar}`);
       } else {
@@ -62,7 +62,7 @@ async function getAllDynamicContent() {
           path: `/movies/${transformedMovie.addressBar}`,
           priority: 0.8,
           changefreq: 'weekly',
-          lastmod: transformedMovie.updatedAt || transformedMovie.publishDate || new Date().toISOString()
+          lastmod: formatDateToISO(transformedMovie.updatedAt || transformedMovie.publishDate)
         });
       }
     });
@@ -79,7 +79,7 @@ async function getAllDynamicContent() {
           path: `/tv/${transformedTv.addressBar}`,
           priority: 0.8,
           changefreq: 'weekly',
-          lastmod: transformedTv.updatedAt || transformedTv.publishDate || new Date().toISOString()
+          lastmod: formatDateToISO(transformedTv.updatedAt || transformedTv.publishDate)
         });
       }
     });
@@ -96,7 +96,7 @@ async function getAllDynamicContent() {
           path: `/news/${transformedNews.addressBar}`,
           priority: 0.7,
           changefreq: 'weekly',
-          lastmod: transformedNews.updatedAt || transformedNews.publishDate || new Date().toISOString()
+          lastmod: formatDateToISO(transformedNews.updatedAt || transformedNews.publishDate)
         });
       }
     });
@@ -106,6 +106,25 @@ async function getAllDynamicContent() {
   }
   
   return routes;
+}
+
+// 格式化日期为ISO 8601格式
+function formatDateToISO(dateString) {
+  if (!dateString) {
+    return new Date().toISOString();
+  }
+  
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      console.warn(`Invalid date format: ${dateString}, using current time`);
+      return new Date().toISOString();
+    }
+    return date.toISOString();
+  } catch (error) {
+    console.warn(`Error parsing date: ${dateString}, using current time`, error);
+    return new Date().toISOString();
+  }
 }
 
 // 生成站点地图XML
@@ -118,9 +137,10 @@ function generateSitemapXML(routes) {
 `;
 
   routes.forEach(route => {
+    const lastmod = formatDateToISO(route.lastmod);
     xml += `  <url>
     <loc>${siteUrl}${route.path}</loc>
-    <lastmod>${route.lastmod || now}</lastmod>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>${route.changefreq}</changefreq>
     <priority>${route.priority}</priority>
   </url>

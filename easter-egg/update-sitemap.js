@@ -8,7 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const API_BASE_URL = 'https://easter-egg-api.vercel.app';
+const API_BASE_URL = 'http://localhost:3000';
 const SITEMAP_PATH = './public/sitemap.xml';
 
 async function updateSitemap() {
