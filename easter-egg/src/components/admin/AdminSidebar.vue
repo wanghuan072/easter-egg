@@ -1,68 +1,37 @@
 <template>
   <aside class="admin-sidebar">
     <nav class="sidebar-nav">
-      <div class="nav-section">
-        <h3 class="nav-title">内容管理</h3>
-        
-        <ul class="nav-list">
-          <li 
-            class="nav-item"
-            :class="{ active: activeModule === 'games' }"
-            @click="$emit('change-module', 'games')"
-          >
-            <span class="nav-icon">🎮</span>
-            <span class="nav-text">游戏管理</span>
-          </li>
-          
-          <li 
-            class="nav-item"
-            :class="{ active: activeModule === 'movies' }"
-            @click="$emit('change-module', 'movies')"
-          >
-            <span class="nav-icon">🎬</span>
-            <span class="nav-text">电影管理</span>
-          </li>
-          
-          <li 
-            class="nav-item"
-            :class="{ active: activeModule === 'tv' }"
-            @click="$emit('change-module', 'tv')"
-          >
-            <span class="nav-icon">📺</span>
-            <span class="nav-text">电视剧管理</span>
-          </li>
-          
-          <li 
-            class="nav-item"
-            :class="{ active: activeModule === 'news' }"
-            @click="$emit('change-module', 'news')"
-          >
-            <span class="nav-icon">📰</span>
-            <span class="nav-text">新闻管理</span>
-          </li>
-          
-          <li 
-            class="nav-item"
-            :class="{ active: activeModule === 'categories' }"
-            @click="$emit('change-module', 'categories')"
-          >
-            <span class="nav-icon">🏷️</span>
-            <span class="nav-text">分类标签管理</span>
-          </li>
-        </ul>
-      </div>
+      <!-- 内容管理已迁移至前端本地数据，管理功能已移除 -->
       
       <div class="nav-section">
-        <h3 class="nav-title">用户互动</h3>
+        <h3 class="nav-title">用户互动管理</h3>
         
         <ul class="nav-list">
+          <li 
+            class="nav-item"
+            :class="{ active: activeModule === 'comments' }"
+            @click="$emit('change-module', 'comments')"
+          >
+            <span class="nav-icon">💬</span>
+            <span class="nav-text">评论管理</span>
+          </li>
+          
+          <li 
+            class="nav-item"
+            :class="{ active: activeModule === 'ratings' }"
+            @click="$emit('change-module', 'ratings')"
+          >
+            <span class="nav-icon">⭐</span>
+            <span class="nav-text">评分管理</span>
+          </li>
+          
           <li 
             class="nav-item"
             :class="{ active: activeModule === 'reviews' }"
             @click="goToReviews"
           >
             <span class="nav-icon">📝</span>
-            <span class="nav-text">评价管理</span>
+            <span class="nav-text">评论管理</span>
           </li>
         </ul>
       </div>
@@ -75,6 +44,11 @@
             <span class="nav-icon">🏠</span>
             <span class="nav-text">返回首页</span>
           </li>
+          
+          <li class="nav-item" @click="logout">
+            <span class="nav-icon">🚪</span>
+            <span class="nav-text">退出登录</span>
+          </li>
         </ul>
       </div>
     </nav>
@@ -83,10 +57,10 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { useEasterEggsStore } from '@/stores/easterEggs.js'
 
 const router = useRouter()
-
-
+const store = useEasterEggsStore()
 
 const emit = defineEmits(['change-module'])
 
@@ -97,7 +71,6 @@ const props = defineProps({
   }
 })
 
-
 // 返回首页
 const goHome = () => {
   router.push('/')
@@ -107,6 +80,14 @@ const goHome = () => {
 const goToReviews = () => {
   console.log('🎯 跳转到评价管理，activeModule:', 'reviews')
   emit('change-module', 'reviews')
+}
+
+// 退出登录
+const logout = () => {
+  if (confirm('确定要退出登录吗？')) {
+    store.logout()
+    router.push('/admin/login')
+  }
 }
 </script>
 

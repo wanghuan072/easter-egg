@@ -1,13 +1,15 @@
 # EasterEggVault API
 
-Backend API for the EasterEggVault platform - a comprehensive easter egg discovery platform for video games, movies, and TV shows.
+Backend API for the EasterEggVault platform - 专注于用户互动功能
+
+> **📝 重要更新 (v2.0)**: 内容数据已迁移至前端本地文件，后端API现仅处理评论评分功能。
 
 ## Features
 
 - **RESTful API** with Express.js
-- **Static data support** (no database required for development)
-- **Search functionality** across all media types
-- **Pagination and filtering** support
+- **评论系统** - 用户评论管理
+- **评分系统** - 用户评分功能
+- **认证系统** - JWT管理员认证
 - **CORS enabled** for frontend integration
 - **Rate limiting** and security middleware
 - **Ready for Vercel deployment** with Neon database
@@ -40,37 +42,32 @@ npm start
 ### Health Check
 - `GET /health` - Server health status
 
-### Games
-- `GET /api/games` - Get all games with pagination and search
-- `GET /api/games/home` - Get games for home page
-- `GET /api/games/latest` - Get latest games
-- `GET /api/games/:addressBar` - Get specific game by address bar
-- `GET /api/games/classifications/all` - Get all game classifications
+### 认证系统
+- `POST /api/auth/login` - 管理员登录
+- `POST /api/auth/logout` - 管理员登出
 
-### Movies
-- `GET /api/movies` - Get all movies with pagination and search
-- `GET /api/movies/home` - Get movies for home page
-- `GET /api/movies/latest` - Get latest movies
-- `GET /api/movies/:addressBar` - Get specific movie by address bar
-- `GET /api/movies/classifications/all` - Get all movie classifications
+### 评论系统
+- `GET /api/comments` - 获取评论列表
+- `GET /api/comments?contentId=&contentType=` - 获取特定内容的评论
+- `POST /api/comments` - 创建评论
+- `PUT /api/comments/:id` - 更新评论
+- `DELETE /api/comments/:id` - 删除评论
 
-### TV Shows
-- `GET /api/tv` - Get all TV shows with pagination and search
-- `GET /api/tv/home` - Get TV shows for home page
-- `GET /api/tv/latest` - Get latest TV shows
-- `GET /api/tv/:addressBar` - Get specific TV show by address bar
-- `GET /api/tv/classifications/all` - Get all TV show classifications
+### 评分系统
+- `GET /api/ratings` - 获取评分列表
+- `GET /api/ratings?contentId=&contentType=` - 获取特定内容的评分
+- `POST /api/ratings` - 提交评分
+- `PUT /api/ratings/:id` - 更新评分
 
-### News
-- `GET /api/news` - Get all news with pagination and search
-- `GET /api/news/latest` - Get latest news
-- `GET /api/news/:addressBar` - Get specific news by address bar
-- `GET /api/news/classifications/all` - Get all news classifications
+### 评价系统
+- `GET /api/reviews` - 获取评价列表
+- `POST /api/reviews` - 创建评价
+- `PUT /api/reviews/:id` - 更新评价
+- `DELETE /api/reviews/:id` - 删除评价
 
-### Search
-- `GET /api/search?q=query` - Global search across all media types
-- `GET /api/search/suggestions?q=query` - Get search suggestions
-- `GET /api/search/stats` - Get search statistics
+---
+
+> **⚠️ 已禁用的路由**: 内容路由（games/movies/tv/news/search/categories）已禁用，前端使用本地数据。
 
 ## Query Parameters
 
@@ -135,12 +132,47 @@ npm run dev
 # Production build
 npm start
 
-# Lint code
-npm run lint
-
-# Format code
-npm run format
+# 导出数据库数据到前端本地文件
+npm run export
 ```
+
+## 数据导出功能
+
+### 快速导出
+
+将数据库中的所有数据导出到前端本地文件：
+
+```bash
+npm run export
+```
+
+### 导出内容
+脚本会自动：
+- ✅ 连接数据库读取所有数据
+- ✅ 转换字段格式（数据库 → 本地）
+- ✅ 提取并生成分类列表
+- ✅ 生成4个数据文件（games/movies/tv/news）
+- ✅ 覆盖前端 `src/data/` 目录下的文件
+
+### 字段映射
+```
+数据库           →  本地数据
+address_bar      →  addressBar
+publish_date     →  publishDate
+image_url        →  imageUrl
+image_alt        →  imageAlt
+iframe_url       →  iframeUrl
+seo_title        →  seo.title
+seo_description  →  seo.description
+seo_keywords     →  seo.keywords
+is_home          →  isHome
+is_latest        →  isLatest
+classify         →  classify (array)
+tag              →  tag (array)
+details_html     →  detailsHtml
+```
+
+**详细使用说明**: 查看 `EXPORT_GUIDE.md`
 
 ### Project Structure
 

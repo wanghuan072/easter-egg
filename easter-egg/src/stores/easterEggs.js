@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { gamesApi, moviesApi, tvApi, newsApi, searchApi } from '@/services/api.js'
 import { getApiUrl } from '@/config/env.js'
+
+// 导入本地数据
+import { gamesData, classifications as gamesClassifications } from '@/data/games.js'
+import { moviesData, classifications as moviesClassifications } from '@/data/movies.js'
+import { tvData, classifications as tvClassifications } from '@/data/tv.js'
+import { newsData, classifications as newsClassifications } from '@/data/news.js'
 
 export const useEasterEggsStore = defineStore('easterEggs', () => {
   // 状态
@@ -101,48 +106,82 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     return types.every(type => dataLoaded.value[type])
   }
 
-  // 通用数据获取函数
-  const fetchData = async (type, apiMethod, params = {}) => {
+  // 本地数据获取辅助函数
+  const getLocalData = (type) => {
+    switch (type) {
+      case 'games':
+        return gamesData
+      case 'movies':
+        return moviesData
+      case 'tv':
+        return tvData
+      case 'news':
+        return newsData
+      default:
+        return []
+    }
+  }
+
+  // 通用数据获取函数（从本地读取）
+  const fetchData = async (type, params = {}) => {
     isLoading.value[type] = true
     errors.value[type] = ''
     
     try {
-      const response = await apiMethod(params)
+      // 模拟异步操作
+      await new Promise(resolve => setTimeout(resolve, 100))
       
-      // 统一处理响应格式
-      let data = []
-      if (Array.isArray(response)) {
-        data = response
-      } else if (response && response.data) {
-        data = response.data
-        // 处理分页信息
-        if (response.pagination) {
-          pagination.value[type] = response.pagination
-        }
-      } else {
-        data = []
+      let data = getLocalData(type)
+      
+      // 应用搜索过滤
+      if (params.search) {
+        const searchLower = params.search.toLowerCase()
+        data = data.filter(item => 
+          item.title?.toLowerCase().includes(searchLower) ||
+          item.description?.toLowerCase().includes(searchLower)
+        )
       }
+      
+      // 应用分类过滤
+      if (params.classify) {
+        data = data.filter(item => 
+          item.classify && item.classify.includes(params.classify)
+        )
+      }
+      
+      // 计算分页信息
+      const page = parseInt(params.page) || 1
+      const limit = parseInt(params.limit) || 10
+      const total = data.length
+      const pages = Math.ceil(total / limit)
+      const offset = (page - 1) * limit
+      
+      // 分页数据
+      const paginatedData = data.slice(offset, offset + limit)
+      
+      // 更新分页信息
+      pagination.value[type] = { page, limit, total, pages }
       
       // 根据类型设置数据
       switch (type) {
         case 'games':
-          games.value = data
+          games.value = paginatedData
           break
         case 'movies':
-          movies.value = data
+          movies.value = paginatedData
           break
         case 'tv':
-          tvShows.value = data
+          tvShows.value = paginatedData
           break
         case 'news':
-          news.value = data
+          news.value = paginatedData
           break
       }
 
       // 标记数据已加载
       dataLoaded.value[type] = true
       
-      return data
+      return paginatedData
     } catch (error) {
       const errorMessage = error.message || `Failed to fetch ${type}`
       errors.value[type] = errorMessage
@@ -155,40 +194,37 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
 
   // 获取游戏数据
   const fetchGames = async (params = {}) => {
-    return await fetchData('games', gamesApi.getAll, params)
+    return await fetchData('games', params)
   }
   
   // 获取电影数据
   const fetchMovies = async (params = {}) => {
-    return await fetchData('movies', moviesApi.getAll, params)
+    return await fetchData('movies', params)
   }
   
   // 获取电视数据
   const fetchTV = async (params = {}) => {
-    return await fetchData('tv', tvApi.getAll, params)
+    return await fetchData('tv', params)
   }
   
   // 获取新闻数据
   const fetchNews = async (params = {}) => {
-    return await fetchData('news', newsApi.getAll, params)
+    return await fetchData('news', params)
   }
   
-  // 获取首页数据
+  // 获取首页数据（从本地读取 isHome=true 的数据）
   const fetchHomeData = async () => {
     isLoading.value.home = true
     errors.value.home = ''
     
     try {
-      const [gamesRes, moviesRes, tvRes] = await Promise.all([
-        gamesApi.getHome(),
-        moviesApi.getHome(),
-        tvApi.getHome()
-      ])
+      // 模拟异步操作
+      await new Promise(resolve => setTimeout(resolve, 100))
       
-      // 统一处理响应
-      games.value = Array.isArray(gamesRes) ? gamesRes : (gamesRes.data || [])
-      movies.value = Array.isArray(moviesRes) ? moviesRes : (moviesRes.data || [])
-      tvShows.value = Array.isArray(tvRes) ? tvRes : (tvRes.data || [])
+      // 过滤首页数据
+      games.value = gamesData.filter(item => item.isHome).slice(0, 6)
+      movies.value = moviesData.filter(item => item.isHome).slice(0, 6)
+      tvShows.value = tvData.filter(item => item.isHome).slice(0, 6)
       
       // 标记数据已加载
       dataLoaded.value.games = true
@@ -206,32 +242,32 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     }
   }
   
-  // 预加载数据以提高性能
+  // 预加载数据以提高性能（从本地读取）
   const preloadData = async () => {
     isPageLoading.value = true
     
     try {
-      // 一次性加载所有数据，提高性能
-      const [gamesData, moviesData, tvData, newsData, gamesCat, moviesCat, tvCat, newsCat] = await Promise.all([
-        fetchData('games', gamesApi.getHome),  // 使用getHome而不是getAll
-        fetchData('movies', moviesApi.getHome), // 使用getHome而不是getAll
-        fetchData('tv', tvApi.getHome),        // 使用getHome而不是getAll
-        fetchData('news', newsApi.getAll),     // 新闻没有getHome，继续使用getAll
-        gamesApi.getClassifications(),
-        moviesApi.getClassifications(),
-        tvApi.getClassifications(),
-        newsApi.getClassifications()
-      ])
+      // 模拟异步操作
+      await new Promise(resolve => setTimeout(resolve, 100))
       
-      // 存储分类数据
-      classifications.value.games = Array.isArray(gamesCat) ? gamesCat : (gamesCat?.data || [])
-      classifications.value.movies = Array.isArray(moviesCat) ? moviesCat : (moviesCat?.data || [])
-      classifications.value.tv = Array.isArray(tvCat) ? tvCat : (tvCat?.data || [])
-      classifications.value.news = Array.isArray(newsCat) ? newsCat : (newsCat?.data || [])
+      // 加载首页数据
+      games.value = gamesData.filter(item => item.isHome).slice(0, 6)
+      movies.value = moviesData.filter(item => item.isHome).slice(0, 6)
+      tvShows.value = tvData.filter(item => item.isHome).slice(0, 6)
+      news.value = newsData.slice(0, 10)
       
-      // 标记分类数据已加载
+      // 存储分类数据（从本地导入）
+      classifications.value.games = gamesClassifications
+      classifications.value.movies = moviesClassifications
+      classifications.value.tv = tvClassifications
+      classifications.value.news = newsClassifications
+      
+      // 标记数据已加载
+      dataLoaded.value.games = true
+      dataLoaded.value.movies = true
+      dataLoaded.value.tv = true
+      dataLoaded.value.news = true
       dataLoaded.value.categories = true
-      
   
     } catch (error) {
       console.error('预加载数据时出错:', error)
@@ -241,42 +277,22 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     }
   }
   
-  // 获取最新发现
+  // 获取最新发现（从本地读取 isLatest=true 的数据）
   const fetchLatestDiscoveries = async () => {
     try {
-      // 获取游戏、电影、电视中 is_latest = true 的内容，不限制数量
-      const [gamesRes, moviesRes, tvRes] = await Promise.all([
-        gamesApi.getLatest(100), // 设置一个较大的数字，实际由后端控制
-        moviesApi.getLatest(100),
-        tvApi.getLatest(100)
-      ])
+      // 模拟异步操作
+      await new Promise(resolve => setTimeout(resolve, 100))
       
-      // 合并所有结果
+      // 合并所有 isLatest=true 的数据
       let allLatest = []
       
-      // 处理游戏数据
-      if (gamesRes && gamesRes.data) {
-        allLatest.push(...gamesRes.data)
-      } else if (Array.isArray(gamesRes)) {
-        allLatest.push(...gamesRes)
-      }
+      // 获取游戏、电影、电视中的最新数据
+      allLatest.push(...gamesData.filter(item => item.isLatest))
+      allLatest.push(...moviesData.filter(item => item.isLatest))
+      allLatest.push(...tvData.filter(item => item.isLatest))
       
-      // 处理电影数据
-      if (moviesRes && moviesRes.data) {
-        allLatest.push(...moviesRes.data)
-      } else if (Array.isArray(moviesRes)) {
-        allLatest.push(...moviesRes)
-      }
-      
-      // 处理电视数据
-      if (tvRes && tvRes.data) {
-        allLatest.push(...tvRes.data)
-      } else if (Array.isArray(tvRes)) {
-        allLatest.push(...tvRes)
-      }
-      
-      // 按发布时间排序，不限制数量
-      allLatest.sort((a, b) => new Date(b.publish_date || b.publishDate) - new Date(a.publish_date || a.publishDate))
+      // 按发布时间排序
+      allLatest.sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate))
       
       latestDiscoveries.value = allLatest
       
@@ -291,30 +307,69 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     }
   }
   
-  // 搜索功能
+  // 本地搜索功能
   const performSearch = async (query, params = {}) => {
     isLoading.value.search = true
     errors.value.search = ''
     
     try {
-      const response = await searchApi.search(query, params)
+      // 模拟异步操作
+      await new Promise(resolve => setTimeout(resolve, 100))
       
-      let data = []
-      if (Array.isArray(response)) {
-        data = response
-      } else if (response && response.data) {
-        data = response.data
-        if (response.pagination) {
-          pagination.value.search = response.pagination
-        }
+      if (!query || !query.trim()) {
+        searchResults.value = []
+        return []
       }
       
-      searchResults.value = data
+      const searchLower = query.toLowerCase()
+      let allData = []
+      
+      // 根据媒体类型过滤
+      if (!params.mediaType || params.mediaType === 'games') {
+        allData.push(...gamesData.map(item => ({ ...item, mediaType: 'games' })))
+      }
+      if (!params.mediaType || params.mediaType === 'movies') {
+        allData.push(...moviesData.map(item => ({ ...item, mediaType: 'movies' })))
+      }
+      if (!params.mediaType || params.mediaType === 'tv') {
+        allData.push(...tvData.map(item => ({ ...item, mediaType: 'tv' })))
+      }
+      if (!params.mediaType || params.mediaType === 'news') {
+        allData.push(...newsData.map(item => ({ ...item, mediaType: 'news' })))
+      }
+      
+      // 搜索过滤
+      let results = allData.filter(item => 
+        item.title?.toLowerCase().includes(searchLower) ||
+        item.description?.toLowerCase().includes(searchLower) ||
+        item.tag?.toLowerCase().includes(searchLower)
+      )
+      
+      // 应用分类过滤
+      if (params.classify) {
+        results = results.filter(item => 
+          item.classify && item.classify.includes(params.classify)
+        )
+      }
+      
+      // 计算分页
+      const page = parseInt(params.page) || 1
+      const limit = parseInt(params.limit) || 10
+      const total = results.length
+      const pages = Math.ceil(total / limit)
+      const offset = (page - 1) * limit
+      
+      const paginatedResults = results.slice(offset, offset + limit)
+      
+      // 更新分页信息
+      pagination.value.search = { page, limit, total, pages }
+      
+      searchResults.value = paginatedResults
       searchState.value.query = query
       searchState.value.filters = params
-      searchState.value.results = data
+      searchState.value.results = paginatedResults
       
-      return data
+      return paginatedResults
     } catch (error) {
       const errorMessage = error.message || 'Search failed'
       errors.value.search = errorMessage
@@ -325,28 +380,30 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     }
   }
   
-  // 获取分类数据
+  // 获取分类数据（从本地读取）
   const fetchClassifications = async (type) => {
     try {
-      let response
+      // 模拟异步操作
+      await new Promise(resolve => setTimeout(resolve, 50))
+      
+      let data = []
       switch (type) {
         case 'games':
-          response = await gamesApi.getClassifications()
+          data = gamesClassifications
           break
         case 'movies':
-          response = await moviesApi.getClassifications()
+          data = moviesClassifications
           break
         case 'tv':
-          response = await tvApi.getClassifications()
+          data = tvClassifications
           break
         case 'news':
-          response = await newsApi.getClassifications()
+          data = newsClassifications
           break
         default:
           return []
       }
       
-      const data = Array.isArray(response) ? response : (response.data || [])
       classifications.value[type] = data
       return data
     } catch (error) {

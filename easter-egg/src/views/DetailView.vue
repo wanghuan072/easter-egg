@@ -100,17 +100,17 @@
               <div class="info-item">
                 <span class="info-label">Labels:</span>
                 <div class="info-tags">
-                  <template v-if="Array.isArray(itemData?.label) && itemData.label.length > 0">
+                  <template v-if="Array.isArray(itemData?.tag) && itemData.tag.length > 0">
                     <span 
-                      v-for="label in itemData.label" 
-                      :key="label" 
+                      v-for="tagItem in itemData.tag" 
+                      :key="tagItem" 
                       class="info-tag"
                     >
-                      {{ label }}
+                      {{ tagItem }}
                     </span>
                   </template>
-                  <span v-else-if="itemData?.label && !Array.isArray(itemData.label)" class="info-tag">
-                    {{ itemData.label }}
+                  <span v-else-if="itemData?.tag && !Array.isArray(itemData.tag)" class="info-tag">
+                    {{ itemData.tag }}
                   </span>
                   <span v-else class="info-tag no-labels">No tags yet</span>
                 </div>
@@ -196,38 +196,57 @@ const fetchData = async () => {
   try {
     isLoading.value = true
     isIframeLoaded.value = false
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3000'
     const type = contentType.value
     
     if (!type || !props.addressBar) {
       return
     }
     
-    const apiUrl = `${apiBase}/api/${type}/${props.addressBar}`
+    // 从本地数据获取内容
+    const { gamesData } = await import('@/data/games.js')
+    const { moviesData } = await import('@/data/movies.js')
+    const { tvData } = await import('@/data/tv.js')
+    const { newsData } = await import('@/data/news.js')
     
-    const res = await axios.get(apiUrl)
-    
-    if (!res.data) {
-      throw new Error('Empty response')
+    let dataSource = []
+    switch (type) {
+      case 'games':
+        dataSource = gamesData
+        break
+      case 'movies':
+        dataSource = moviesData
+        break
+      case 'tv':
+        dataSource = tvData
+        break
+      case 'news':
+        dataSource = newsData
+        break
+      default:
+        throw new Error('Invalid content type')
     }
     
-    const rawData = res.data.data || res.data
+    // 根据 addressBar 查找数据
+    const rawData = dataSource.find(item => item.addressBar === props.addressBar)
     
-    // Ensure label field is array format
-    if (!rawData.label) {
-      rawData.label = []
-    } else if (!Array.isArray(rawData.label)) {
-      // If still string (backward compatibility), convert to array
-      rawData.label = [rawData.label]
+    if (!rawData) {
+      throw new Error('Content not found')
+    }
+    
+    // Ensure tag field is array format
+    if (!rawData.tag) {
+      rawData.tag = []
+    } else if (!Array.isArray(rawData.tag)) {
+      rawData.tag = [rawData.tag]
     }
     
     itemData.value = rawData
     
     // Set page TDK with enhanced SEO - 不使用默认内容，直接使用后台数据
     setPageTDK({
-      title: rawData.seoTitle || rawData.title,
-      description: rawData.seoDescription || rawData.description,
-      keywords: rawData.seoKeywords || rawData.classify?.join(', ') || '',
+      title: rawData.seo?.title || rawData.title,
+      description: rawData.seo?.description || rawData.description,
+      keywords: rawData.seo?.keywords || rawData.classify?.join(', ') || '',
       imageUrl: rawData.imageUrl
     }, null, false)
   } catch (error) {

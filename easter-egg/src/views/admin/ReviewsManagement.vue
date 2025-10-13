@@ -250,7 +250,6 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { categoriesApi } from '@/services/api.js'
 import axios from 'axios'
 
 const reviews = ref([])

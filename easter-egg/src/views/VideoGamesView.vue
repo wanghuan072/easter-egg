@@ -85,9 +85,17 @@ const activeCategory = ref('')
 
 // 使用store中的数据
 const gamesList = computed(() => store.games)
-const categories = computed(() => store.classifications.games)
+const allCategories = computed(() => {
+  // 在分类列表前添加"All"选项
+  return [
+    { name: '', display_name: 'All' },
+    ...store.classifications.games
+  ]
+})
+const categories = computed(() => allCategories.value)
 
 const filteredGames = computed(() => {
+  // 如果没有选中分类或选中"All"，显示所有内容
   if (!activeCategory.value) return gamesList.value
   return gamesList.value.filter(game => game.classify && game.classify.includes(activeCategory.value))
 })
@@ -111,10 +119,10 @@ onMounted(async () => {
   // 等待数据预加载完成
   const waitForData = () => {
     if (store.areDataTypesLoaded(['games', 'categories'])) {
-      // 数据已加载，设置第一个分类为默认选中
-      if (categories.value.length > 0) {
-        activeCategory.value = categories.value[0].name
-      }
+      // 数据已加载，默认选中"All"（空字符串）
+      activeCategory.value = ''
+      // 加载所有游戏数据（不仅仅是首页数据）
+      store.fetchGames({ limit: 100 })
     } else {
       // 使用更短的轮询间隔，提高响应速度
       setTimeout(waitForData, 50)

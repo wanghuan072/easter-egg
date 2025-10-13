@@ -1,139 +1,38 @@
 import { buildApiUrl, apiRequest } from '../config/api.js';
 
-// 游戏相关API
-export const gamesApi = {
-  // 获取所有游戏
+// 注意：内容数据(games/movies/tv/news)已迁移至本地数据文件
+// 前端页面直接从 src/data/*.js 读取数据，不再使用这些API
+
+// 评论相关API
+export const commentsApi = {
+  // 获取评论列表
   getAll: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
-    const url = buildApiUrl(`/games${queryString ? `?${queryString}` : ''}`);
+    const url = buildApiUrl(`/comments${queryString ? `?${queryString}` : ''}`);
     return await apiRequest(url);
   },
 
-  // 获取首页游戏
-  getHome: async () => {
-    const url = buildApiUrl('/games/home');
+  // 获取特定内容的评论
+  getByContent: async (contentId, contentType) => {
+    const url = buildApiUrl(`/comments?contentId=${contentId}&contentType=${contentType}`);
     return await apiRequest(url);
   },
 
-  // 获取最新游戏
-  getLatest: async (limit = 8) => {
-    const url = buildApiUrl(`/games/latest?limit=${limit}`);
-    return await apiRequest(url);
-  },
-
-  // 根据地址栏获取游戏详情
-  getByAddressBar: async (addressBar) => {
-    const url = buildApiUrl(`/games/${addressBar}`);
-    return await apiRequest(url);
-  },
-
-  // 获取游戏分类
-  getClassifications: async () => {
-    const url = buildApiUrl('/categories/games');
-    return await apiRequest(url);
-  }
-};
-
-// 电影相关API
-export const moviesApi = {
-  // 获取所有电影
-  getAll: async (params = {}) => {
-    const queryString = new URLSearchParams(params).toString();
-    const url = buildApiUrl(`/movies${queryString ? `?${queryString}` : ''}`);
-    return await apiRequest(url);
-  },
-
-  // 获取首页电影
-  getHome: async () => {
-    const url = buildApiUrl('/movies/home');
-    return await apiRequest(url);
-  },
-
-  // 获取最新电影
-  getLatest: async (limit = 8) => {
-    const url = buildApiUrl(`/movies/latest?limit=${limit}`);
-    return await apiRequest(url);
-  },
-
-  // 根据地址栏获取电影详情
-  getByAddressBar: async (addressBar) => {
-    const url = buildApiUrl(`/movies/${addressBar}`);
-    return await apiRequest(url);
-  },
-
-  // 获取电影分类
-  getClassifications: async () => {
-    const url = buildApiUrl('/categories/movies');
-    return await apiRequest(url);
-  }
-};
-
-// 电视相关API
-export const tvApi = {
-  // 获取所有电视节目
-  getAll: async (params = {}) => {
-    const queryString = new URLSearchParams(params).toString();
-    const url = buildApiUrl(`/tv${queryString ? `?${queryString}` : ''}`);
-    return await apiRequest(url);
-  },
-
-  // 获取首页电视节目
-  getHome: async () => {
-    const url = buildApiUrl('/tv/home');
-    return await apiRequest(url);
-  },
-
-  // 获取最新电视节目
-  getLatest: async (limit = 8) => {
-    const url = buildApiUrl(`/tv/latest?limit=${limit}`);
-    return await apiRequest(url);
-  },
-
-  // 根据地址栏获取电视节目详情
-  getByAddressBar: async (addressBar) => {
-    const url = buildApiUrl(`/tv/${addressBar}`);
-    return await apiRequest(url);
-  },
-
-  // 获取电视节目分类
-  getClassifications: async () => {
-    const url = buildApiUrl('/categories/tv');
-    return await apiRequest(url);
-  }
-};
-
-// 分类相关API
-export const categoriesApi = {
-  // 获取所有分类
-  getAll: async (params = {}) => {
-    const queryString = new URLSearchParams(params).toString();
-    const url = buildApiUrl(`/categories${queryString ? `?${queryString}` : ''}`);
-    return await apiRequest(url);
-  },
-
-  // 获取特定媒体类型的分类
-  getByMediaType: async (mediaType) => {
-    const url = buildApiUrl(`/categories/${mediaType}`);
-    return await apiRequest(url);
-  },
-
-  // 创建分类
-  create: async (categoryData) => {
-    const url = buildApiUrl('/categories');
-    const token = localStorage.getItem('admin_token');
+  // 创建评论
+  create: async (commentData) => {
+    const url = buildApiUrl('/comments');
     return await apiRequest(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(categoryData)
+      body: JSON.stringify(commentData)
     });
   },
 
-  // 更新分类
-  update: async (id, categoryData) => {
-    const url = buildApiUrl(`/categories/${id}`);
+  // 更新评论
+  update: async (id, commentData) => {
+    const url = buildApiUrl(`/comments/${id}`);
     const token = localStorage.getItem('admin_token');
     return await apiRequest(url, {
       method: 'PUT',
@@ -141,13 +40,13 @@ export const categoriesApi = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(categoryData)
+      body: JSON.stringify(commentData)
     });
   },
 
-  // 删除分类（硬删除）
+  // 删除评论
   delete: async (id) => {
-    const url = buildApiUrl(`/categories/${id}?hard=true`);
+    const url = buildApiUrl(`/comments/${id}`);
     const token = localStorage.getItem('admin_token');
     return await apiRequest(url, {
       method: 'DELETE',
@@ -155,76 +54,46 @@ export const categoriesApi = {
         'Authorization': `Bearer ${token}`
       }
     });
+  }
+};
+
+// 评分相关API
+export const ratingsApi = {
+  // 获取评分列表
+  getAll: async (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    const url = buildApiUrl(`/ratings${queryString ? `?${queryString}` : ''}`);
+    return await apiRequest(url);
   },
 
-  // 批量更新排序
-  updateSort: async (categories) => {
-    const url = buildApiUrl('/categories/sort/batch');
-    const token = localStorage.getItem('admin_token');
+  // 获取特定内容的评分
+  getByContent: async (contentId, contentType) => {
+    const url = buildApiUrl(`/ratings?contentId=${contentId}&contentType=${contentType}`);
+    return await apiRequest(url);
+  },
+
+  // 提交评分
+  submit: async (ratingData) => {
+    const url = buildApiUrl('/ratings');
+    return await apiRequest(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(ratingData)
+    });
+  },
+
+  // 更新评分
+  update: async (id, ratingData) => {
+    const url = buildApiUrl(`/ratings/${id}`);
     return await apiRequest(url, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ categories })
+      body: JSON.stringify(ratingData)
     });
-  }
-};
-
-// 新闻相关API
-export const newsApi = {
-  // 获取所有新闻
-  getAll: async (params = {}) => {
-    const queryString = new URLSearchParams(params).toString();
-    const url = buildApiUrl(`/news${queryString ? `?${queryString}` : ''}`);
-    return await apiRequest(url);
-  },
-
-  // 获取首页新闻
-  getHome: async () => {
-    const url = buildApiUrl('/news/home');
-    return await apiRequest(url);
-  },
-
-  // 获取最新新闻
-  getLatest: async (limit = 8) => {
-    const url = buildApiUrl(`/news/latest?limit=${limit}`);
-    return await apiRequest(url);
-  },
-
-  // 根据地址栏获取新闻详情
-  getByAddressBar: async (addressBar) => {
-    const url = buildApiUrl(`/news/${addressBar}`);
-    return await apiRequest(url);
-  },
-
-  // 获取新闻分类
-  getClassifications: async () => {
-    const url = buildApiUrl('/categories/news');
-    return await apiRequest(url);
-  }
-};
-
-// 搜索相关API
-export const searchApi = {
-  // 全局搜索
-  search: async (query, params = {}) => {
-    const searchParams = { q: query, ...params };
-    const queryString = new URLSearchParams(searchParams).toString();
-    const url = buildApiUrl(`/search?${queryString}`);
-    return await apiRequest(url);
-  },
-
-  // 获取搜索建议
-  getSuggestions: async (query, limit = 5) => {
-    const url = buildApiUrl(`/search/suggestions?q=${query}&limit=${limit}`);
-    return await apiRequest(url);
-  },
-
-  // 获取搜索统计
-  getStats: async () => {
-    const url = buildApiUrl('/search/stats');
-    return await apiRequest(url);
   }
 };
 
@@ -244,5 +113,7 @@ export default {
   news: newsApi,
   categories: categoriesApi,
   search: searchApi,
+  comments: commentsApi,
+  ratings: ratingsApi,
   health: healthApi
 };

@@ -88,9 +88,17 @@ const activeCategory = ref('')
 
 // 使用store中的数据
 const tvList = computed(() => store.tvShows)
-const categories = computed(() => store.classifications.tv)
+const allCategories = computed(() => {
+  // 在分类列表前添加"All"选项
+  return [
+    { name: '', display_name: 'All' },
+    ...store.classifications.tv
+  ]
+})
+const categories = computed(() => allCategories.value)
 
 const filteredTVShows = computed(() => {
+  // 如果没有选中分类或选中"All"，显示所有内容
   if (!activeCategory.value) return tvList.value
   return tvList.value.filter(tv => tv.classify && tv.classify.includes(activeCategory.value))
 })
@@ -115,10 +123,10 @@ onMounted(async () => {
   // 等待数据预加载完成
   const waitForData = () => {
     if (store.areDataTypesLoaded(['tv', 'categories'])) {
-      // 数据已加载，设置第一个分类为默认选中
-      if (categories.value.length > 0) {
-        activeCategory.value = categories.value[0].name
-      }
+      // 数据已加载，默认选中"All"（空字符串）
+      activeCategory.value = ''
+      // 加载所有电视数据（不仅仅是首页数据）
+      store.fetchTV({ limit: 100 })
     } else {
       // 使用更短的轮询间隔，提高响应速度
       setTimeout(waitForData, 50)
