@@ -7,20 +7,17 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 
 // Import routes
-// 注意：前端已迁移至本地数据，仅保留评论评分功能
-// import gamesRoutes from './routes/games.js';
-// import moviesRoutes from './routes/movies.js';
-// import tvRoutes from './routes/tv.js';
-// import newsRoutes from './routes/news.js';
-// import searchRoutes from './routes/search.js';
-// import categoriesRoutes from './routes/categories.js';
-// import sitemapRoutes from './routes/sitemap.js';
-
-// 保留的核心功能
+import gamesRoutes from './routes/games.js';
+import moviesRoutes from './routes/movies.js';
+import tvRoutes from './routes/tv.js';
+import newsRoutes from './routes/news.js';
+import searchRoutes from './routes/search.js';
 import authRoutes from './routes/auth.js';
+import categoriesRoutes from './routes/categories.js';
 import reviewsRoutes from './routes/reviews.js';
 import ratingsRoutes from './routes/ratings.js';
 import commentsRoutes from './routes/comments.js';
+import sitemapRoutes from './routes/sitemap.js';
 
 // Import database connection
 import { testConnection } from './config/database.js';
@@ -86,20 +83,18 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes - 仅保留评论评分和认证功能
+// API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoriesRoutes);
 app.use('/api/reviews', reviewsRoutes);
+app.use('/api/games', gamesRoutes);
+app.use('/api/movies', moviesRoutes);
+app.use('/api/tv', tvRoutes);
+app.use('/api/news', newsRoutes);
+app.use('/api/search', searchRoutes);
 app.use('/api/ratings', ratingsRoutes);
 app.use('/api/comments', commentsRoutes);
-
-// 已禁用：内容路由（前端使用本地数据）
-// app.use('/api/categories', categoriesRoutes);
-// app.use('/api/games', gamesRoutes);
-// app.use('/api/movies', moviesRoutes);
-// app.use('/api/tv', tvRoutes);
-// app.use('/api/news', newsRoutes);
-// app.use('/api/search', searchRoutes);
-// app.use('/api/sitemap', sitemapRoutes);
+app.use('/api/sitemap', sitemapRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
