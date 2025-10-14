@@ -6,9 +6,9 @@
     <section class="hero-section">
       <div class="container">
         <div class="hero-content">
-          <h1 class="hero-title">Contact Us</h1>
+          <h1 class="hero-title">{{ $t('ContactUsPage.title') }} {{ $t('ContactUsPage.titleGradient') }}</h1>
           <p class="hero-description">
-            Get in touch with the EasterEggVault team
+            {{ $t('ContactUsPage.desc') }}
           </p>
         </div>
       </div>
@@ -19,45 +19,45 @@
       <div class="container">
         <div class="content-wrapper">
           <div class="content-body">
-            <h2>Get in Touch</h2>
-            <p>We'd love to hear from you! Whether you have questions, suggestions, want to report an issue, or just want to say hello, feel free to reach out to us.</p>
+            <h2>{{ $t('ContactUsPage.h1') }}</h2>
+            <p>{{ $t('ContactUsPage.p1') }}</p>
 
-            <h2>Email Contact</h2>
-            <p>For general inquiries, content suggestions, or technical support:</p>
-            <p><strong>Email:</strong> <a href="mailto:kadiyamobi89@gmail.com">kadiyamobi89@gmail.com</a></p>
+            <h2>{{ $t('ContactUsPage.h2') }}</h2>
+            <p>{{ $t('ContactUsPage.p2') }}</p>
+            <p><strong>{{ $t('ContactUsPage.email') }}</strong> <a href="mailto:kadiyamobi89@gmail.com">kadiyamobi89@gmail.com</a></p>
 
-            <h2>What We Can Help With</h2>
+            <h2>{{ $t('ContactUsPage.h3') }}</h2>
             <ul>
-              <li><strong>Content Submissions:</strong> Found a new easter egg? Let us know!</li>
-              <li><strong>Bug Reports:</strong> Experiencing issues with our website?</li>
-              <li><strong>Feature Requests:</strong> Have ideas for improving EasterEggVault?</li>
-              <li><strong>Partnership Inquiries:</strong> Interested in collaborating?</li>
-              <li><strong>General Questions:</strong> Anything else on your mind?</li>
+              <li><strong>{{ $t('ContactUsPage.help1') }}</strong> {{ $t('ContactUsPage.help1Desc') }}</li>
+              <li><strong>{{ $t('ContactUsPage.help2') }}</strong> {{ $t('ContactUsPage.help2Desc') }}</li>
+              <li><strong>{{ $t('ContactUsPage.help3') }}</strong> {{ $t('ContactUsPage.help3Desc') }}</li>
+              <li><strong>{{ $t('ContactUsPage.help4') }}</strong> {{ $t('ContactUsPage.help4Desc') }}</li>
+              <li><strong>{{ $t('ContactUsPage.help5') }}</strong> {{ $t('ContactUsPage.help5Desc') }}</li>
             </ul>
 
-            <h2>Response Time</h2>
-            <p>We typically respond to emails within 24-48 hours during business days. For urgent matters, please include "URGENT" in your subject line.</p>
+            <h2>{{ $t('ContactUsPage.h4') }}</h2>
+            <p>{{ $t('ContactUsPage.p4') }}</p>
 
-            <h2>Before You Contact Us</h2>
-            <p>To help us provide the best possible assistance, please consider including:</p>
+            <h2>{{ $t('ContactUsPage.h5') }}</h2>
+            <p>{{ $t('ContactUsPage.p5') }}</p>
             <ul>
-              <li>Your name (optional but appreciated)</li>
-              <li>A clear description of your inquiry or issue</li>
-              <li>Relevant details about the content or problem</li>
-              <li>Your browser and device information (for technical issues)</li>
+              <li>{{ $t('ContactUsPage.tip1') }}</li>
+              <li>{{ $t('ContactUsPage.tip2') }}</li>
+              <li>{{ $t('ContactUsPage.tip3') }}</li>
+              <li>{{ $t('ContactUsPage.tip4') }}</li>
             </ul>
 
-            <h2>Community Guidelines</h2>
-            <p>We maintain a respectful and inclusive community. When contacting us, please:</p>
+            <h2>{{ $t('ContactUsPage.h6') }}</h2>
+            <p>{{ $t('ContactUsPage.p6') }}</p>
             <ul>
-              <li>Be respectful and courteous</li>
-              <li>Provide constructive feedback</li>
-              <li>Include relevant details</li>
-              <li>Be patient with our response time</li>
+              <li>{{ $t('ContactUsPage.guide1') }}</li>
+              <li>{{ $t('ContactUsPage.guide2') }}</li>
+              <li>{{ $t('ContactUsPage.guide3') }}</li>
+              <li>{{ $t('ContactUsPage.guide4') }}</li>
             </ul>
 
-            <h2>Last Updated</h2>
-            <p>September 1, 2025</p>
+            <h2>{{ $t('ContactUsPage.h7') }}</h2>
+            <p>{{ $t('ContactUsPage.date') }}</p>
           </div>
         </div>
       </div>

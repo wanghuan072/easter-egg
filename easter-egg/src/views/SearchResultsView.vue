@@ -11,22 +11,22 @@
         <!-- Search Header -->
         <div class="search-header">
           <h1 class="search-title">
-            Search Results for "<span class="highlight">{{ searchQuery }}</span>"
+            {{ $t('SearchResultsPage.resultsFor') }} "<span class="highlight">{{ searchQuery }}</span>"
           </h1>
           <p class="search-subtitle">
-            Found {{ totalResults }} results
+            {{ totalResults }} {{ $t('SearchResultsPage.resultsFor').toLowerCase() }}
           </p>
         </div>
 
         <!-- Loading State -->
         <div v-if="store.isLoading.search" class="loading-section">
-          <div class="loading-text">Loading...</div>
+          <div class="loading-text">{{ $t('common.searching') }}</div>
         </div>
 
         <!-- Error State -->
         <div v-else-if="hasError" class="error-section">
           <p>⚠️ {{ hasError }}</p>
-          <button @click="retrySearch" class="retry-button">Retry Search</button>
+          <button @click="retrySearch" class="retry-button">{{ $t('common.retry') }}</button>
         </div>
 
   <!-- Search Results -->
@@ -73,11 +73,11 @@
               @click="changePage(pagination.page - 1)"
               class="page-button"
             >
-              Previous
+              {{ $t('common.viewAll') }}
             </button>
             
             <span class="page-info">
-              Page {{ pagination.page }} of {{ pagination.pages }}
+              {{ pagination.page }} / {{ pagination.pages }}
             </span>
             
             <button 
@@ -85,7 +85,7 @@
               @click="changePage(pagination.page + 1)"
               class="page-button"
             >
-              Next
+              {{ $t('common.loadMore') }}
             </button>
           </div>
         </div>
@@ -93,12 +93,12 @@
         <!-- No Results -->
         <div v-else class="no-results">
           <div class="no-results-icon">🔍</div>
-          <h2>No results found</h2>
-          <p>Try adjusting your search terms or browse our categories:</p>
+          <h2>{{ $t('SearchResultsPage.noResults') }}</h2>
+          <p>{{ $t('SearchResultsPage.tryDifferent') }}</p>
           <div class="suggested-categories">
-            <a href="/games" class="category-link">🎮 Games</a>
-            <a href="/movies" class="category-link">🎬 Movies</a>
-            <a href="/tv" class="category-link">📺 TV Shows</a>
+            <a href="/games" class="category-link">🎮 {{ $t('nav.videoGames') }}</a>
+            <a href="/movies" class="category-link">🎬 {{ $t('nav.movies') }}</a>
+            <a href="/tv" class="category-link">📺 {{ $t('nav.tvShows') }}</a>
             <!-- News 相关链接已移除 -->
           </div>
         </div>
@@ -113,6 +113,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useEasterEggsStore } from '@/stores/easterEggs.js'
 import { dataUtils } from '@/config/dataStructure.js'
 import Header from '@/components/Header.vue'
@@ -132,6 +133,7 @@ const formatDate = (dateString) => {
 // 使用路由
 const route = useRoute()
 const router = useRouter()
+const { locale } = useI18n()
 
 // 使用状态管理
 const store = useEasterEggsStore()
@@ -297,12 +299,40 @@ const goToDetail = (item) => {
       return
     }
     
-    // 根据类型构建路径
-    const path = `/${type}/${addressBar}`
-    console.log('Navigating to:', path, 'for item:', item)
+    // 根据类型确定基础路由名称
+    let baseRouteName
+    switch (type) {
+      case 'games':
+        baseRouteName = 'GameDetail'
+        break
+      case 'movies':
+        baseRouteName = 'MovieDetail'
+        break
+      case 'tv':
+        baseRouteName = 'TVDetail'
+        break
+      case 'news':
+        baseRouteName = 'NewsDetail'
+        break
+      default:
+        baseRouteName = 'GameDetail'
+    }
     
-    // 使用路径导航
-    router.push(path)
+    // 根据当前语言构建路由名称
+    const currentLang = locale.value
+    const routeName = currentLang === 'en' 
+      ? baseRouteName 
+      : `${baseRouteName}${currentLang.charAt(0).toUpperCase() + currentLang.slice(1)}`
+    
+    console.log('Navigating to:', routeName, 'with addressBar:', addressBar)
+    
+    // 使用命名路由导航
+    router.push({
+      name: routeName,
+      params: {
+        addressBar
+      }
+    })
   } catch (error) {
     console.error('Navigation error:', error, 'for item:', item)
   }

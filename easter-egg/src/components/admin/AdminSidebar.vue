@@ -31,7 +31,7 @@
             @click="goToReviews"
           >
             <span class="nav-icon">📝</span>
-            <span class="nav-text">评论管理</span>
+            <span class="nav-text">评价管理</span>
           </li>
         </ul>
       </div>

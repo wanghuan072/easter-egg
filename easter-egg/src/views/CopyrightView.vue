@@ -6,9 +6,9 @@
     <section class="hero-section">
       <div class="container">
         <div class="hero-content">
-          <h1 class="hero-title">Copyright</h1>
+          <h1 class="hero-title">{{ $t('CopyrightPage.title') }} {{ $t('CopyrightPage.titleGradient') }}</h1>
           <p class="hero-description">
-            Last updated: September 1, 2025
+            {{ $t('CopyrightPage.lastUpdated') }}
           </p>
         </div>
       </div>
@@ -19,36 +19,36 @@
       <div class="container">
         <div class="content-wrapper">
           <div class="content-body">
-            <h2>Copyright Notice</h2>
-            <p>© 2025 EasterEggVault. All rights reserved.</p>
+            <h2>{{ $t('CopyrightPage.h1') }}</h2>
+            <p>{{ $t('CopyrightPage.p1') }}</p>
 
-            <h2>1. Copyright Protection</h2>
-            <p>All content on EasterEggVault, including but not limited to text, graphics, images, logos, and software, is the property of EasterEggVault or its content suppliers and is protected by international copyright laws.</p>
+            <h2>{{ $t('CopyrightPage.h2') }}</h2>
+            <p>{{ $t('CopyrightPage.p2') }}</p>
 
-            <h2>2. Fair Use</h2>
-            <p>This website may contain copyrighted material the use of which has not always been specifically authorized by the copyright owner. We are making such material available in our efforts to advance understanding of easter eggs and hidden secrets in entertainment media.</p>
+            <h2>{{ $t('CopyrightPage.h3') }}</h2>
+            <p>{{ $t('CopyrightPage.p3') }}</p>
 
-            <h2>3. Third-Party Content</h2>
-            <p>Some content on this website may be sourced from third parties. We respect the intellectual property rights of others and expect our users to do the same. If you believe that your work has been copied in a way that constitutes copyright infringement, please contact us.</p>
+            <h2>{{ $t('CopyrightPage.h4') }}</h2>
+            <p>{{ $t('CopyrightPage.p4') }}</p>
 
-            <h2>4. User-Generated Content</h2>
-            <p>Users may submit content to our platform. By submitting content, users grant EasterEggVault a non-exclusive, royalty-free, perpetual, and worldwide license to use, reproduce, modify, and distribute such content.</p>
+            <h2>{{ $t('CopyrightPage.h5') }}</h2>
+            <p>{{ $t('CopyrightPage.p5') }}</p>
 
-            <h2>5. Trademarks</h2>
-            <p>All trademarks, service marks, and trade names used on this website are the property of their respective owners. EasterEggVault does not claim ownership of any third-party trademarks.</p>
+            <h2>{{ $t('CopyrightPage.h6') }}</h2>
+            <p>{{ $t('CopyrightPage.p6') }}</p>
 
-            <h2>6. DMCA Compliance</h2>
-            <p>If you believe that your copyrighted work has been copied in a way that constitutes copyright infringement, please provide us with the following information:</p>
+            <h2>{{ $t('CopyrightPage.h7') }}</h2>
+            <p>{{ $t('CopyrightPage.p7') }}</p>
             <ul>
-              <li>A description of the copyrighted work that you claim has been infringed</li>
-              <li>A description of where the material is located on our website</li>
-              <li>Your contact information</li>
-              <li>A statement that you have a good faith belief that the use is not authorized</li>
-              <li>A statement that the information is accurate and that you are authorized to act on behalf of the copyright owner</li>
+              <li>{{ $t('CopyrightPage.dmca1') }}</li>
+              <li>{{ $t('CopyrightPage.dmca2') }}</li>
+              <li>{{ $t('CopyrightPage.dmca3') }}</li>
+              <li>{{ $t('CopyrightPage.dmca4') }}</li>
+              <li>{{ $t('CopyrightPage.dmca5') }}</li>
             </ul>
 
-            <h2>7. Contact Information</h2>
-            <p>For copyright-related inquiries, please contact us at: <a href="mailto:kadiyamobi89@gmail.com">kadiyamobi89@gmail.com</a></p>
+            <h2>{{ $t('CopyrightPage.h8') }}</h2>
+            <p>{{ $t('CopyrightPage.p8') }} <a href="mailto:kadiyamobi89@gmail.com">kadiyamobi89@gmail.com</a></p>
           </div>
         </div>
       </div>

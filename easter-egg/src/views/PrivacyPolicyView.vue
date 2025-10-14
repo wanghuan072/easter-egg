@@ -6,9 +6,9 @@
     <section class="hero-section">
       <div class="container">
         <div class="hero-content">
-          <h1 class="hero-title">Privacy Policy</h1>
+          <h1 class="hero-title">{{ $t('PrivacyPolicyPage.title') }} {{ $t('PrivacyPolicyPage.titleGradient') }}</h1>
           <p class="hero-description">
-            Last updated: September 1, 2025
+            {{ $t('PrivacyPolicyPage.lastUpdated') }}
           </p>
         </div>
       </div>
@@ -19,32 +19,32 @@
       <div class="container">
         <div class="content-wrapper">
           <div class="content-body">
-            <h2>1. Information We Collect</h2>
-            <p>We collect information you provide directly to us, such as when you create an account, submit content, or contact us. This may include your name, email address, and any other information you choose to provide.</p>
+            <h2>{{ $t('PrivacyPolicyPage.h1') }}</h2>
+            <p>{{ $t('PrivacyPolicyPage.p1') }}</p>
 
-            <h2>2. How We Use Your Information</h2>
-            <p>We use the information we collect to provide, maintain, and improve our services, to communicate with you, and to develop new features and services.</p>
+            <h2>{{ $t('PrivacyPolicyPage.h2') }}</h2>
+            <p>{{ $t('PrivacyPolicyPage.p2') }}</p>
 
-            <h2>3. Information Sharing</h2>
-            <p>We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy or as required by law.</p>
+            <h2>{{ $t('PrivacyPolicyPage.h3') }}</h2>
+            <p>{{ $t('PrivacyPolicyPage.p3') }}</p>
 
-            <h2>4. Data Security</h2>
-            <p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
+            <h2>{{ $t('PrivacyPolicyPage.h4') }}</h2>
+            <p>{{ $t('PrivacyPolicyPage.p4') }}</p>
 
-            <h2>5. Cookies and Tracking</h2>
-            <p>We use cookies and similar tracking technologies to enhance your experience on our website and to analyze how our services are used.</p>
+            <h2>{{ $t('PrivacyPolicyPage.h5') }}</h2>
+            <p>{{ $t('PrivacyPolicyPage.p5') }}</p>
 
-            <h2>6. Third-Party Services</h2>
-            <p>Our website may contain links to third-party websites or services. We are not responsible for the privacy practices of these third parties.</p>
+            <h2>{{ $t('PrivacyPolicyPage.h6') }}</h2>
+            <p>{{ $t('PrivacyPolicyPage.p6') }}</p>
 
-            <h2>7. Children's Privacy</h2>
-            <p>Our services are not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13.</p>
+            <h2>{{ $t('PrivacyPolicyPage.h7') }}</h2>
+            <p>{{ $t('PrivacyPolicyPage.p7') }}</p>
 
-            <h2>8. Changes to This Policy</h2>
-            <p>We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last updated" date.</p>
+            <h2>{{ $t('PrivacyPolicyPage.h8') }}</h2>
+            <p>{{ $t('PrivacyPolicyPage.p8') }}</p>
 
-            <h2>9. Contact Us</h2>
-            <p>If you have any questions about this privacy policy, please contact us at: <a href="mailto:kadiyamobi89@gmail.com">kadiyamobi89@gmail.com</a></p>
+            <h2>{{ $t('PrivacyPolicyPage.h9') }}</h2>
+            <p>{{ $t('PrivacyPolicyPage.p9') }} <a href="mailto:kadiyamobi89@gmail.com">kadiyamobi89@gmail.com</a></p>
           </div>
         </div>
       </div>

@@ -6,9 +6,9 @@
     <section class="hero-section">
       <div class="container">
         <div class="hero-content">
-          <h1 class="hero-title">Terms of Use</h1>
+          <h1 class="hero-title">{{ $t('TermsOfUsePage.title') }} {{ $t('TermsOfUsePage.titleGradient') }}</h1>
           <p class="hero-description">
-            Last updated: September 1, 2025
+            {{ $t('TermsOfUsePage.lastUpdated') }}
           </p>
         </div>
       </div>
@@ -19,32 +19,32 @@
       <div class="container">
         <div class="content-wrapper">
           <div class="content-body">
-            <h2>1. Acceptance of Terms</h2>
-            <p>By accessing and using EasterEggVault, you accept and agree to be bound by the terms and provision of this agreement.</p>
+            <h2>{{ $t('TermsOfUsePage.h1') }}</h2>
+            <p>{{ $t('TermsOfUsePage.p1') }}</p>
 
-            <h2>2. Use License</h2>
-            <p>Permission is granted to temporarily download one copy of the materials on EasterEggVault for personal, non-commercial transitory viewing only.</p>
+            <h2>{{ $t('TermsOfUsePage.h2') }}</h2>
+            <p>{{ $t('TermsOfUsePage.p2') }}</p>
 
-            <h2>3. Disclaimer</h2>
-            <p>The materials on EasterEggVault are provided on an 'as is' basis. EasterEggVault makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</p>
+            <h2>{{ $t('TermsOfUsePage.h3') }}</h2>
+            <p>{{ $t('TermsOfUsePage.p3') }}</p>
 
-            <h2>4. Limitations</h2>
-            <p>In no event shall EasterEggVault or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on EasterEggVault.</p>
+            <h2>{{ $t('TermsOfUsePage.h4') }}</h2>
+            <p>{{ $t('TermsOfUsePage.p4') }}</p>
 
-            <h2>5. Accuracy of Materials</h2>
-            <p>The materials appearing on EasterEggVault could include technical, typographical, or photographic errors. EasterEggVault does not warrant that any of the materials on its website are accurate, complete or current.</p>
+            <h2>{{ $t('TermsOfUsePage.h5') }}</h2>
+            <p>{{ $t('TermsOfUsePage.p5') }}</p>
 
-            <h2>6. Links</h2>
-            <p>EasterEggVault has not reviewed all of the sites linked to its website and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by EasterEggVault of the site.</p>
+            <h2>{{ $t('TermsOfUsePage.h6') }}</h2>
+            <p>{{ $t('TermsOfUsePage.p6') }}</p>
 
-            <h2>7. Modifications</h2>
-            <p>EasterEggVault may revise these terms of service for its website at any time without notice. By using this website you are agreeing to be bound by the then current version of these Terms of Service.</p>
+            <h2>{{ $t('TermsOfUsePage.h7') }}</h2>
+            <p>{{ $t('TermsOfUsePage.p7') }}</p>
 
-            <h2>8. Governing Law</h2>
-            <p>These terms and conditions are governed by and construed in accordance with the laws and you irrevocably submit to the exclusive jurisdiction of the courts in that location.</p>
+            <h2>{{ $t('TermsOfUsePage.h8') }}</h2>
+            <p>{{ $t('TermsOfUsePage.p8') }}</p>
 
-            <h2>9. Contact Information</h2>
-            <p>If you have any questions about these Terms of Use, please contact us at: <a href="mailto:kadiyamobi89@gmail.com">kadiyamobi89@gmail.com</a></p>
+            <h2>{{ $t('TermsOfUsePage.h9') }}</h2>
+            <p>{{ $t('TermsOfUsePage.p9') }} <a href="mailto:kadiyamobi89@gmail.com">kadiyamobi89@gmail.com</a></p>
           </div>
         </div>
       </div>

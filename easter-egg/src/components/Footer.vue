@@ -9,9 +9,7 @@
               <div class="logo-text">EasterEggVault</div>
             </div>
             <p class="footer-description">
-              The ultimate guide to easter eggs, hidden details, and secrets in video games,
-              movies, and TV shows. Join our community of secret hunters and never miss another
-              hidden gem.
+              {{ $t('footer.description') }}
             </p>
             <div class="footer-social">
               <a href="#twitter" class="social-link" target="_blank">
@@ -28,21 +26,21 @@
 
           <div class="footer-links">
             <div class="footer-link-group">
-              <h3 class="footer-link-title">QUICK LINKS</h3>
+              <h3 class="footer-link-title">{{ $t('footer.quickLinks') }}</h3>
               <ul class="footer-link-list">
-                <li><a href="/">Home</a></li>
-                <li><a href="/games">Video Games</a></li>
-                <li><a href="/movies">Movies</a></li>
-                <li><a href="/tv">TV Shows</a></li>
-                <li><a href="/news">Latest News</a></li>
+                <li><a :href="getLocalizedPath('/')">{{ $t('nav.home') }}</a></li>
+                <li><a :href="getLocalizedPath('/games')">{{ $t('nav.videoGames') }}</a></li>
+                <li><a :href="getLocalizedPath('/movies')">{{ $t('nav.movies') }}</a></li>
+                <li><a :href="getLocalizedPath('/tv')">{{ $t('nav.tvShows') }}</a></li>
+                <li><a :href="getLocalizedPath('/news')">{{ $t('footer.latestNews') }}</a></li>
               </ul>
             </div>
 
             <div class="footer-link-group">
-              <h3 class="footer-link-title">Popular</h3>
+              <h3 class="footer-link-title">{{ $t('footer.popular') }}</h3>
               <ul class="footer-link-list">
-                <li v-if="!isLatestDiscoveriesLoaded" class="footer-loading">Loading...</li>
-                <li v-else-if="latestDiscoveries.length === 0" class="footer-empty">No content available</li>
+                <li v-if="!isLatestDiscoveriesLoaded" class="footer-loading">{{ $t('common.loading') }}</li>
+                <li v-else-if="latestDiscoveries.length === 0" class="footer-empty">{{ $t('PopularPage.noContent') }}</li>
                 <li v-else v-for="item in latestDiscoveries.slice(0, 4)" :key="item.id">
                   <a :href="getDetailRoute(item)" class="footer-popular-link">
                     {{ item.title }}
@@ -52,13 +50,13 @@
             </div>
 
             <div class="footer-link-group">
-              <h3 class="footer-link-title">Legal</h3>
+              <h3 class="footer-link-title">{{ $t('footer.legal') }}</h3>
               <ul class="footer-link-list">
-                <li><a href="/privacy">Privacy Policy</a></li>
-                <li><a href="/terms">Terms of Use</a></li>
-                <li><a href="/copyright">Copyright</a></li>
-                <li><a href="/about">About Us</a></li>
-                <li><a href="/contact">Contact Us</a></li>
+                <li><a :href="getLocalizedPath('/privacy')">{{ $t('footer.privacyPolicy') }}</a></li>
+                <li><a :href="getLocalizedPath('/terms')">{{ $t('footer.termsOfUse') }}</a></li>
+                <li><a :href="getLocalizedPath('/copyright')">{{ $t('footer.copyright') }}</a></li>
+                <li><a :href="getLocalizedPath('/about')">{{ $t('footer.aboutUs') }}</a></li>
+                <li><a :href="getLocalizedPath('/contact')">{{ $t('footer.contactUs') }}</a></li>
               </ul>
             </div>
           </div>
@@ -66,7 +64,7 @@
 
         <div class="footer-bottom">
           <div class="footer-copyright">
-            <p>&copy; 2025 eastereggvault.com. All rights reserved.</p>
+            <p>{{ $t('footer.copyrightText') }}</p>
           </div>
         </div>
       </div>
@@ -76,32 +74,47 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useEasterEggsStore } from '@/stores/easterEggs.js'
 import { dataUtils } from '@/config/dataStructure.js'
 
 const store = useEasterEggsStore()
+const { locale } = useI18n()
 
 // 计算属性
 const latestDiscoveries = computed(() => store.latestDiscoveries)
 const isLatestDiscoveriesLoaded = computed(() => store.isDataLoaded('latestDiscoveries'))
+
+// 获取本地化路径的辅助函数
+const getLocalizedPath = (path) => {
+  const lang = locale.value
+  return lang === 'en' ? path : `/${lang}${path}`
+}
 
 // 获取详情页路由
 const getDetailRoute = (item) => {
   const mediaType = dataUtils.getMediaType(item)
   const addressBar = dataUtils.getAddressBar(item)
   
+  let basePath
   switch (mediaType) {
     case 'games':
-      return `/games/${addressBar}`
+      basePath = `/games/${addressBar}`
+      break
     case 'movies':
-      return `/movies/${addressBar}`
+      basePath = `/movies/${addressBar}`
+      break
     case 'tv':
-      return `/tv/${addressBar}`
+      basePath = `/tv/${addressBar}`
+      break
     case 'news':
-      return `/news/${addressBar}`
+      basePath = `/news/${addressBar}`
+      break
     default:
-      return `/games/${addressBar}`
+      basePath = `/games/${addressBar}`
   }
+  
+  return getLocalizedPath(basePath)
 }
 
 // 生命周期

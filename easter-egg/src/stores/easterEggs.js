@@ -1,12 +1,22 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getApiUrl } from '@/config/env.js'
+import { loadAllData } from '@/data/index.js'
+import i18n from '@/i18n'
 
-// 导入本地数据
-import { gamesData, classifications as gamesClassifications } from '@/data/games.js'
-import { moviesData, classifications as moviesClassifications } from '@/data/movies.js'
-import { tvData, classifications as tvClassifications } from '@/data/tv.js'
-import { newsData, classifications as newsClassifications } from '@/data/news.js'
+// 存储当前加载的数据
+let currentLocaleData = {
+  games: [],
+  movies: [],
+  tv: [],
+  news: [],
+  classifications: {
+    games: [],
+    movies: [],
+    tv: [],
+    news: []
+  }
+}
 
 export const useEasterEggsStore = defineStore('easterEggs', () => {
   // 状态
@@ -110,13 +120,13 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
   const getLocalData = (type) => {
     switch (type) {
       case 'games':
-        return gamesData
+        return currentLocaleData.games || []
       case 'movies':
-        return moviesData
+        return currentLocaleData.movies || []
       case 'tv':
-        return tvData
+        return currentLocaleData.tv || []
       case 'news':
-        return newsData
+        return currentLocaleData.news || []
       default:
         return []
     }
@@ -222,9 +232,9 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
       await new Promise(resolve => setTimeout(resolve, 100))
       
       // 过滤首页数据
-      games.value = gamesData.filter(item => item.isHome).slice(0, 6)
-      movies.value = moviesData.filter(item => item.isHome).slice(0, 6)
-      tvShows.value = tvData.filter(item => item.isHome).slice(0, 6)
+      games.value = currentLocaleData.games.filter(item => item.isHome).slice(0, 6)
+      movies.value = currentLocaleData.movies.filter(item => item.isHome).slice(0, 6)
+      tvShows.value = currentLocaleData.tv.filter(item => item.isHome).slice(0, 6)
       
       // 标记数据已加载
       dataLoaded.value.games = true
@@ -247,20 +257,23 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
     isPageLoading.value = true
     
     try {
-      // 模拟异步操作
-      await new Promise(resolve => setTimeout(resolve, 100))
+      // 获取当前语言
+      const currentLocale = i18n.global.locale.value || 'en'
+      
+      // 动态加载对应语言的数据
+      const allData = await loadAllData(currentLocale)
+      
+      // 存储到缓存
+      currentLocaleData = allData
       
       // 加载首页数据
-      games.value = gamesData.filter(item => item.isHome).slice(0, 6)
-      movies.value = moviesData.filter(item => item.isHome).slice(0, 6)
-      tvShows.value = tvData.filter(item => item.isHome).slice(0, 6)
-      news.value = newsData.slice(0, 10)
+      games.value = allData.games.filter(item => item.isHome).slice(0, 6)
+      movies.value = allData.movies.filter(item => item.isHome).slice(0, 6)
+      tvShows.value = allData.tv.filter(item => item.isHome).slice(0, 6)
+      news.value = allData.news.slice(0, 10)
       
-      // 存储分类数据（从本地导入）
-      classifications.value.games = gamesClassifications
-      classifications.value.movies = moviesClassifications
-      classifications.value.tv = tvClassifications
-      classifications.value.news = newsClassifications
+      // 存储分类数据
+      classifications.value = allData.classifications
       
       // 标记数据已加载
       dataLoaded.value.games = true
@@ -286,10 +299,10 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
       // 合并所有 isLatest=true 的数据
       let allLatest = []
       
-      // 获取游戏、电影、电视中的最新数据
-      allLatest.push(...gamesData.filter(item => item.isLatest))
-      allLatest.push(...moviesData.filter(item => item.isLatest))
-      allLatest.push(...tvData.filter(item => item.isLatest))
+      // 获取游戏、电影、电视中的最新数据，并添加 mediaType 标识
+      allLatest.push(...currentLocaleData.games.filter(item => item.isLatest).map(item => ({ ...item, mediaType: 'games' })))
+      allLatest.push(...currentLocaleData.movies.filter(item => item.isLatest).map(item => ({ ...item, mediaType: 'movies' })))
+      allLatest.push(...currentLocaleData.tv.filter(item => item.isLatest).map(item => ({ ...item, mediaType: 'tv' })))
       
       // 按发布时间排序
       allLatest.sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate))
@@ -324,26 +337,34 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
       const searchLower = query.toLowerCase()
       let allData = []
       
-      // 根据媒体类型过滤
+      // 根据媒体类型过滤，并添加 mediaType 标识
       if (!params.mediaType || params.mediaType === 'games') {
-        allData.push(...gamesData.map(item => ({ ...item, mediaType: 'games' })))
+        allData.push(...currentLocaleData.games.map(item => ({ ...item, mediaType: 'games' })))
       }
       if (!params.mediaType || params.mediaType === 'movies') {
-        allData.push(...moviesData.map(item => ({ ...item, mediaType: 'movies' })))
+        allData.push(...currentLocaleData.movies.map(item => ({ ...item, mediaType: 'movies' })))
       }
       if (!params.mediaType || params.mediaType === 'tv') {
-        allData.push(...tvData.map(item => ({ ...item, mediaType: 'tv' })))
+        allData.push(...currentLocaleData.tv.map(item => ({ ...item, mediaType: 'tv' })))
       }
       if (!params.mediaType || params.mediaType === 'news') {
-        allData.push(...newsData.map(item => ({ ...item, mediaType: 'news' })))
+        allData.push(...currentLocaleData.news.map(item => ({ ...item, mediaType: 'news' })))
       }
       
       // 搜索过滤
-      let results = allData.filter(item => 
-        item.title?.toLowerCase().includes(searchLower) ||
-        item.description?.toLowerCase().includes(searchLower) ||
-        item.tag?.toLowerCase().includes(searchLower)
-      )
+      let results = allData.filter(item => {
+        // 检查标题和描述
+        const titleMatch = item.title?.toLowerCase().includes(searchLower)
+        const descMatch = item.description?.toLowerCase().includes(searchLower)
+        
+        // 检查标签数组（tag 是数组）
+        let tagMatch = false
+        if (Array.isArray(item.tag)) {
+          tagMatch = item.tag.some(tag => tag?.toLowerCase().includes(searchLower))
+        }
+        
+        return titleMatch || descMatch || tagMatch
+      })
       
       // 应用分类过滤
       if (params.classify) {
@@ -386,24 +407,7 @@ export const useEasterEggsStore = defineStore('easterEggs', () => {
       // 模拟异步操作
       await new Promise(resolve => setTimeout(resolve, 50))
       
-      let data = []
-      switch (type) {
-        case 'games':
-          data = gamesClassifications
-          break
-        case 'movies':
-          data = moviesClassifications
-          break
-        case 'tv':
-          data = tvClassifications
-          break
-        case 'news':
-          data = newsClassifications
-          break
-        default:
-          return []
-      }
-      
+      const data = currentLocaleData.classifications[type] || []
       classifications.value[type] = data
       return data
     } catch (error) {

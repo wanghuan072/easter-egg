@@ -6,9 +6,9 @@
     <section class="hero-section">
       <div class="container">
         <div class="hero-content">
-          <h1 class="hero-title">About Us</h1>
+          <h1 class="hero-title">{{ $t('AboutUsPage.title') }} {{ $t('AboutUsPage.titleGradient') }}</h1>
           <p class="hero-description">
-            Learn more about EasterEggVault and our mission
+            {{ $t('AboutUsPage.desc') }}
           </p>
         </div>
       </div>
@@ -19,39 +19,39 @@
       <div class="container">
         <div class="content-wrapper">
           <div class="content-body">
-            <h2>Our Mission</h2>
-            <p>EasterEggVault is dedicated to uncovering and documenting the hidden secrets, easter eggs, and fascinating details that creators embed in video games, movies, and TV shows. We believe these hidden gems add depth and wonder to the entertainment experience.</p>
+            <h2>{{ $t('AboutUsPage.h1') }}</h2>
+            <p>{{ $t('AboutUsPage.p1') }}</p>
 
-            <h2>What We Do</h2>
-            <p>Our platform serves as a comprehensive database and community hub for easter egg enthusiasts. We research, document, and share discoveries from across the entertainment industry, making it easy for fans to find and appreciate these hidden treasures.</p>
+            <h2>{{ $t('AboutUsPage.h2') }}</h2>
+            <p>{{ $t('AboutUsPage.p2') }}</p>
 
-            <h2>Our Community</h2>
-            <p>We're proud to host a vibrant community of secret hunters, gaming enthusiasts, movie buffs, and TV show fans. Our users contribute discoveries, share insights, and help us maintain the most comprehensive easter egg database on the web.</p>
+            <h2>{{ $t('AboutUsPage.h3') }}</h2>
+            <p>{{ $t('AboutUsPage.p3') }}</p>
 
-            <h2>Content Categories</h2>
-            <p>Our platform covers a wide range of content:</p>
+            <h2>{{ $t('AboutUsPage.h4') }}</h2>
+            <p>{{ $t('AboutUsPage.p4') }}</p>
             <ul>
-              <li><strong>Video Games:</strong> Hidden levels, secret characters, developer jokes, and more</li>
-              <li><strong>Movies:</strong> Hidden references, background details, and director's secrets</li>
-              <li><strong>TV Shows:</strong> Callbacks, hidden messages, and production easter eggs</li>
-              <li><strong>News:</strong> Latest discoveries and updates from the entertainment world</li>
+              <li><strong>{{ $t('AboutUsPage.cat1') }}</strong> {{ $t('AboutUsPage.cat1Desc') }}</li>
+              <li><strong>{{ $t('AboutUsPage.cat2') }}</strong> {{ $t('AboutUsPage.cat2Desc') }}</li>
+              <li><strong>{{ $t('AboutUsPage.cat3') }}</strong> {{ $t('AboutUsPage.cat3Desc') }}</li>
+              <li><strong>{{ $t('AboutUsPage.cat4') }}</strong> {{ $t('AboutUsPage.cat4Desc') }}</li>
             </ul>
 
-            <h2>Our Values</h2>
-            <p>We are committed to:</p>
+            <h2>{{ $t('AboutUsPage.h5') }}</h2>
+            <p>{{ $t('AboutUsPage.p5') }}</p>
             <ul>
-              <li>Accuracy and thorough research</li>
-              <li>Respect for intellectual property rights</li>
-              <li>Community engagement and collaboration</li>
-              <li>Continuous improvement and expansion</li>
+              <li>{{ $t('AboutUsPage.val1') }}</li>
+              <li>{{ $t('AboutUsPage.val2') }}</li>
+              <li>{{ $t('AboutUsPage.val3') }}</li>
+              <li>{{ $t('AboutUsPage.val4') }}</li>
             </ul>
 
-            <h2>Contact Information</h2>
-            <p>Have questions, suggestions, or want to contribute? We'd love to hear from you!</p>
-            <p>Email: <a href="mailto:kadiyamobi89@gmail.com">kadiyamobi89@gmail.com</a></p>
+            <h2>{{ $t('AboutUsPage.h6') }}</h2>
+            <p>{{ $t('AboutUsPage.p6') }}</p>
+            <p>{{ $t('AboutUsPage.email') }} <a href="mailto:kadiyamobi89@gmail.com">kadiyamobi89@gmail.com</a></p>
 
-            <h2>Last Updated</h2>
-            <p>September 1, 2025</p>
+            <h2>{{ $t('AboutUsPage.h7') }}</h2>
+            <p>{{ $t('AboutUsPage.date') }}</p>
           </div>
         </div>
       </div>

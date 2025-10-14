@@ -19,13 +19,12 @@
         <div class="hero-content">
           <div class="hero-text">
             <h1 class="hero-title">
-              <span class="hero-title-part-1">Explore</span>
+              <span class="hero-title-part-1">{{ $t('TVShowsPage.title') }}</span>
               <br />
-              <span class="hero-title-part-2">TV Secrets</span>
+              <span class="hero-title-part-2">{{ $t('TVShowsPage.titleGradient') }}</span>
             </h1>
             <p class="hero-description">
-              Find hidden references, callbacks, and easter eggs across your favorite television series.
-              From classic sitcoms to epic dramas, uncover the secrets that make every episode unforgettable.
+              {{ $t('TVShowsPage.description') }}
             </p>
           </div>
         </div>
@@ -37,7 +36,7 @@
       <div class="container">
         <!-- Loading State - 等待所有数据加载完成 -->
         <div v-if="!isDataReady" class="loading-section">
-          <div class="loading-text">Loading...</div>
+          <div class="loading-text">{{ $t('TVShowsPage.loadingShows') }}</div>
         </div>
 
         <!-- 数据加载完成后的内容 -->
@@ -56,8 +55,8 @@
           </div>
 
           <div v-if="filteredTVShows.length === 0" class="empty-state">
-            <h3>No Content Available</h3>
-            <p>No TV shows found in category "{{ getCategoryDisplayName(activeCategory) }}"</p>
+            <h3>{{ $t('TVShowsPage.noShows') }}</h3>
+            <p>{{ $t('TVShowsPage.noShows') }} "{{ getCategoryDisplayName(activeCategory) }}"</p>
           </div>
           
           <MediaList 
@@ -90,8 +89,9 @@ const activeCategory = ref('')
 const tvList = computed(() => store.tvShows)
 const allCategories = computed(() => {
   // 在分类列表前添加"All"选项
+  const allText = window.$t ? window.$t('TVShowsPage.allCategories') : 'All'
   return [
-    { name: '', display_name: 'All' },
+    { name: '', display_name: allText },
     ...store.classifications.tv
   ]
 })

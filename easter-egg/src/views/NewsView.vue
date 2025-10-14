@@ -2,9 +2,7 @@
   <div class="news-view">
     <!-- Header Component -->
     <Header />
-
-
-
+    
     <!-- Hero Section -->
     <section class="hero-section">
       <!-- 背景装饰元素 -->
@@ -19,13 +17,12 @@
         <div class="hero-content">
           <div class="hero-text">
             <h1 class="hero-title">
-              <span class="hero-title-part-1">📰</span>
+              <span class="hero-title-part-1">{{ $t('NewsPage.title') }}</span>
               <br />
-              <span class="hero-title-part-2">Latest News</span>
+              <span class="hero-title-part-2">{{ $t('NewsPage.titleGradient') }}</span>
             </h1>
             <p class="hero-description">
-              Stay updated with the latest easter egg discoveries, community highlights, and vault announcements.
-              From breaking discoveries to expert insights, get the scoop on everything happening in the world of hidden secrets.
+              {{ $t('NewsPage.description') }}
             </p>
           </div>
         </div>
@@ -37,7 +34,7 @@
       <div class="container">
         <!-- Loading State -->
         <div v-if="!isDataReady" class="loading-section">
-          <div class="loading-text">Loading...</div>
+          <div class="loading-text">{{ $t('NewsPage.loadingNews') }}</div>
         </div>
 
         <!-- 数据加载完成后的内容 -->
@@ -87,7 +84,7 @@
                 </div>
                 
                 <div class="news-actions">
-                  <button class="read-more-btn">Read More →</button>
+                  <button class="read-more-btn">{{ $t('common.viewAll') }} →</button>
                 </div>
               </div>
             </div>
@@ -141,11 +138,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import { useEasterEggsStore } from '@/stores/easterEggs.js'
 
 const router = useRouter()
+const { locale } = useI18n()
 const store = useEasterEggsStore()
 // 使用store中的数据
 const newsList = computed(() => store.news)
@@ -154,7 +153,18 @@ const filteredNews = computed(() => newsList.value)
 
 const goToDetail = (newsItem) => {
   if (newsItem.addressBar) {
-    router.push(`/news/${newsItem.addressBar}`)
+    // 根据当前语言构建路由名称
+    const currentLang = locale.value
+    const routeName = currentLang === 'en' 
+      ? 'NewsDetail' 
+      : `NewsDetail${currentLang.charAt(0).toUpperCase() + currentLang.slice(1)}`
+    
+    router.push({
+      name: routeName,
+      params: {
+        addressBar: newsItem.addressBar
+      }
+    })
   }
 }
 

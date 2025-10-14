@@ -16,13 +16,12 @@
         <div class="hero-content">
           <div class="hero-text">
             <h1 class="hero-title">
-              <span class="hero-title-part-1">Unlock</span>
+              <span class="hero-title-part-1">{{ $t('VideoGamesPage.title') }}</span>
               <br />
-              <span class="hero-title-part-2">Game Secrets</span>
+              <span class="hero-title-part-2">{{ $t('VideoGamesPage.titleGradient') }}</span>
             </h1>
             <p class="hero-description">
-              Discover hidden easter eggs, secret levels, and developer jokes in your favorite video games.
-              From classic retro games to modern AAA titles, uncover the secrets that make gaming truly magical.
+              {{ $t('VideoGamesPage.description') }}
             </p>
           </div>
         </div>
@@ -34,7 +33,7 @@
       <div class="container">
         <!-- Loading State - 等待所有数据加载完成 -->
         <div v-if="!isDataReady" class="loading-section">
-          <div class="loading-text">Loading...</div>
+          <div class="loading-text">{{ $t('VideoGamesPage.loadingGames') }}</div>
         </div>
 
         <!-- 数据加载完成后的内容 -->
@@ -53,8 +52,8 @@
           </div>
 
           <div v-if="filteredGames.length === 0" class="empty-state">
-            <h3>No Content Available</h3>
-            <p>No games found in category "{{ getCategoryDisplayName(activeCategory) }}"</p>
+            <h3>{{ $t('VideoGamesPage.noGames') }}</h3>
+            <p>{{ $t('VideoGamesPage.noGames') }} "{{ getCategoryDisplayName(activeCategory) }}"</p>
           </div>
           
           <MediaList 
@@ -87,8 +86,9 @@ const activeCategory = ref('')
 const gamesList = computed(() => store.games)
 const allCategories = computed(() => {
   // 在分类列表前添加"All"选项
+  const allText = window.$t ? window.$t('VideoGamesPage.allCategories') : 'All'
   return [
-    { name: '', display_name: 'All' },
+    { name: '', display_name: allText },
     ...store.classifications.games
   ]
 })

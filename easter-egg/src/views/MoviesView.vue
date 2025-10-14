@@ -3,8 +3,6 @@
     <!-- Header Component -->
     <Header />
 
-
-
     <!-- Hero Section -->
     <section class="hero-section">
       <!-- 背景装饰元素 -->
@@ -19,13 +17,12 @@
         <div class="hero-content">
           <div class="hero-text">
             <h1 class="hero-title">
-              <span class="hero-title-part-1">Discover</span>
+              <span class="hero-title-part-1">{{ $t('MoviesPage.title') }}</span>
               <br />
-              <span class="hero-title-part-2">Movie Magic</span>
+              <span class="hero-title-part-2">{{ $t('MoviesPage.titleGradient') }}</span>
             </h1>
             <p class="hero-description">
-              Uncover movie easter eggs, hidden details, and director's subtle references in every frame.
-              From blockbuster hits to indie gems, every viewing becomes a treasure hunt for hidden secrets.
+              {{ $t('MoviesPage.description') }}
             </p>
           </div>
         </div>
@@ -37,7 +34,7 @@
       <div class="container">
         <!-- Loading State - 等待所有数据加载完成 -->
         <div v-if="!isDataReady" class="loading-section">
-          <div class="loading-text">Loading...</div>
+          <div class="loading-text">{{ $t('MoviesPage.loadingMovies') }}</div>
         </div>
 
         <!-- 数据加载完成后的内容 -->
@@ -51,8 +48,8 @@
           </div>
 
           <div v-if="filteredMovies.length === 0" class="empty-state">
-            <h3>No Content Available</h3>
-            <p>No movies found in category "{{ getCategoryDisplayName(activeCategory) }}"</p>
+            <h3>{{ $t('MoviesPage.noMovies') }}</h3>
+            <p>{{ $t('MoviesPage.noMovies') }} "{{ getCategoryDisplayName(activeCategory) }}"</p>
           </div>
 
           <MediaList v-else type="movies" :data="filteredMovies" :show-more-button="false" />
@@ -80,8 +77,9 @@ const activeCategory = ref('')
 const moviesList = computed(() => store.movies)
 const allCategories = computed(() => {
   // 在分类列表前添加"All"选项
+  const allText = window.$t ? window.$t('MoviesPage.allCategories') : 'All'
   return [
-    { name: '', display_name: 'All' },
+    { name: '', display_name: allText },
     ...store.classifications.movies
   ]
 })

@@ -11,7 +11,7 @@
       <div class="container">
         <!-- Loading State -->
         <div v-if="isLoading" class="loading-section">
-          <div class="loading-text">Loading...</div>
+          <div class="loading-text">{{ $t('common.loading') }}</div>
         </div>
 
         <!-- 数据加载完成后的内容 -->
@@ -37,7 +37,7 @@
 
         <!-- 错误状态 -->
         <div v-else class="error-section">
-          <div class="error-text">Failed to load content</div>
+          <div class="error-text">{{ $t('common.error') }}</div>
         </div>
       </div>
     </section>
@@ -112,7 +112,7 @@
                   <span v-else-if="itemData?.tag && !Array.isArray(itemData.tag)" class="info-tag">
                     {{ itemData.tag }}
                   </span>
-                  <span v-else class="info-tag no-labels">No tags yet</span>
+                  <span v-else class="info-tag no-labels">{{ $t('DetailPage.noTags') }}</span>
                 </div>
               </div>
             </div>
@@ -145,8 +145,11 @@ import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import AnonymousReview from '../components/AnonymousReview.vue'
 import { setPageTDK, resetPageTDK } from '@/seo/tdkManager.js'
+import { loadData } from '@/data/index.js'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
+const { locale } = useI18n()
 
 const props = defineProps({
   addressBar: {
@@ -202,29 +205,9 @@ const fetchData = async () => {
       return
     }
     
-    // 从本地数据获取内容
-    const { gamesData } = await import('@/data/games.js')
-    const { moviesData } = await import('@/data/movies.js')
-    const { tvData } = await import('@/data/tv.js')
-    const { newsData } = await import('@/data/news.js')
-    
-    let dataSource = []
-    switch (type) {
-      case 'games':
-        dataSource = gamesData
-        break
-      case 'movies':
-        dataSource = moviesData
-        break
-      case 'tv':
-        dataSource = tvData
-        break
-      case 'news':
-        dataSource = newsData
-        break
-      default:
-        throw new Error('Invalid content type')
-    }
+    // 从本地数据获取内容（使用当前语言）
+    const currentLocale = locale.value || 'en'
+    const { data: dataSource } = await loadData(currentLocale, type)
     
     // 根据 addressBar 查找数据
     const rawData = dataSource.find(item => item.addressBar === props.addressBar)

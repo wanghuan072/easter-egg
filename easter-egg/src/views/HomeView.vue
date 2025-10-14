@@ -6,7 +6,7 @@
     <!-- Error State -->
     <div v-if="store.errors.home" class="error-banner">
       <p>⚠️ {{ store.errors.home }}</p>
-      <button @click="retryFetch" class="retry-button">Retry</button>
+      <button @click="retryFetch" class="retry-button">{{ $t('common.retry') }}</button>
     </div>
 
     <!-- Hero Section -->
@@ -24,14 +24,13 @@
         <div class="hero-content">
           <div class="hero-text">
             <h1 class="hero-title">
-              <span class="hero-title-part-1">Unlock the</span>
+              <span class="hero-title-part-1">{{ $t('HomePage.hero.title1') }}</span>
               <br />
-              <span class="hero-title-part-2">Secrets</span>
+              <span class="hero-title-part-2">{{ $t('HomePage.hero.title2') }}</span>
             </h1>
 
             <p class="hero-description">
-              The ultimate guide to easter eggs, hidden details, and secrets in video games, movies,
-              and TV shows.
+              {{ $t('HomePage.hero.desc') }}
             </p>
 
             <div class="hero-search">
@@ -41,28 +40,28 @@
                   v-model="searchQuery"
                   @keyup.enter="performSearch"
                   type="text"
-                  placeholder="Find a secret in... (e.g., 'Cyberpunk 2077', 'The Avengers')"
+                  :placeholder="$t('HomePage.hero.searchPlaceholder')"
                   class="hero-search-input"
                 />
               </div>
               <button @click="performSearch" class="hero-search-button">
-                <span v-if="isSearching">Searching...</span>
-                <span v-else>Search Vault</span>
+                <span v-if="isSearching">{{ $t('HomePage.hero.searching') }}</span>
+                <span v-else>{{ $t('HomePage.hero.searchBtn') }}</span>
               </button>
             </div>
 
             <div class="hero-stats">
               <div class="stat-item">
                 <div class="stat-dot stat-dot-purple"></div>
-                <span>Multiple Secrets</span>
+                <span>{{ $t('HomePage.hero.stat1') }}</span>
               </div>
               <div class="stat-item">
                 <div class="stat-dot stat-dot-cyan"></div>
-                <span>Daily Updates</span>
+                <span>{{ $t('HomePage.hero.stat2') }}</span>
               </div>
               <div class="stat-item">
                 <div class="stat-dot stat-dot-purple"></div>
-                <span>Expert Guides</span>
+                <span>{{ $t('HomePage.hero.stat3') }}</span>
               </div>
             </div>
           </div>
@@ -81,13 +80,13 @@
     <section class="latest-discoveries-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title"><span class="gradient-text">Latest</span> Discoveries</h2>
+          <h2 class="section-title"><span class="gradient-text">{{ $t('HomePage.section1.title1') }}</span> {{ $t('HomePage.section1.title2') }}</h2>
           <p class="section-description">
-            Fresh secrets, hidden details, and easter eggs discovered by our community of hunters.
+            {{ $t('HomePage.section1.desc') }}
           </p>
         </div>
         <div v-if="!isLatestDiscoveriesLoaded" class="loading-section">
-          <div class="loading-text">Loading...</div>
+          <div class="loading-text">{{ $t('common.loading') }}</div>
         </div>
         
         <MediaList 
@@ -103,19 +102,19 @@
     <section class="category-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title"><span class="gradient-text">Video Games</span></h2>
+          <h2 class="section-title"><span class="gradient-text">{{ $t('HomePage.section2.title1') }} {{ $t('HomePage.section2.title2') }}</span></h2>
           <p class="section-description">
-            Discover hidden easter eggs, secret levels, and developer jokes in your favorite games.
+            {{ $t('HomePage.section2.desc') }}
           </p>
         </div>
           <div v-if="!isGamesLoaded" class="loading-section">
           <div class="loading-spinner"></div>
-          <p>Loading games...</p>
+          <p>{{ $t('VideoGamesPage.loadingGames') }}</p>
         </div>
         
         <div v-else-if="store.errors.home" class="error-section">
           <p>⚠️ {{ store.errors.home }}</p>
-          <button @click="retryFetch" class="retry-button">Retry</button>
+          <button @click="retryFetch" class="retry-button">{{ $t('common.retry') }}</button>
         </div>
         
         <MediaList 
@@ -131,19 +130,19 @@
     <section class="category-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title"><span class="gradient-text">Movies</span></h2>
+          <h2 class="section-title"><span class="gradient-text">{{ $t('HomePage.section3.title1') }} {{ $t('HomePage.section3.title2') }}</span></h2>
           <p class="section-description">
-            Uncover movie easter eggs, hidden details, and director's subtle references.
+            {{ $t('HomePage.section3.desc') }}
           </p>
         </div>
         <div v-if="!isMoviesLoaded" class="loading-section">
           <div class="loading-spinner"></div>
-          <p>Loading movies...</p>
+          <p>{{ $t('MoviesPage.loadingMovies') }}</p>
         </div>
         
         <div v-else-if="store.errors.home" class="error-section">
           <p>⚠️ {{ store.errors.home }}</p>
-          <button @click="retryFetch" class="retry-button">Retry</button>
+          <button @click="retryFetch" class="retry-button">{{ $t('common.retry') }}</button>
         </div>
         
         <MediaList 
@@ -159,19 +158,19 @@
     <section class="category-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title"><span class="gradient-text">TV Shows</span></h2>
+          <h2 class="section-title"><span class="gradient-text">{{ $t('HomePage.section4.title1') }} {{ $t('HomePage.section4.title2') }}</span></h2>
           <p class="section-description">
-            Find hidden references, callbacks, and easter eggs across television series.
+            {{ $t('HomePage.section4.desc') }}
           </p>
         </div>
         <div v-if="!isTVLoaded" class="loading-section">
           <div class="loading-spinner"></div>
-          <p>Loading TV shows...</p>
+          <p>{{ $t('TVShowsPage.loadingShows') }}</p>
         </div>
         
         <div v-else-if="store.errors.home" class="error-section">
           <p>⚠️ {{ store.errors.home }}</p>
-          <button @click="retryFetch" class="retry-button">Retry</button>
+          <button @click="retryFetch" class="retry-button">{{ $t('common.retry') }}</button>
         </div>
         
         <MediaList 
@@ -188,10 +187,9 @@
       <div class="container">
         <div class="introduction-content">
           <div class="section-header">
-            <h2 class="section-title">About <span class="gradient-text">EasterEggVault</span></h2>
+            <h2 class="section-title">{{ $t('HomePage.section5.title1') }} <span class="gradient-text">{{ $t('HomePage.section5.title2') }}</span></h2>
             <p class="section-description">
-              Your ultimate destination for discovering hidden secrets, easter eggs, and fascinating
-              details in entertainment media. Turn every viewing into an exploration adventure.
+              {{ $t('HomePage.section5.desc') }}
             </p>
           </div>
 
@@ -200,10 +198,9 @@
               <div class="intro-icon">
                 <svg t="1757063170726" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2287" width="200" height="200"><path d="M1009.2544 537.2928 1009.2544 434.8928c0-162.9184-114.176-198.9632-187.2896-198.9632L541.9008 235.9296c0.4096-1.536 0.7168-3.2768 0.7168-4.9152l0-65.8432c0-10.3424-8.3968-18.7392-18.7392-18.7392-10.3424 0-18.7392 8.3968-18.7392 18.7392l0 65.8432c0 1.7408 0.2048 3.3792 0.7168 4.9152l-3.8912 0L210.2272 235.9296c-73.1136 0-187.2896 36.0448-187.2896 198.9632l0 102.5024 0 29.9008 0 163.4304c0 59.5968 48.3328 107.9296 107.9296 107.9296 17.408 0 34.816 0 52.1216 0 0 0 58.1632 3.6864 86.016-27.5456 16.5888-18.6368 25.1904-31.8464 25.1904-31.8464 20.5824-27.7504 50.176-41.984 83.968-46.592 7.3728-1.024 14.9504-1.6384 22.4256-1.9456l76.0832 0 129.6384 0c7.4752 0.3072 40.1408 0.9216 47.616 1.9456 33.792 4.608 63.3856 18.8416 83.968 46.592 0 0 8.704 13.2096 25.1904 31.8464 27.8528 31.3344 86.016 27.5456 86.016 27.5456 17.408 0 34.816 0 52.1216 0 59.5968 0 107.9296-48.3328 107.9296-107.9296L1009.152 567.1936 1009.2544 537.2928zM401.2032 510.5664l-114.176 0.3072L286.72 625.2544c0 10.3424-8.3968 18.7392-18.7392 18.7392l0 0c-10.3424 0-18.7392-8.3968-18.7392-18.7392l0.2048-114.2784-114.0736 0.3072 0 0c-10.3424 0-18.7392-8.3968-18.7392-18.7392 0-10.3424 8.2944-18.7392 18.7392-18.7392l114.2784-0.3072 0.2048-114.4832c0-10.3424 8.3968-18.7392 18.7392-18.7392l0 0c10.3424 0 18.7392 8.3968 18.7392 18.7392l-0.2048 114.3808 114.0736-0.3072 0 0c10.3424 0 18.7392 8.3968 18.7392 18.7392C419.9424 502.0672 411.5456 510.464 401.2032 510.5664zM688.2304 488.1408c-31.232 0-56.6272-25.3952-56.6272-56.6272 0-31.232 25.3952-56.5248 56.6272-56.5248s56.6272 25.3952 56.6272 56.5248C744.7552 462.7456 719.4624 488.1408 688.2304 488.1408zM834.56 621.2608c-32.256 0-58.4704-26.2144-58.4704-58.368 0-32.256 26.2144-58.4704 58.4704-58.4704 32.256 0 58.4704 26.2144 58.4704 58.4704C893.0304 595.0464 866.816 621.2608 834.56 621.2608z" fill="#FF9000" p-id="2288"></path></svg>
               </div>
-              <h3 class="intro-title">Video Game Secrets</h3>
+              <h3 class="intro-title">{{ $t('HomePage.section5.card1Title') }}</h3>
               <p class="intro-description">
-                Uncover hidden levels, developer easter eggs, character references, and story details
-                in games. From classic titles to the latest releases, discover every carefully crafted secret.
+                {{ $t('HomePage.section5.card1Desc') }}
               </p>
             </div>
 
@@ -211,10 +208,9 @@
               <div class="intro-icon">
                 <svg t="1757063279384" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3484" width="200" height="200"><path d="M97.28 512c0 225.792 172.544 408.576 386.048 408.576s386.048-182.784 386.048-408.576S696.32 103.424 483.328 103.424C269.824 103.424 97.28 286.208 97.28 512z" fill="#3366FF" p-id="3485"></path><path d="M502.272 838.656h385.536c21.504 0 38.912 18.432 38.912 40.96s-17.408 40.96-38.912 40.96H502.272c-21.504 0-38.912-18.432-38.912-40.96 0.512-22.528 17.408-40.96 38.912-40.96z" fill="#3366FF" p-id="3486"></path><path d="M386.56 307.712c0 56.32 43.008 101.888 96.256 101.888s96.256-45.568 96.256-101.888-43.008-101.888-96.256-101.888c-53.248-0.512-96.256 45.568-96.256 101.888zM483.328 613.888c53.248 0 96.256 45.568 96.256 101.888s-43.008 101.888-96.256 101.888-96.256-45.568-96.256-101.888 42.496-101.888 96.256-101.888z" fill="#FFFFFF" p-id="3487"></path><path d="M270.848 409.6c53.248 0 96.768 45.568 96.768 101.888s-43.008 102.4-96.256 102.4S174.592 568.32 174.592 512c0-56.32 43.008-101.888 96.256-102.4zM695.296 409.6c53.248 0 96.256 45.568 96.256 101.888s-43.008 101.888-96.256 101.888S599.04 568.32 599.04 512s43.008-102.4 96.256-102.4z" fill="#AEC9FF" p-id="3488"></path></svg>
               </div>
-              <h3 class="intro-title">Movie Details</h3>
+              <h3 class="intro-title">{{ $t('HomePage.section5.card2Title') }}</h3>
               <p class="intro-description">
-                Explore hidden easter eggs, tribute elements, prop details, and behind-the-scenes
-                secrets in films. Understand the director's vision and production team's dedication.
+                {{ $t('HomePage.section5.card2Desc') }}
               </p>
             </div>
 
@@ -222,10 +218,9 @@
               <div class="intro-icon">
                 <svg t="1757063304052" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5035" width="200" height="200"><path d="M929.28 250.368h-310.784c-3.584 0-6.656-2.048-8.192-5.632-1.024-3.584 0-6.656 3.072-8.704l150.528-100.864c14.336-9.216 19.456-27.648 11.264-42.496-4.608-8.192-12.288-13.824-20.48-15.872-9.216-2.048-18.432-0.512-25.6 4.608L547.84 203.264c-22.016 14.848-50.176 14.848-72.192 0L294.912 81.92c-14.848-9.728-34.816-5.632-45.056 9.216-0.512 0.512-0.512 1.024-1.024 1.536-7.68 14.848-2.048 33.28 11.264 42.496l150.016 100.864c3.584 2.048 4.608 7.68 2.048 10.752-1.536 2.048-4.096 3.584-6.656 3.584H94.72c-34.816 0-63.488 28.16-64 63.488v570.88c0 34.816 29.184 63.488 64 63.488h834.048c34.816 0 63.488-28.16 64-63.488V313.856c0.512-35.84-28.672-63.488-63.488-63.488z m-321.024 539.136c0 17.92-14.848 32.256-32.768 32.256H190.976c-17.92 0-32.256-14.336-32.256-32.256V409.088c0-17.92 14.336-32.256 32.256-32.256h385.024c17.92 0 32.256 14.336 32.256 32.256v380.416z m240.64 31.232H752.64c-17.92 0.512-32.768-12.8-33.28-30.208-0.512-17.92 12.8-32.768 30.208-33.28H848.896c17.92-0.512 32.768 12.8 33.28 30.208 0.512 17.92-12.8 32.768-30.208 33.28h-3.072z m0-142.336H752.64c-17.92 0.512-32.768-12.8-33.28-30.208-0.512-17.92 12.8-32.768 30.208-33.28H848.896c17.92-0.512 32.768 12.8 33.28 30.208s-12.8 32.768-30.208 33.28h-3.072z m-48.128-142.848c-43.52-0.512-78.336-36.864-77.824-80.384s36.864-78.336 80.384-77.824c43.52 0.512 77.824 36.352 77.824 78.848 0 44.032-36.352 79.872-80.384 79.36z" fill="#3366FF" p-id="5036"></path><path d="M513.536 442.368H256c-17.92-0.512-32.256 13.824-32.768 31.744v251.904c0.512 17.92 14.848 31.744 32.768 31.744h258.048c17.92 0 32.256-13.824 32.256-31.744V473.6c-0.512-17.408-14.848-31.232-32.768-31.232z" fill="#AEC9FF" p-id="5037"></path></svg>
               </div>
-              <h3 class="intro-title">TV Show Easter Eggs</h3>
+              <h3 class="intro-title">{{ $t('HomePage.section5.card3Title') }}</h3>
               <p class="intro-description">
-                Discover recurring easter eggs, character connections, plot foreshadowing, and
-                production details in television series. Track hidden clues across seasons.
+                {{ $t('HomePage.section5.card3Desc') }}
               </p>
             </div>
 
@@ -233,10 +228,9 @@
               <div class="intro-icon">
                 <svg t="1757063319258" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6061" width="200" height="200"><path d="M209.7 414.1l202.4 53.8c2 0.5 4.1 0.8 6.3 0.8 11 0 20.6-7.4 23.4-18 3.4-12.9-4.3-26.2-17.2-29.6l-202.4-53.8c-6.2-1.7-12.7-0.9-18.3 2.3-5.7 3.2-9.7 8.5-11.4 14.8-3.4 13 4.3 26.3 17.2 29.7zM424.7 606.3l-202.4-53.8c-6.2-1.7-12.7-0.8-18.4 2.4-5.6 3.3-9.7 8.5-11.3 14.8-3.4 12.9 4.3 26.2 17.2 29.6l202.4 53.8c2 0.5 4.1 0.8 6.3 0.8 11 0 20.6-7.4 23.4-18 3.4-12.8-4.3-26.1-17.2-29.6zM607.9 468.7c2.2 0 4.3-0.3 6.2-0.8l202.5-53.8c12.9-3.4 20.6-16.7 17.2-29.7-1.7-6.3-5.8-11.6-11.5-14.9-5.6-3.2-12.1-4-18.2-2.3L601.6 421c-12.9 3.4-20.6 16.7-17.2 29.7 2.9 10.6 12.5 18 23.5 18zM833.8 569.7c-1.7-6.3-5.7-11.6-11.4-14.8-5.6-3.2-12.1-4.1-18.3-2.4l-202.5 53.8c-12.9 3.4-20.6 16.7-17.2 29.6 2.8 10.6 12.4 18 23.4 18 2.2 0 4.3-0.3 6.2-0.8l202.5-53.8c13-3.4 20.7-16.7 17.3-29.6z" fill="#FF4E7D" p-id="6062"></path><path d="M891.3 166.2c-6.8-5.3-18.6-10.7-36.3-6.4L518.7 244h-0.1c-0.4 0.1-0.8 0.1-1.1 0L171 159.8c-17.6-4.4-29.4 1-36.2 6.4-7.5 5.8-16.3 17.4-16.3 39.7l0.6 342.4 0.2 186.1c0 14.2 5.8 25.8 17.2 34.6 8.5 6.6 18 9.6 22.5 11.1l340 98.4c4.6 1.3 9.4 2 14.1 2 4.7 0 9.5-0.7 14.2-2l340.1-98.4 0.2-0.1c4.4-1.4 13.7-4.4 22.2-11 11.4-8.8 17.1-20.4 17.1-34.5l0.8-528.5c-0.1-22.4-9-34-16.4-39.8zM488.8 825l-315.5-91.3c-2.7-0.9-4.5-1.6-5.6-2.1l-0.2-183.2-0.6-339.6L488.8 287v538z m369.5-93.4c-1 0.5-2.7 1.2-5.2 2L537.2 825V289.3l321.9-80.6-0.8 522.9z" fill="#4E30DC" p-id="6063"></path></svg>
               </div>
-              <h3 class="intro-title">Latest News</h3>
+              <h3 class="intro-title">{{ $t('HomePage.section5.card4Title') }}</h3>
               <p class="intro-description">
-                Get the latest easter egg discoveries, behind-the-scenes stories, and industry
-                insights. Stay updated with entertainment trends and never miss fascinating details.
+                {{ $t('HomePage.section5.card4Desc') }}
               </p>
             </div>
 
@@ -244,10 +238,9 @@
               <div class="intro-icon">
                 <svg t="1757063343331" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7093" width="200" height="200"><path d="M910.793765 204.556811l-329.178854-188.093059c-38.335401-21.919657-100.798424-21.983656-139.229823 0l-329.178854 188.093059c-38.335401 21.919657-69.630911 75.742816-69.630911 120.062123l0 374.746141c0 44.351307 31.167513 98.110466 69.630911 120.062123l329.178854 188.093059c38.335401 21.919657 100.798424 21.983656 139.229823 0l329.178854-188.093059c38.335401-21.919657 69.630911-75.742816 69.630911-120.062123l0-374.746141c0-44.319307-31.167513-98.110466-69.630911-120.062123zM769.675972 466.152721l-82.238714 81.822721c-17.087733 17.023734-27.743566 50.55921-23.711629 74.558834l19.391697 115.582193c4.031937 23.999625-9.951844 34.367463-31.039515 23.03964l-101.662411-54.591147c-21.11967-11.327823-55.67913-11.327823-76.7668 0l-101.662411 54.591147c-21.11967 11.359822-35.103451 0.991984-31.039515-23.03964l19.391697-115.582193c4.031937-23.999625-6.655896-57.5671-23.743629-74.558834l-82.238714-81.822721c-17.087733-17.023734-11.743816-33.791472 11.871814-37.311417l113.662223-16.863736c23.615631-3.519945 51.551194-24.255621 62.111029-46.07928l50.847205-105.150356c10.559835-21.855658 27.839565-21.855658 38.3994 0l50.815206 105.150356c10.559835 21.855658 38.527398 42.591334 62.111029 46.07928l113.630224 16.863736c23.583631 3.487945 28.927548 20.287683 11.839815 37.311417z" fill="#F8CA2A" p-id="7094"></path></svg>
               </div>
-              <h3 class="intro-title">Curated Content</h3>
+              <h3 class="intro-title">{{ $t('HomePage.section5.card5Title') }}</h3>
               <p class="intro-description">
-                Carefully organized and categorized content library with detailed descriptions
-                and explanations. Each easter egg is documented with context and background information.
+                {{ $t('HomePage.section5.card5Desc') }}
               </p>
             </div>
 
@@ -255,10 +248,9 @@
               <div class="intro-icon">
                 <svg t="1757063372050" class="icon" viewBox="0 0 1056 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9883" width="200" height="200"><path d="M16 0m512 0l0 0q512 0 512 512l0 0q0 512-512 512l0 0q-512 0-512-512l0 0q0-512 512-512Z" fill="#7C9FEE" p-id="9884"></path><path d="M686.016 758.944h-316c-18.72 0-33.856-12.384-33.856-27.68V251.616c0-15.232 15.136-27.616 33.856-27.616h316c18.688 0 33.824 12.384 33.824 27.68v479.616c0 15.232-15.136 27.648-33.824 27.648z m-157.888-27.52c12.48 0 22.592-8.896 22.592-19.872 0-10.944-10.144-19.84-22.592-19.84-12.48 0-22.592 8.896-22.592 19.84 0 10.976 10.112 19.84 22.592 19.84z m157.888-452.096h-316v387.392h316.032V279.328z" fill="#FFFFFF" p-id="9885"></path><path d="M422.496 339.104h191.84a19.2 19.2 0 0 1 0 38.4h-191.84a19.2 19.2 0 0 1 0-38.4z m0 76.736h108.128a19.2 19.2 0 1 1 0 38.4h-108.16a19.2 19.2 0 0 1 0-38.4z m0 76.736h45.344a19.2 19.2 0 0 1 0 38.4h-45.344a19.2 19.2 0 0 1 0-38.4z" fill="#FFFFFF" p-id="9886"></path></svg>
               </div>
-              <h3 class="intro-title">Mobile Friendly</h3>
+              <h3 class="intro-title">{{ $t('HomePage.section5.card6Title') }}</h3>
               <p class="intro-description">
-                Access our vault anywhere, anytime with our responsive design. Discover secrets
-                on your phone, tablet, or desktop with seamless cross-device experience.
+                {{ $t('HomePage.section5.card6Desc') }}
               </p>
             </div>
           </div>
@@ -272,76 +264,67 @@
         <div class="faq-content">
           <div class="section-header">
             <h2 class="section-title">
-              Frequently Asked <span class="gradient-text">Questions</span>
+              {{ $t('HomePage.section6.title1') }} <span class="gradient-text">{{ $t('HomePage.section6.title2') }}</span>
             </h2>
             <p class="section-description">
-              Find answers to common questions about our platform and how to use it effectively.
+              {{ $t('HomePage.section6.desc') }}
             </p>
           </div>
 
           <div class="faq-grid">
             <div class="faq-item">
-              <h3 class="faq-title">What is an easter egg?</h3>
+              <h3 class="faq-title">{{ $t('HomePage.section6.q1') }}</h3>
               <p class="faq-answer">
-                An easter egg is a hidden message, feature, or reference intentionally placed in
-                media content by creators. These can include secret levels in games, hidden
-                messages in movies, or subtle references that reward attentive viewers.
+                {{ $t('HomePage.section6.a1') }}
               </p>
             </div>
 
             <div class="faq-item">
-              <h3 class="faq-title">How often is new content added?</h3>
+              <h3 class="faq-title">{{ $t('HomePage.section6.q2') }}</h3>
               <p class="faq-answer">
-                We update our content weekly with new easter egg discoveries and detailed explanations. 
-                Our team carefully researches and documents each finding to ensure quality and accuracy.
+                {{ $t('HomePage.section6.a2') }}
               </p>
             </div>
 
             <div class="faq-item">
-              <h3 class="faq-title">Can I submit my own discoveries?</h3>
+              <h3 class="faq-title">{{ $t('HomePage.section6.q3') }}</h3>
               <p class="faq-answer">
-                We'd love to hear about your discoveries! Please contact us via email to share your findings 
-                or suggestions. We're always interested in learning about new easter eggs and hidden details.
+                {{ $t('HomePage.section6.a3') }}
               </p>
             </div>
 
             <div class="faq-item">
-              <h3 class="faq-title">How do I search for specific content?</h3>
+              <h3 class="faq-title">{{ $t('HomePage.section6.q4') }}</h3>
               <p class="faq-answer">
-                Use our search bar to find specific games, movies, TV shows, or easter egg types.
-                You can search by title, genre, or even specific details you remember seeing.
+                {{ $t('HomePage.section6.a4') }}
               </p>
             </div>
 
             <div class="faq-item">
-              <h3 class="faq-title">Are all easter eggs verified?</h3>
+              <h3 class="faq-title">{{ $t('HomePage.section6.q5') }}</h3>
               <p class="faq-answer">
-                We carefully research and document each easter egg to ensure accuracy. Our team takes great care 
-                to provide detailed explanations and context for every discovery in our vault.
+                {{ $t('HomePage.section6.a5') }}
               </p>
             </div>
 
             <div class="faq-item">
-              <h3 class="faq-title">How can I contact you?</h3>
+              <h3 class="faq-title">{{ $t('HomePage.section6.q6') }}</h3>
               <p class="faq-answer">
-                For questions, suggestions, or to share discoveries, please reach out to us via email. 
-                We appreciate your feedback and are always interested in hearing from fellow easter egg enthusiasts.
+                {{ $t('HomePage.section6.a6') }}
               </p>
             </div>
 
             <div class="faq-item">
-              <h3 class="faq-title">What types of content do you cover?</h3>
+              <h3 class="faq-title">{{ $t('HomePage.section6.q7') }}</h3>
               <p class="faq-answer">
-                We focus on popular video games, movies, and TV shows with a strong emphasis on mainstream 
-                entertainment content. Our collection includes well-known titles and their hidden secrets.
+                {{ $t('HomePage.section6.a7') }}
               </p>
             </div>
 
             <div class="faq-item">
-              <h3 class="faq-title">Is the website free to use?</h3>
+              <h3 class="faq-title">{{ $t('HomePage.section6.q8') }}</h3>
               <p class="faq-answer">
-                Yes! EasterEggVault is completely free to browse and explore. We believe that discovering 
-                hidden secrets should be accessible to everyone who loves entertainment media.
+                {{ $t('HomePage.section6.a8') }}
               </p>
             </div>
           </div>
@@ -357,6 +340,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import MediaList from '@/components/MediaList.vue'
@@ -366,6 +350,7 @@ import { useEasterEggsStore } from '@/stores/easterEggs.js'
 
 // 使用路由
 const router = useRouter()
+const { locale } = useI18n()
 
 const store = useEasterEggsStore()
 const searchQuery = ref('')
@@ -389,9 +374,15 @@ const performSearch = async () => {
   if (!searchQuery.value.trim()) return
   isSearching.value = true
   try {
+    // 根据当前语言构建路由名称
+    const currentLang = locale.value
+    const routeName = currentLang === 'en' 
+      ? 'Search' 
+      : `Search${currentLang.charAt(0).toUpperCase() + currentLang.slice(1)}`
+    
     // 直接跳转到搜索结果页面，数据由 SearchResultsView.vue 负责获取
     router.push({
-      name: 'search-results',
+      name: routeName,
       query: { q: searchQuery.value.trim() }
     })
   } catch (error) {

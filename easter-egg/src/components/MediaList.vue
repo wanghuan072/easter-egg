@@ -49,10 +49,12 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { formatRelativeTime } from '@/utils/dateUtils.js'
 import { dataUtils, DATA_STRUCTURE } from '@/config/dataStructure.js'
 
 const router = useRouter()
+const { locale } = useI18n()
 
 // 格式化日期函数
 const formatDate = formatRelativeTime
@@ -79,17 +81,18 @@ const props = defineProps({
 
 // 类型标签
 const typeLabel = computed(() => {
+  const $t = window.$t || ((key) => key) // 回退函数
   switch (props.type) {
     case DATA_STRUCTURE.MEDIA_TYPES.GAMES:
-      return 'Games'
+      return $t('nav.videoGames')
     case DATA_STRUCTURE.MEDIA_TYPES.MOVIES:
-      return 'Movies'
+      return $t('nav.movies')
     case DATA_STRUCTURE.MEDIA_TYPES.TV:
-      return 'TV Shows'
+      return $t('nav.tvShows')
     case DATA_STRUCTURE.MEDIA_TYPES.NEWS:
-      return 'News'
+      return $t('nav.news')
     case 'latest':
-      return 'Latest Discoveries'
+      return $t('HomePage.section1.title2')
     default:
       return 'Content'
   }
@@ -222,22 +225,22 @@ const goToDetail = (item) => {
   const validMediaTypes = ['games', 'movies', 'tv', 'news']
   const isTypeValid = props.type && validMediaTypes.includes(props.type)
   
-  let routeName
+  let baseRouteName
   
   if (isTypeValid) {
     // 如果传入的type是有效的媒体类型，直接使用
     switch (props.type) {
       case 'games':
-        routeName = 'games-detail'
+        baseRouteName = 'GameDetail'
         break
       case 'movies':
-        routeName = 'movies-detail'
+        baseRouteName = 'MovieDetail'
         break
       case 'tv':
-        routeName = 'tv-detail'
+        baseRouteName = 'TVDetail'
         break
       case 'news':
-        routeName = 'news-detail'
+        baseRouteName = 'NewsDetail'
         break
     }
   } else {
@@ -245,21 +248,27 @@ const goToDetail = (item) => {
     const smartType = getSmartMediaType(item)
     switch (smartType) {
       case 'games':
-        routeName = 'games-detail'
+        baseRouteName = 'GameDetail'
         break
       case 'movies':
-        routeName = 'movies-detail'
+        baseRouteName = 'MovieDetail'
         break
       case 'tv':
-        routeName = 'tv-detail'
+        baseRouteName = 'TVDetail'
         break
       case 'news':
-        routeName = 'news-detail'
+        baseRouteName = 'NewsDetail'
         break
       default:
-        routeName = 'games-detail'
+        baseRouteName = 'GameDetail'
     }
   }
+  
+  // 根据当前语言构建路由名称
+  const currentLang = locale.value
+  const routeName = currentLang === 'en' 
+    ? baseRouteName 
+    : `${baseRouteName}${currentLang.charAt(0).toUpperCase() + currentLang.slice(1)}`
   
   // 使用命名路由进行导航
   router.push({

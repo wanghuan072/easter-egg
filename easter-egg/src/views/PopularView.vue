@@ -7,10 +7,10 @@
       <div class="container">
         <div class="hero-content">
           <h1 class="hero-title">
-            <span class="gradient-text">Popular</span> Discoveries
+            <span class="gradient-text">{{ $t('PopularPage.title') }}</span> {{ $t('PopularPage.titleGradient') }}
           </h1>
           <p class="hero-description">
-            The most popular and trending easter eggs, hidden secrets, and discoveries from our community.
+            {{ $t('PopularPage.description') }}
           </p>
         </div>
       </div>
@@ -20,19 +20,19 @@
     <section class="popular-content-section">
       <div class="container">
         <div v-if="!isLatestDiscoveriesLoaded" class="loading-section">
-          <div class="loading-text">Loading popular content...</div>
+          <div class="loading-text">{{ $t('common.loading') }}</div>
         </div>
         
         <div v-else-if="store.errors.home" class="error-section">
           <p>⚠️ {{ store.errors.home }}</p>
-          <button @click="retryFetch" class="retry-button">Retry</button>
+          <button @click="retryFetch" class="retry-button">{{ $t('common.retry') }}</button>
         </div>
         
         <div v-else>
           <div class="section-header">
-            <h2 class="section-title">Most <span class="gradient-text">Popular</span> Content</h2>
+            <h2 class="section-title">{{ $t('PopularPage.title') }} <span class="gradient-text">{{ $t('PopularPage.titleGradient') }}</span></h2>
             <p class="section-description">
-              Discover the most popular easter eggs and hidden secrets that our community loves.
+              {{ $t('PopularPage.description') }}
             </p>
           </div>
           
