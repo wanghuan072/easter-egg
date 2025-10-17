@@ -79,6 +79,25 @@
     <!-- Latest Discoveries Section -->
     <section class="latest-discoveries-section">
       <div class="container">
+        <!-- PC横幅广告位1 -->
+        <aside style="width: 100%; padding: 20px 0; text-align: center; overflow: hidden;" v-if="!isMobile">
+          <ins class="eas6a97888e2" data-zoneid="5751770"></ins>
+        </aside>
+
+        <!-- PC底部粘性横幅广告位1 -->
+        <ins class="eas6a97888e17" data-zoneid="5751774" v-if="!isMobile"></ins>
+
+        <!-- PC左侧粘性横幅广告位1  -->
+        <ins class="eas6a97888e17" data-zoneid="5751776" v-if="!isMobile"></ins>
+
+        <!-- PC粘性横幅广告位2 -->
+        <ins class="eas6a97888e17" data-zoneid="5751778" v-if="!isMobile"></ins>
+
+        <!-- 移动横幅广告1 -->
+        <aside style="width: 100%; padding: 20px 0; text-align: center; overflow: hidden;" v-if="isMobile">
+          <ins class="eas6a97888e2" data-zoneid="5751802"></ins>
+        </aside>
+
         <div class="section-header">
           <h2 class="section-title"><span class="gradient-text">{{ $t('HomePage.section1.title1') }}</span> {{ $t('HomePage.section1.title2') }}</h2>
           <p class="section-description">
@@ -101,6 +120,11 @@
     <!-- Video Games Section -->
     <section class="category-section">
       <div class="container">
+        <!-- PC横幅广告位2 -->
+        <aside style="width: 100%; padding: 20px 0; text-align: center; overflow: hidden;" v-if="!isMobile">
+          <ins class="eas6a97888e2" data-zoneid="5751772"></ins>
+        </aside>
+
         <div class="section-header">
           <h2 class="section-title"><span class="gradient-text">{{ $t('HomePage.section2.title1') }} {{ $t('HomePage.section2.title2') }}</span></h2>
           <p class="section-description">
@@ -129,6 +153,11 @@
     <!-- Movies Section -->
     <section class="category-section">
       <div class="container">
+        <!-- 原生广告 -->
+        <aside style="width: 100%; padding: 20px 0; text-align: center; overflow: hidden;">
+          <ins class="eas6a97888e20" data-zoneid="5751798"></ins>
+        </aside>
+
         <div class="section-header">
           <h2 class="section-title"><span class="gradient-text">{{ $t('HomePage.section3.title1') }} {{ $t('HomePage.section3.title2') }}</span></h2>
           <p class="section-description">
@@ -261,6 +290,11 @@
     <!-- FAQ Section -->
     <section class="faq-section">
       <div class="container">
+        <!-- 移动横幅广告2 -->
+        <aside style="width: 100%; padding: 20px 0; text-align: center; overflow: hidden;" v-if="isMobile">
+          <ins class="eas6a97888e10" data-zoneid="5751804"></ins>
+        </aside>
+
         <div class="faq-content">
           <div class="section-header">
             <h2 class="section-title">
@@ -345,8 +379,10 @@ import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import MediaList from '@/components/MediaList.vue'
 
-
 import { useEasterEggsStore } from '@/stores/easterEggs.js'
+
+import { useDeviceDetection } from '@/utils/useDeviceDetection.js'
+const { isMobile } = useDeviceDetection()
 
 // 使用路由
 const router = useRouter()
@@ -402,6 +438,21 @@ const retryLatestFetch = async () => {
   await store.fetchLatestDiscoveries()
 }
 
+// 广告联盟
+const adProvider = () => {
+  const script = document.createElement('script')
+    script.src = 'https://a.magsrv.com/ad-provider.js'
+    script.async = true
+    script.type = 'application/javascript'
+    document.head.appendChild(script)
+
+    script.onload = () => {
+        if (window.AdProvider) {
+            window.AdProvider.push({ "serve": {} })
+        }
+    }
+}
+
 onMounted(async () => {
   // 等待数据预加载完成
   const waitForData = () => {
@@ -415,6 +466,11 @@ onMounted(async () => {
   }
   
   waitForData()
+
+  // 加载广告
+  setTimeout(() => {
+    adProvider()
+  }, 1000); // 延迟1秒加载广
 })
 </script>
 
