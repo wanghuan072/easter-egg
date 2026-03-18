@@ -38,6 +38,10 @@ onMounted(async () => {
   box-sizing: border-box;
 }
 
+.isPC{
+  display: block;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -66,6 +70,10 @@ onMounted(async () => {
   .container {
     max-width: 100%;
     padding: 0 20px;
+  }
+
+  .isPC{
+    display: none;
   }
 
   .loading-section {

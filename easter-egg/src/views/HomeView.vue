@@ -64,6 +64,16 @@
                 <span>{{ $t('HomePage.hero.stat3') }}</span>
               </div>
             </div>
+
+            <!-- 横幅广告位 -->
+            <aside v-if="!isMobile" style="width: 100%; text-align: center; overflow: hidden">
+              <ins class="eas6a97888e2" data-zoneid="5874736"></ins>
+            </aside>
+
+            <!-- 移动横幅广告位 -->
+            <aside v-if="isMobile" style="width: 100%; text-align: center; overflow: hidden">
+              <ins class="eas6a97888e10" data-zoneid="5874748"></ins>
+            </aside>
           </div>
         </div>
 
@@ -80,7 +90,10 @@
     <section class="latest-discoveries-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title"><span class="gradient-text">{{ $t('HomePage.section1.title1') }}</span> {{ $t('HomePage.section1.title2') }}</h2>
+          <h2 class="section-title">
+            <span class="gradient-text">{{ $t('HomePage.section1.title1') }}</span>
+            {{ $t('HomePage.section1.title2') }}
+          </h2>
           <p class="section-description">
             {{ $t('HomePage.section1.desc') }}
           </p>
@@ -88,13 +101,13 @@
         <div v-if="!isLatestDiscoveriesLoaded" class="loading-section">
           <div class="loading-text">{{ $t('common.loading') }}</div>
         </div>
-        
-        <MediaList 
-          v-else
-          type="latest"
-          :data="latestDiscoveries"
-          :show-more-button="true"
-        />
+
+        <MediaList v-else type="latest" :data="latestDiscoveries" :show-more-button="true" />
+
+        <!-- 原生广告位 -->
+        <aside style="width: 100%; text-align: center; overflow: hidden">
+          <ins class="eas6a97888e20" data-zoneid="5874746"></ins>
+        </aside>
       </div>
     </section>
 
@@ -102,27 +115,42 @@
     <section class="category-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title"><span class="gradient-text">{{ $t('HomePage.section2.title1') }} {{ $t('HomePage.section2.title2') }}</span></h2>
+          <h2 class="section-title">
+            <span class="gradient-text"
+              >{{ $t('HomePage.section2.title1') }} {{ $t('HomePage.section2.title2') }}</span
+            >
+          </h2>
           <p class="section-description">
             {{ $t('HomePage.section2.desc') }}
           </p>
         </div>
-          <div v-if="!isGamesLoaded" class="loading-section">
+        <div v-if="!isGamesLoaded" class="loading-section">
           <div class="loading-spinner"></div>
           <p>{{ $t('VideoGamesPage.loadingGames') }}</p>
         </div>
-        
+
         <div v-else-if="store.errors.home" class="error-section">
           <p>⚠️ {{ store.errors.home }}</p>
           <button @click="retryFetch" class="retry-button">{{ $t('common.retry') }}</button>
         </div>
-        
-        <MediaList 
-          v-else
-          type="games"
-          :data="games"
-          :show-more-button="true"
-        />
+
+        <MediaList v-else type="games" :data="games" :show-more-button="true" />
+
+        <!-- 横幅广告位 -->
+        <aside
+          v-if="!isMobile"
+          style="width: 100%; padding-top: 20px; text-align: center; overflow: hidden"
+        >
+          <ins class="eas6a97888e2" data-zoneid="5874736"></ins>
+        </aside>
+
+        <!-- 移动横幅广告位 -->
+        <aside
+          v-if="isMobile"
+          style="width: 100%; padding-top: 20px; text-align: center; overflow: hidden"
+        >
+          <ins class="eas6a97888e10" data-zoneid="5874748"></ins>
+        </aside>
       </div>
     </section>
 
@@ -130,7 +158,11 @@
     <section class="category-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title"><span class="gradient-text">{{ $t('HomePage.section3.title1') }} {{ $t('HomePage.section3.title2') }}</span></h2>
+          <h2 class="section-title">
+            <span class="gradient-text"
+              >{{ $t('HomePage.section3.title1') }} {{ $t('HomePage.section3.title2') }}</span
+            >
+          </h2>
           <p class="section-description">
             {{ $t('HomePage.section3.desc') }}
           </p>
@@ -139,18 +171,29 @@
           <div class="loading-spinner"></div>
           <p>{{ $t('MoviesPage.loadingMovies') }}</p>
         </div>
-        
+
         <div v-else-if="store.errors.home" class="error-section">
           <p>⚠️ {{ store.errors.home }}</p>
           <button @click="retryFetch" class="retry-button">{{ $t('common.retry') }}</button>
         </div>
-        
-        <MediaList 
-          v-else
-          type="movies"
-          :data="movies"
-          :show-more-button="true"
-        />
+
+        <MediaList v-else type="movies" :data="movies" :show-more-button="true" />
+
+        <!-- 横幅广告位 -->
+        <aside
+          v-if="!isMobile"
+          style="width: 100%; padding-top: 20px; text-align: center; overflow: hidden"
+        >
+          <ins class="eas6a97888e2" data-zoneid="5874736"></ins>
+        </aside>
+
+        <!-- 移动横幅广告位 -->
+        <aside
+          v-if="isMobile"
+          style="width: 100%; padding-top: 20px; text-align: center; overflow: hidden"
+        >
+          <ins class="eas6a97888e10" data-zoneid="5874748"></ins>
+        </aside>
       </div>
     </section>
 
@@ -158,7 +201,11 @@
     <section class="category-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title"><span class="gradient-text">{{ $t('HomePage.section4.title1') }} {{ $t('HomePage.section4.title2') }}</span></h2>
+          <h2 class="section-title">
+            <span class="gradient-text"
+              >{{ $t('HomePage.section4.title1') }} {{ $t('HomePage.section4.title2') }}</span
+            >
+          </h2>
           <p class="section-description">
             {{ $t('HomePage.section4.desc') }}
           </p>
@@ -167,18 +214,29 @@
           <div class="loading-spinner"></div>
           <p>{{ $t('TVShowsPage.loadingShows') }}</p>
         </div>
-        
+
         <div v-else-if="store.errors.home" class="error-section">
           <p>⚠️ {{ store.errors.home }}</p>
           <button @click="retryFetch" class="retry-button">{{ $t('common.retry') }}</button>
         </div>
-        
-        <MediaList 
-          v-else
-          type="tv"
-          :data="tvShows"
-          :show-more-button="true"
-        />
+
+        <MediaList v-else type="tv" :data="tvShows" :show-more-button="true" />
+
+        <!-- 横幅广告位 -->
+        <aside
+          v-if="!isMobile"
+          style="width: 100%; padding-top: 20px; text-align: center; overflow: hidden"
+        >
+          <ins class="eas6a97888e2" data-zoneid="5874736"></ins>
+        </aside>
+
+        <!-- 移动横幅广告位 -->
+        <aside
+          v-if="isMobile"
+          style="width: 100%; padding-top: 20px; text-align: center; overflow: hidden"
+        >
+          <ins class="eas6a97888e10" data-zoneid="5874748"></ins>
+        </aside>
       </div>
     </section>
 
@@ -187,7 +245,10 @@
       <div class="container">
         <div class="introduction-content">
           <div class="section-header">
-            <h2 class="section-title">{{ $t('HomePage.section5.title1') }} <span class="gradient-text">{{ $t('HomePage.section5.title2') }}</span></h2>
+            <h2 class="section-title">
+              {{ $t('HomePage.section5.title1') }}
+              <span class="gradient-text">{{ $t('HomePage.section5.title2') }}</span>
+            </h2>
             <p class="section-description">
               {{ $t('HomePage.section5.desc') }}
             </p>
@@ -196,7 +257,22 @@
           <div class="introduction-grid">
             <div class="intro-card">
               <div class="intro-icon">
-                <svg t="1757063170726" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2287" width="200" height="200"><path d="M1009.2544 537.2928 1009.2544 434.8928c0-162.9184-114.176-198.9632-187.2896-198.9632L541.9008 235.9296c0.4096-1.536 0.7168-3.2768 0.7168-4.9152l0-65.8432c0-10.3424-8.3968-18.7392-18.7392-18.7392-10.3424 0-18.7392 8.3968-18.7392 18.7392l0 65.8432c0 1.7408 0.2048 3.3792 0.7168 4.9152l-3.8912 0L210.2272 235.9296c-73.1136 0-187.2896 36.0448-187.2896 198.9632l0 102.5024 0 29.9008 0 163.4304c0 59.5968 48.3328 107.9296 107.9296 107.9296 17.408 0 34.816 0 52.1216 0 0 0 58.1632 3.6864 86.016-27.5456 16.5888-18.6368 25.1904-31.8464 25.1904-31.8464 20.5824-27.7504 50.176-41.984 83.968-46.592 7.3728-1.024 14.9504-1.6384 22.4256-1.9456l76.0832 0 129.6384 0c7.4752 0.3072 40.1408 0.9216 47.616 1.9456 33.792 4.608 63.3856 18.8416 83.968 46.592 0 0 8.704 13.2096 25.1904 31.8464 27.8528 31.3344 86.016 27.5456 86.016 27.5456 17.408 0 34.816 0 52.1216 0 59.5968 0 107.9296-48.3328 107.9296-107.9296L1009.152 567.1936 1009.2544 537.2928zM401.2032 510.5664l-114.176 0.3072L286.72 625.2544c0 10.3424-8.3968 18.7392-18.7392 18.7392l0 0c-10.3424 0-18.7392-8.3968-18.7392-18.7392l0.2048-114.2784-114.0736 0.3072 0 0c-10.3424 0-18.7392-8.3968-18.7392-18.7392 0-10.3424 8.2944-18.7392 18.7392-18.7392l114.2784-0.3072 0.2048-114.4832c0-10.3424 8.3968-18.7392 18.7392-18.7392l0 0c10.3424 0 18.7392 8.3968 18.7392 18.7392l-0.2048 114.3808 114.0736-0.3072 0 0c10.3424 0 18.7392 8.3968 18.7392 18.7392C419.9424 502.0672 411.5456 510.464 401.2032 510.5664zM688.2304 488.1408c-31.232 0-56.6272-25.3952-56.6272-56.6272 0-31.232 25.3952-56.5248 56.6272-56.5248s56.6272 25.3952 56.6272 56.5248C744.7552 462.7456 719.4624 488.1408 688.2304 488.1408zM834.56 621.2608c-32.256 0-58.4704-26.2144-58.4704-58.368 0-32.256 26.2144-58.4704 58.4704-58.4704 32.256 0 58.4704 26.2144 58.4704 58.4704C893.0304 595.0464 866.816 621.2608 834.56 621.2608z" fill="#FF9000" p-id="2288"></path></svg>
+                <svg
+                  t="1757063170726"
+                  class="icon"
+                  viewBox="0 0 1024 1024"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  p-id="2287"
+                  width="200"
+                  height="200"
+                >
+                  <path
+                    d="M1009.2544 537.2928 1009.2544 434.8928c0-162.9184-114.176-198.9632-187.2896-198.9632L541.9008 235.9296c0.4096-1.536 0.7168-3.2768 0.7168-4.9152l0-65.8432c0-10.3424-8.3968-18.7392-18.7392-18.7392-10.3424 0-18.7392 8.3968-18.7392 18.7392l0 65.8432c0 1.7408 0.2048 3.3792 0.7168 4.9152l-3.8912 0L210.2272 235.9296c-73.1136 0-187.2896 36.0448-187.2896 198.9632l0 102.5024 0 29.9008 0 163.4304c0 59.5968 48.3328 107.9296 107.9296 107.9296 17.408 0 34.816 0 52.1216 0 0 0 58.1632 3.6864 86.016-27.5456 16.5888-18.6368 25.1904-31.8464 25.1904-31.8464 20.5824-27.7504 50.176-41.984 83.968-46.592 7.3728-1.024 14.9504-1.6384 22.4256-1.9456l76.0832 0 129.6384 0c7.4752 0.3072 40.1408 0.9216 47.616 1.9456 33.792 4.608 63.3856 18.8416 83.968 46.592 0 0 8.704 13.2096 25.1904 31.8464 27.8528 31.3344 86.016 27.5456 86.016 27.5456 17.408 0 34.816 0 52.1216 0 59.5968 0 107.9296-48.3328 107.9296-107.9296L1009.152 567.1936 1009.2544 537.2928zM401.2032 510.5664l-114.176 0.3072L286.72 625.2544c0 10.3424-8.3968 18.7392-18.7392 18.7392l0 0c-10.3424 0-18.7392-8.3968-18.7392-18.7392l0.2048-114.2784-114.0736 0.3072 0 0c-10.3424 0-18.7392-8.3968-18.7392-18.7392 0-10.3424 8.2944-18.7392 18.7392-18.7392l114.2784-0.3072 0.2048-114.4832c0-10.3424 8.3968-18.7392 18.7392-18.7392l0 0c10.3424 0 18.7392 8.3968 18.7392 18.7392l-0.2048 114.3808 114.0736-0.3072 0 0c10.3424 0 18.7392 8.3968 18.7392 18.7392C419.9424 502.0672 411.5456 510.464 401.2032 510.5664zM688.2304 488.1408c-31.232 0-56.6272-25.3952-56.6272-56.6272 0-31.232 25.3952-56.5248 56.6272-56.5248s56.6272 25.3952 56.6272 56.5248C744.7552 462.7456 719.4624 488.1408 688.2304 488.1408zM834.56 621.2608c-32.256 0-58.4704-26.2144-58.4704-58.368 0-32.256 26.2144-58.4704 58.4704-58.4704 32.256 0 58.4704 26.2144 58.4704 58.4704C893.0304 595.0464 866.816 621.2608 834.56 621.2608z"
+                    fill="#FF9000"
+                    p-id="2288"
+                  ></path>
+                </svg>
               </div>
               <h3 class="intro-title">{{ $t('HomePage.section5.card1Title') }}</h3>
               <p class="intro-description">
@@ -206,7 +282,37 @@
 
             <div class="intro-card">
               <div class="intro-icon">
-                <svg t="1757063279384" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3484" width="200" height="200"><path d="M97.28 512c0 225.792 172.544 408.576 386.048 408.576s386.048-182.784 386.048-408.576S696.32 103.424 483.328 103.424C269.824 103.424 97.28 286.208 97.28 512z" fill="#3366FF" p-id="3485"></path><path d="M502.272 838.656h385.536c21.504 0 38.912 18.432 38.912 40.96s-17.408 40.96-38.912 40.96H502.272c-21.504 0-38.912-18.432-38.912-40.96 0.512-22.528 17.408-40.96 38.912-40.96z" fill="#3366FF" p-id="3486"></path><path d="M386.56 307.712c0 56.32 43.008 101.888 96.256 101.888s96.256-45.568 96.256-101.888-43.008-101.888-96.256-101.888c-53.248-0.512-96.256 45.568-96.256 101.888zM483.328 613.888c53.248 0 96.256 45.568 96.256 101.888s-43.008 101.888-96.256 101.888-96.256-45.568-96.256-101.888 42.496-101.888 96.256-101.888z" fill="#FFFFFF" p-id="3487"></path><path d="M270.848 409.6c53.248 0 96.768 45.568 96.768 101.888s-43.008 102.4-96.256 102.4S174.592 568.32 174.592 512c0-56.32 43.008-101.888 96.256-102.4zM695.296 409.6c53.248 0 96.256 45.568 96.256 101.888s-43.008 101.888-96.256 101.888S599.04 568.32 599.04 512s43.008-102.4 96.256-102.4z" fill="#AEC9FF" p-id="3488"></path></svg>
+                <svg
+                  t="1757063279384"
+                  class="icon"
+                  viewBox="0 0 1024 1024"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  p-id="3484"
+                  width="200"
+                  height="200"
+                >
+                  <path
+                    d="M97.28 512c0 225.792 172.544 408.576 386.048 408.576s386.048-182.784 386.048-408.576S696.32 103.424 483.328 103.424C269.824 103.424 97.28 286.208 97.28 512z"
+                    fill="#3366FF"
+                    p-id="3485"
+                  ></path>
+                  <path
+                    d="M502.272 838.656h385.536c21.504 0 38.912 18.432 38.912 40.96s-17.408 40.96-38.912 40.96H502.272c-21.504 0-38.912-18.432-38.912-40.96 0.512-22.528 17.408-40.96 38.912-40.96z"
+                    fill="#3366FF"
+                    p-id="3486"
+                  ></path>
+                  <path
+                    d="M386.56 307.712c0 56.32 43.008 101.888 96.256 101.888s96.256-45.568 96.256-101.888-43.008-101.888-96.256-101.888c-53.248-0.512-96.256 45.568-96.256 101.888zM483.328 613.888c53.248 0 96.256 45.568 96.256 101.888s-43.008 101.888-96.256 101.888-96.256-45.568-96.256-101.888 42.496-101.888 96.256-101.888z"
+                    fill="#FFFFFF"
+                    p-id="3487"
+                  ></path>
+                  <path
+                    d="M270.848 409.6c53.248 0 96.768 45.568 96.768 101.888s-43.008 102.4-96.256 102.4S174.592 568.32 174.592 512c0-56.32 43.008-101.888 96.256-102.4zM695.296 409.6c53.248 0 96.256 45.568 96.256 101.888s-43.008 101.888-96.256 101.888S599.04 568.32 599.04 512s43.008-102.4 96.256-102.4z"
+                    fill="#AEC9FF"
+                    p-id="3488"
+                  ></path>
+                </svg>
               </div>
               <h3 class="intro-title">{{ $t('HomePage.section5.card2Title') }}</h3>
               <p class="intro-description">
@@ -216,7 +322,27 @@
 
             <div class="intro-card">
               <div class="intro-icon">
-                <svg t="1757063304052" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5035" width="200" height="200"><path d="M929.28 250.368h-310.784c-3.584 0-6.656-2.048-8.192-5.632-1.024-3.584 0-6.656 3.072-8.704l150.528-100.864c14.336-9.216 19.456-27.648 11.264-42.496-4.608-8.192-12.288-13.824-20.48-15.872-9.216-2.048-18.432-0.512-25.6 4.608L547.84 203.264c-22.016 14.848-50.176 14.848-72.192 0L294.912 81.92c-14.848-9.728-34.816-5.632-45.056 9.216-0.512 0.512-0.512 1.024-1.024 1.536-7.68 14.848-2.048 33.28 11.264 42.496l150.016 100.864c3.584 2.048 4.608 7.68 2.048 10.752-1.536 2.048-4.096 3.584-6.656 3.584H94.72c-34.816 0-63.488 28.16-64 63.488v570.88c0 34.816 29.184 63.488 64 63.488h834.048c34.816 0 63.488-28.16 64-63.488V313.856c0.512-35.84-28.672-63.488-63.488-63.488z m-321.024 539.136c0 17.92-14.848 32.256-32.768 32.256H190.976c-17.92 0-32.256-14.336-32.256-32.256V409.088c0-17.92 14.336-32.256 32.256-32.256h385.024c17.92 0 32.256 14.336 32.256 32.256v380.416z m240.64 31.232H752.64c-17.92 0.512-32.768-12.8-33.28-30.208-0.512-17.92 12.8-32.768 30.208-33.28H848.896c17.92-0.512 32.768 12.8 33.28 30.208 0.512 17.92-12.8 32.768-30.208 33.28h-3.072z m0-142.336H752.64c-17.92 0.512-32.768-12.8-33.28-30.208-0.512-17.92 12.8-32.768 30.208-33.28H848.896c17.92-0.512 32.768 12.8 33.28 30.208s-12.8 32.768-30.208 33.28h-3.072z m-48.128-142.848c-43.52-0.512-78.336-36.864-77.824-80.384s36.864-78.336 80.384-77.824c43.52 0.512 77.824 36.352 77.824 78.848 0 44.032-36.352 79.872-80.384 79.36z" fill="#3366FF" p-id="5036"></path><path d="M513.536 442.368H256c-17.92-0.512-32.256 13.824-32.768 31.744v251.904c0.512 17.92 14.848 31.744 32.768 31.744h258.048c17.92 0 32.256-13.824 32.256-31.744V473.6c-0.512-17.408-14.848-31.232-32.768-31.232z" fill="#AEC9FF" p-id="5037"></path></svg>
+                <svg
+                  t="1757063304052"
+                  class="icon"
+                  viewBox="0 0 1024 1024"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  p-id="5035"
+                  width="200"
+                  height="200"
+                >
+                  <path
+                    d="M929.28 250.368h-310.784c-3.584 0-6.656-2.048-8.192-5.632-1.024-3.584 0-6.656 3.072-8.704l150.528-100.864c14.336-9.216 19.456-27.648 11.264-42.496-4.608-8.192-12.288-13.824-20.48-15.872-9.216-2.048-18.432-0.512-25.6 4.608L547.84 203.264c-22.016 14.848-50.176 14.848-72.192 0L294.912 81.92c-14.848-9.728-34.816-5.632-45.056 9.216-0.512 0.512-0.512 1.024-1.024 1.536-7.68 14.848-2.048 33.28 11.264 42.496l150.016 100.864c3.584 2.048 4.608 7.68 2.048 10.752-1.536 2.048-4.096 3.584-6.656 3.584H94.72c-34.816 0-63.488 28.16-64 63.488v570.88c0 34.816 29.184 63.488 64 63.488h834.048c34.816 0 63.488-28.16 64-63.488V313.856c0.512-35.84-28.672-63.488-63.488-63.488z m-321.024 539.136c0 17.92-14.848 32.256-32.768 32.256H190.976c-17.92 0-32.256-14.336-32.256-32.256V409.088c0-17.92 14.336-32.256 32.256-32.256h385.024c17.92 0 32.256 14.336 32.256 32.256v380.416z m240.64 31.232H752.64c-17.92 0.512-32.768-12.8-33.28-30.208-0.512-17.92 12.8-32.768 30.208-33.28H848.896c17.92-0.512 32.768 12.8 33.28 30.208 0.512 17.92-12.8 32.768-30.208 33.28h-3.072z m0-142.336H752.64c-17.92 0.512-32.768-12.8-33.28-30.208-0.512-17.92 12.8-32.768 30.208-33.28H848.896c17.92-0.512 32.768 12.8 33.28 30.208s-12.8 32.768-30.208 33.28h-3.072z m-48.128-142.848c-43.52-0.512-78.336-36.864-77.824-80.384s36.864-78.336 80.384-77.824c43.52 0.512 77.824 36.352 77.824 78.848 0 44.032-36.352 79.872-80.384 79.36z"
+                    fill="#3366FF"
+                    p-id="5036"
+                  ></path>
+                  <path
+                    d="M513.536 442.368H256c-17.92-0.512-32.256 13.824-32.768 31.744v251.904c0.512 17.92 14.848 31.744 32.768 31.744h258.048c17.92 0 32.256-13.824 32.256-31.744V473.6c-0.512-17.408-14.848-31.232-32.768-31.232z"
+                    fill="#AEC9FF"
+                    p-id="5037"
+                  ></path>
+                </svg>
               </div>
               <h3 class="intro-title">{{ $t('HomePage.section5.card3Title') }}</h3>
               <p class="intro-description">
@@ -226,7 +352,27 @@
 
             <div class="intro-card">
               <div class="intro-icon">
-                <svg t="1757063319258" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6061" width="200" height="200"><path d="M209.7 414.1l202.4 53.8c2 0.5 4.1 0.8 6.3 0.8 11 0 20.6-7.4 23.4-18 3.4-12.9-4.3-26.2-17.2-29.6l-202.4-53.8c-6.2-1.7-12.7-0.9-18.3 2.3-5.7 3.2-9.7 8.5-11.4 14.8-3.4 13 4.3 26.3 17.2 29.7zM424.7 606.3l-202.4-53.8c-6.2-1.7-12.7-0.8-18.4 2.4-5.6 3.3-9.7 8.5-11.3 14.8-3.4 12.9 4.3 26.2 17.2 29.6l202.4 53.8c2 0.5 4.1 0.8 6.3 0.8 11 0 20.6-7.4 23.4-18 3.4-12.8-4.3-26.1-17.2-29.6zM607.9 468.7c2.2 0 4.3-0.3 6.2-0.8l202.5-53.8c12.9-3.4 20.6-16.7 17.2-29.7-1.7-6.3-5.8-11.6-11.5-14.9-5.6-3.2-12.1-4-18.2-2.3L601.6 421c-12.9 3.4-20.6 16.7-17.2 29.7 2.9 10.6 12.5 18 23.5 18zM833.8 569.7c-1.7-6.3-5.7-11.6-11.4-14.8-5.6-3.2-12.1-4.1-18.3-2.4l-202.5 53.8c-12.9 3.4-20.6 16.7-17.2 29.6 2.8 10.6 12.4 18 23.4 18 2.2 0 4.3-0.3 6.2-0.8l202.5-53.8c13-3.4 20.7-16.7 17.3-29.6z" fill="#FF4E7D" p-id="6062"></path><path d="M891.3 166.2c-6.8-5.3-18.6-10.7-36.3-6.4L518.7 244h-0.1c-0.4 0.1-0.8 0.1-1.1 0L171 159.8c-17.6-4.4-29.4 1-36.2 6.4-7.5 5.8-16.3 17.4-16.3 39.7l0.6 342.4 0.2 186.1c0 14.2 5.8 25.8 17.2 34.6 8.5 6.6 18 9.6 22.5 11.1l340 98.4c4.6 1.3 9.4 2 14.1 2 4.7 0 9.5-0.7 14.2-2l340.1-98.4 0.2-0.1c4.4-1.4 13.7-4.4 22.2-11 11.4-8.8 17.1-20.4 17.1-34.5l0.8-528.5c-0.1-22.4-9-34-16.4-39.8zM488.8 825l-315.5-91.3c-2.7-0.9-4.5-1.6-5.6-2.1l-0.2-183.2-0.6-339.6L488.8 287v538z m369.5-93.4c-1 0.5-2.7 1.2-5.2 2L537.2 825V289.3l321.9-80.6-0.8 522.9z" fill="#4E30DC" p-id="6063"></path></svg>
+                <svg
+                  t="1757063319258"
+                  class="icon"
+                  viewBox="0 0 1024 1024"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  p-id="6061"
+                  width="200"
+                  height="200"
+                >
+                  <path
+                    d="M209.7 414.1l202.4 53.8c2 0.5 4.1 0.8 6.3 0.8 11 0 20.6-7.4 23.4-18 3.4-12.9-4.3-26.2-17.2-29.6l-202.4-53.8c-6.2-1.7-12.7-0.9-18.3 2.3-5.7 3.2-9.7 8.5-11.4 14.8-3.4 13 4.3 26.3 17.2 29.7zM424.7 606.3l-202.4-53.8c-6.2-1.7-12.7-0.8-18.4 2.4-5.6 3.3-9.7 8.5-11.3 14.8-3.4 12.9 4.3 26.2 17.2 29.6l202.4 53.8c2 0.5 4.1 0.8 6.3 0.8 11 0 20.6-7.4 23.4-18 3.4-12.8-4.3-26.1-17.2-29.6zM607.9 468.7c2.2 0 4.3-0.3 6.2-0.8l202.5-53.8c12.9-3.4 20.6-16.7 17.2-29.7-1.7-6.3-5.8-11.6-11.5-14.9-5.6-3.2-12.1-4-18.2-2.3L601.6 421c-12.9 3.4-20.6 16.7-17.2 29.7 2.9 10.6 12.5 18 23.5 18zM833.8 569.7c-1.7-6.3-5.7-11.6-11.4-14.8-5.6-3.2-12.1-4.1-18.3-2.4l-202.5 53.8c-12.9 3.4-20.6 16.7-17.2 29.6 2.8 10.6 12.4 18 23.4 18 2.2 0 4.3-0.3 6.2-0.8l202.5-53.8c13-3.4 20.7-16.7 17.3-29.6z"
+                    fill="#FF4E7D"
+                    p-id="6062"
+                  ></path>
+                  <path
+                    d="M891.3 166.2c-6.8-5.3-18.6-10.7-36.3-6.4L518.7 244h-0.1c-0.4 0.1-0.8 0.1-1.1 0L171 159.8c-17.6-4.4-29.4 1-36.2 6.4-7.5 5.8-16.3 17.4-16.3 39.7l0.6 342.4 0.2 186.1c0 14.2 5.8 25.8 17.2 34.6 8.5 6.6 18 9.6 22.5 11.1l340 98.4c4.6 1.3 9.4 2 14.1 2 4.7 0 9.5-0.7 14.2-2l340.1-98.4 0.2-0.1c4.4-1.4 13.7-4.4 22.2-11 11.4-8.8 17.1-20.4 17.1-34.5l0.8-528.5c-0.1-22.4-9-34-16.4-39.8zM488.8 825l-315.5-91.3c-2.7-0.9-4.5-1.6-5.6-2.1l-0.2-183.2-0.6-339.6L488.8 287v538z m369.5-93.4c-1 0.5-2.7 1.2-5.2 2L537.2 825V289.3l321.9-80.6-0.8 522.9z"
+                    fill="#4E30DC"
+                    p-id="6063"
+                  ></path>
+                </svg>
               </div>
               <h3 class="intro-title">{{ $t('HomePage.section5.card4Title') }}</h3>
               <p class="intro-description">
@@ -236,7 +382,22 @@
 
             <div class="intro-card">
               <div class="intro-icon">
-                <svg t="1757063343331" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7093" width="200" height="200"><path d="M910.793765 204.556811l-329.178854-188.093059c-38.335401-21.919657-100.798424-21.983656-139.229823 0l-329.178854 188.093059c-38.335401 21.919657-69.630911 75.742816-69.630911 120.062123l0 374.746141c0 44.351307 31.167513 98.110466 69.630911 120.062123l329.178854 188.093059c38.335401 21.919657 100.798424 21.983656 139.229823 0l329.178854-188.093059c38.335401-21.919657 69.630911-75.742816 69.630911-120.062123l0-374.746141c0-44.319307-31.167513-98.110466-69.630911-120.062123zM769.675972 466.152721l-82.238714 81.822721c-17.087733 17.023734-27.743566 50.55921-23.711629 74.558834l19.391697 115.582193c4.031937 23.999625-9.951844 34.367463-31.039515 23.03964l-101.662411-54.591147c-21.11967-11.327823-55.67913-11.327823-76.7668 0l-101.662411 54.591147c-21.11967 11.359822-35.103451 0.991984-31.039515-23.03964l19.391697-115.582193c4.031937-23.999625-6.655896-57.5671-23.743629-74.558834l-82.238714-81.822721c-17.087733-17.023734-11.743816-33.791472 11.871814-37.311417l113.662223-16.863736c23.615631-3.519945 51.551194-24.255621 62.111029-46.07928l50.847205-105.150356c10.559835-21.855658 27.839565-21.855658 38.3994 0l50.815206 105.150356c10.559835 21.855658 38.527398 42.591334 62.111029 46.07928l113.630224 16.863736c23.583631 3.487945 28.927548 20.287683 11.839815 37.311417z" fill="#F8CA2A" p-id="7094"></path></svg>
+                <svg
+                  t="1757063343331"
+                  class="icon"
+                  viewBox="0 0 1024 1024"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  p-id="7093"
+                  width="200"
+                  height="200"
+                >
+                  <path
+                    d="M910.793765 204.556811l-329.178854-188.093059c-38.335401-21.919657-100.798424-21.983656-139.229823 0l-329.178854 188.093059c-38.335401 21.919657-69.630911 75.742816-69.630911 120.062123l0 374.746141c0 44.351307 31.167513 98.110466 69.630911 120.062123l329.178854 188.093059c38.335401 21.919657 100.798424 21.983656 139.229823 0l329.178854-188.093059c38.335401-21.919657 69.630911-75.742816 69.630911-120.062123l0-374.746141c0-44.319307-31.167513-98.110466-69.630911-120.062123zM769.675972 466.152721l-82.238714 81.822721c-17.087733 17.023734-27.743566 50.55921-23.711629 74.558834l19.391697 115.582193c4.031937 23.999625-9.951844 34.367463-31.039515 23.03964l-101.662411-54.591147c-21.11967-11.327823-55.67913-11.327823-76.7668 0l-101.662411 54.591147c-21.11967 11.359822-35.103451 0.991984-31.039515-23.03964l19.391697-115.582193c4.031937-23.999625-6.655896-57.5671-23.743629-74.558834l-82.238714-81.822721c-17.087733-17.023734-11.743816-33.791472 11.871814-37.311417l113.662223-16.863736c23.615631-3.519945 51.551194-24.255621 62.111029-46.07928l50.847205-105.150356c10.559835-21.855658 27.839565-21.855658 38.3994 0l50.815206 105.150356c10.559835 21.855658 38.527398 42.591334 62.111029 46.07928l113.630224 16.863736c23.583631 3.487945 28.927548 20.287683 11.839815 37.311417z"
+                    fill="#F8CA2A"
+                    p-id="7094"
+                  ></path>
+                </svg>
               </div>
               <h3 class="intro-title">{{ $t('HomePage.section5.card5Title') }}</h3>
               <p class="intro-description">
@@ -246,7 +407,32 @@
 
             <div class="intro-card">
               <div class="intro-icon">
-                <svg t="1757063372050" class="icon" viewBox="0 0 1056 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9883" width="200" height="200"><path d="M16 0m512 0l0 0q512 0 512 512l0 0q0 512-512 512l0 0q-512 0-512-512l0 0q0-512 512-512Z" fill="#7C9FEE" p-id="9884"></path><path d="M686.016 758.944h-316c-18.72 0-33.856-12.384-33.856-27.68V251.616c0-15.232 15.136-27.616 33.856-27.616h316c18.688 0 33.824 12.384 33.824 27.68v479.616c0 15.232-15.136 27.648-33.824 27.648z m-157.888-27.52c12.48 0 22.592-8.896 22.592-19.872 0-10.944-10.144-19.84-22.592-19.84-12.48 0-22.592 8.896-22.592 19.84 0 10.976 10.112 19.84 22.592 19.84z m157.888-452.096h-316v387.392h316.032V279.328z" fill="#FFFFFF" p-id="9885"></path><path d="M422.496 339.104h191.84a19.2 19.2 0 0 1 0 38.4h-191.84a19.2 19.2 0 0 1 0-38.4z m0 76.736h108.128a19.2 19.2 0 1 1 0 38.4h-108.16a19.2 19.2 0 0 1 0-38.4z m0 76.736h45.344a19.2 19.2 0 0 1 0 38.4h-45.344a19.2 19.2 0 0 1 0-38.4z" fill="#FFFFFF" p-id="9886"></path></svg>
+                <svg
+                  t="1757063372050"
+                  class="icon"
+                  viewBox="0 0 1056 1024"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  p-id="9883"
+                  width="200"
+                  height="200"
+                >
+                  <path
+                    d="M16 0m512 0l0 0q512 0 512 512l0 0q0 512-512 512l0 0q-512 0-512-512l0 0q0-512 512-512Z"
+                    fill="#7C9FEE"
+                    p-id="9884"
+                  ></path>
+                  <path
+                    d="M686.016 758.944h-316c-18.72 0-33.856-12.384-33.856-27.68V251.616c0-15.232 15.136-27.616 33.856-27.616h316c18.688 0 33.824 12.384 33.824 27.68v479.616c0 15.232-15.136 27.648-33.824 27.648z m-157.888-27.52c12.48 0 22.592-8.896 22.592-19.872 0-10.944-10.144-19.84-22.592-19.84-12.48 0-22.592 8.896-22.592 19.84 0 10.976 10.112 19.84 22.592 19.84z m157.888-452.096h-316v387.392h316.032V279.328z"
+                    fill="#FFFFFF"
+                    p-id="9885"
+                  ></path>
+                  <path
+                    d="M422.496 339.104h191.84a19.2 19.2 0 0 1 0 38.4h-191.84a19.2 19.2 0 0 1 0-38.4z m0 76.736h108.128a19.2 19.2 0 1 1 0 38.4h-108.16a19.2 19.2 0 0 1 0-38.4z m0 76.736h45.344a19.2 19.2 0 0 1 0 38.4h-45.344a19.2 19.2 0 0 1 0-38.4z"
+                    fill="#FFFFFF"
+                    p-id="9886"
+                  ></path>
+                </svg>
               </div>
               <h3 class="intro-title">{{ $t('HomePage.section5.card6Title') }}</h3>
               <p class="intro-description">
@@ -255,21 +441,32 @@
             </div>
           </div>
         </div>
+        <!-- 横幅广告位 -->
+        <aside
+          v-if="!isMobile"
+          style="width: 100%; padding-top: 20px; text-align: center; overflow: hidden"
+        >
+          <ins class="eas6a97888e2" data-zoneid="5874736"></ins>
+        </aside>
+
+        <!-- 移动横幅广告位 -->
+        <aside
+          v-if="isMobile"
+          style="width: 100%; padding-top: 20px; text-align: center; overflow: hidden"
+        >
+          <ins class="eas6a97888e10" data-zoneid="5874748"></ins>
+        </aside>
       </div>
     </section>
 
     <!-- FAQ Section -->
     <section class="faq-section">
       <div class="container">
-        <!-- 移动横幅广告2 -->
-        <aside style="width: 100%; padding: 20px 0; text-align: center; overflow: hidden;" v-if="isMobile">
-          <ins class="eas6a97888e10" data-zoneid="5751804"></ins>
-        </aside>
-
         <div class="faq-content">
           <div class="section-header">
             <h2 class="section-title">
-              {{ $t('HomePage.section6.title1') }} <span class="gradient-text">{{ $t('HomePage.section6.title2') }}</span>
+              {{ $t('HomePage.section6.title1') }}
+              <span class="gradient-text">{{ $t('HomePage.section6.title2') }}</span>
             </h2>
             <p class="section-description">
               {{ $t('HomePage.section6.desc') }}
@@ -383,14 +580,15 @@ const performSearch = async () => {
   try {
     // 根据当前语言构建路由名称
     const currentLang = locale.value
-    const routeName = currentLang === 'en' 
-      ? 'Search' 
-      : `Search${currentLang.charAt(0).toUpperCase() + currentLang.slice(1)}`
-    
+    const routeName =
+      currentLang === 'en'
+        ? 'Search'
+        : `Search${currentLang.charAt(0).toUpperCase() + currentLang.slice(1)}`
+
     // 直接跳转到搜索结果页面，数据由 SearchResultsView.vue 负责获取
     router.push({
       name: routeName,
-      query: { q: searchQuery.value.trim() }
+      query: { q: searchQuery.value.trim() },
     })
   } catch (error) {
     console.error('Search failed:', error)
@@ -409,6 +607,20 @@ const retryLatestFetch = async () => {
   await store.fetchLatestDiscoveries()
 }
 
+const adProvider = () => {
+  const script = document.createElement('script')
+  script.src = 'https://a.magsrv.com/ad-provider.js'
+  script.async = true
+  script.type = 'application/javascript'
+  document.head.appendChild(script)
+
+  script.onload = () => {
+    if (window.AdProvider) {
+      window.AdProvider.push({ serve: {} })
+    }
+  }
+}
+
 onMounted(async () => {
   // 等待数据预加载完成
   const waitForData = () => {
@@ -420,7 +632,11 @@ onMounted(async () => {
       setTimeout(waitForData, 50)
     }
   }
-  
+
+  setTimeout(() => {
+    adProvider()
+  }, 1000) // 延迟1秒加载广
+
   waitForData()
 })
 </script>
@@ -485,7 +701,6 @@ onMounted(async () => {
   transform: scale(1.05);
 }
 
-
 /* Hero Section */
 .hero-section {
   position: relative;
@@ -520,8 +735,7 @@ onMounted(async () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    linear-gradient(rgba(139, 92, 246, 0.2) 1px, transparent 1px),
+  background-image: linear-gradient(rgba(139, 92, 246, 0.2) 1px, transparent 1px),
     linear-gradient(90deg, rgba(139, 92, 246, 0.2) 1px, transparent 1px);
   background-size: 50px 50px;
   opacity: 0.6;
@@ -576,8 +790,6 @@ onMounted(async () => {
 }
 
 /* 移除不再需要的网格和线条样式 */
-
-
 
 /* 移除不再需要的扫描动画 */
 
@@ -846,10 +1058,6 @@ onMounted(async () => {
   }
 }
 
-
-
-
-
 /* Latest Discoveries Section */
 .latest-discoveries-section {
   padding: 80px 0;
@@ -1071,8 +1279,6 @@ onMounted(async () => {
   color: #6b7280;
 }
 
-
-
 /* Introduction Section */
 .introduction-section {
   padding: 80px 0;
@@ -1251,8 +1457,12 @@ onMounted(async () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* 响应式设计 - 1024px 断点 */
@@ -1260,90 +1470,90 @@ onMounted(async () => {
   .section-title {
     font-size: 40px;
   }
-  
+
   .section-description {
     font-size: 18px;
   }
-  
+
   .hero-title {
     font-size: 72px;
   }
-  
+
   .hero-description {
     font-size: 20px;
     margin-bottom: 28px;
   }
-  
+
   .hero-search-input {
     font-size: 16px;
     padding: 14px 14px 14px 44px;
   }
-  
+
   .hero-search-button {
     font-size: 16px;
     padding: 14px 28px;
   }
-  
+
   .hero-stats {
     font-size: 16px;
     gap: 28px;
   }
-  
+
   .latest-discoveries-section,
   .category-section,
   .introduction-section,
   .faq-section {
     padding: 60px 0;
   }
-  
+
   .section-header {
     margin-bottom: 40px;
   }
-  
+
   .articles-grid,
   .category-grid {
     gap: 28px;
     margin-bottom: 40px;
   }
-  
+
   .introduction-grid {
     gap: 20px;
     margin-top: 20px;
   }
-  
+
   .faq-grid {
     margin-top: 40px;
     gap: 20px;
   }
-  
+
   .intro-card {
     padding: 28px 20px;
   }
-  
+
   .intro-icon {
     width: 25px;
     height: 25px;
     margin: 0 auto 10px;
   }
-  
+
   .intro-title {
     font-size: 18px;
     margin-bottom: 14px;
   }
-  
+
   .intro-description {
     font-size: 16px;
   }
-  
+
   .faq-item {
     padding: 20px;
   }
-  
+
   .faq-title {
     font-size: 16px;
     margin-bottom: 14px;
   }
-  
+
   .faq-answer {
     font-size: 16px;
   }
@@ -1355,111 +1565,111 @@ onMounted(async () => {
     min-height: 80vh;
     padding: 20px 0;
   }
-  
+
   .hero-content {
     padding: 0 10px;
   }
-  
+
   .section-title {
     font-size: 24px;
   }
-  
+
   .section-description {
     font-size: 12px;
   }
-  
+
   .hero-title {
     font-size: 32px;
     margin-bottom: 10px;
   }
-  
+
   .hero-description {
     font-size: 12px;
     margin-bottom: 20px;
   }
-  
+
   .hero-search {
     margin-bottom: 20px;
   }
-  
+
   .hero-search-input {
     font-size: 12px;
     padding: 10px 10px 10px 36px;
   }
-  
+
   .hero-search-icon {
     font-size: 16px;
     left: 12px;
   }
-  
+
   .hero-search-button {
     font-size: 12px;
     padding: 10px 20px;
   }
-  
+
   .hero-stats {
     font-size: 12px;
     gap: 10px;
   }
-  
+
   .stat-item {
     padding: 6px 12px;
     gap: 6px;
   }
-  
+
   .latest-discoveries-section,
   .category-section,
   .introduction-section,
   .faq-section {
     padding: 20px 0;
   }
-  
+
   .section-header {
     margin-bottom: 20px;
   }
-  
+
   .section-title {
     margin-bottom: 10px;
   }
-  
+
   .section-description {
     margin-bottom: 10px;
   }
-  
+
   .articles-grid,
   .category-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
     margin-bottom: 20px;
   }
-  
+
   .article-card,
   .category-article-card {
     margin-bottom: 10px;
   }
-  
+
   .article-content,
   .category-article-content {
     padding: 20px;
   }
-  
+
   .article-title,
   .category-article-title {
     font-size: 16px;
     margin-bottom: 10px;
   }
-  
+
   .article-excerpt,
   .category-article-excerpt {
     font-size: 12px;
     margin-bottom: 10px;
   }
-  
+
   .article-meta,
   .category-article-meta {
     font-size: 12px;
   }
-  
+
   .article-category,
   .category-article-category {
     font-size: 10px;
@@ -1467,95 +1677,93 @@ onMounted(async () => {
     top: 12px;
     left: 12px;
   }
-  
+
   .introduction-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin-top: 20px;
   }
-  
+
   .intro-card {
     padding: 20px 16px;
   }
-  
-  
+
   .intro-title {
     font-size: 16px;
     margin-bottom: 10px;
   }
-  
+
   .intro-description {
     font-size: 12px;
   }
-  
+
   .faq-grid {
     grid-template-columns: 1fr;
     margin-top: 20px;
     gap: 20px;
   }
-  
+
   .faq-item {
     padding: 20px;
   }
-  
+
   .faq-title {
     font-size: 16px;
     margin-bottom: 10px;
   }
-  
+
   .faq-answer {
     font-size: 12px;
   }
-  
+
   .loading-section {
     padding: 20px 10px;
     margin: 10px 0;
   }
-  
+
   .loading-text {
     font-size: 12px;
   }
-  
+
   .loading-spinner {
     width: 40px;
     height: 40px;
     margin-bottom: 15px;
   }
-  
+
   .error-banner {
     padding: 12px 20px;
     margin: 10px 0;
   }
-  
+
   .error-section {
     padding: 15px;
     margin: 10px 0;
   }
-  
+
   .retry-button {
     padding: 6px 12px;
     font-size: 12px;
   }
-  
+
   .action-button {
     padding: 10px 24px;
     font-size: 12px;
   }
-  
+
   .tech-circle-1 {
     width: 300px;
     height: 300px;
   }
-  
+
   .tech-circle-2 {
     width: 200px;
     height: 200px;
   }
-  
+
   .tech-circle-3 {
     width: 150px;
     height: 150px;
   }
 }
-
 </style>
